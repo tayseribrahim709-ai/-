@@ -1012,7 +1012,606 @@ function updateReminderTime(val){
   toast('⏰ تم تحديث الوقت');
 }
 
-// ─── INIT REMINDER + TEACHER ON LOAD ───
+// ═══════════════════════════════════════════
+// ═══ KIDS ZONE - قسم أطفال ═══
+// ═══════════════════════════════════════════
+
+var KIDS_DATA={
+  categories:[
+    {id:'animals',emoji:'🐾',nameAr:'الحيوانات',nameEn:'Animals',color:'#e74c3c',words:[
+      {en:'Cat',ar:'قطة',emoji:'🐱',sound:'Meow!'},
+      {en:'Dog',ar:'كلب',emoji:'🐶',sound:'Woof!'},
+      {en:'Bird',ar:'طائر',emoji:'🐦',sound:'Tweet!'},
+      {en:'Fish',ar:'سمكة',emoji:'🐟',sound:'Splash!'},
+      {en:'Rabbit',ar:'أرنب',emoji:'🐰',sound:''},
+      {en:'Horse',ar:'حصان',emoji:'🐴',sound:'Neigh!'},
+      {en:'Cow',ar:'بقرة',emoji:'🐮',sound:'Moo!'},
+      {en:'Lion',ar:'أسد',emoji:'🦁',sound:'Roar!'},
+      {en:'Elephant',ar:'فيل',emoji:'🐘',sound:'Trumpet!'},
+      {en:'Monkey',ar:'قرد',emoji:'🐵',sound:'Ooh ooh!'},
+      {en:'Bear',ar:'دب',emoji:'🐻',sound:'Grr!'},
+      {en:'Turtle',ar:'سلحفاة',emoji:'🐢',sound:''},
+      {en:'Duck',ar:'بطة',emoji:'🦆',sound:'Quack!'},
+      {en:'Frog',ar:'ضفدع',emoji:'🐸',sound:'Ribbit!'},
+      {en:'Butterfly',ar:'فراشة',emoji:'🦋',sound:''}
+    ]},
+    {id:'colors',emoji:'🎨',nameAr:'الألوان',nameEn:'Colors',color:'#3498db',words:[
+      {en:'Red',ar:'أحمر',emoji:'🔴',colorHex:'#e74c3c'},
+      {en:'Blue',ar:'أزرق',emoji:'🔵',colorHex:'#3498db'},
+      {en:'Green',ar:'أخضر',emoji:'🟢',colorHex:'#27ae60'},
+      {en:'Yellow',ar:'أصفر',emoji:'🟡',colorHex:'#f1c40f'},
+      {en:'Orange',ar:'برتقالي',emoji:'🟠',colorHex:'#e67e22'},
+      {en:'Purple',ar:'بنفسجي',emoji:'🟣',colorHex:'#9b59b6'},
+      {en:'Pink',ar:'وردي',emoji:'💗',colorHex:'#e91e63'},
+      {en:'Black',ar:'أسود',emoji:'⚫',colorHex:'#2c3e50'},
+      {en:'White',ar:'أبيض',emoji:'⚪',colorHex:'#ecf0f1'},
+      {en:'Brown',ar:'بني',emoji:'🟤',colorHex:'#8d6e63'}
+    ]},
+    {id:'numbers',emoji:'🔢',nameAr:'الأرقام',nameEn:'Numbers',color:'#27ae60',words:[
+      {en:'One',ar:'واحد',emoji:'1️⃣',num:1},
+      {en:'Two',ar:'اثنان',emoji:'2️⃣',num:2},
+      {en:'Three',ar:'ثلاثة',emoji:'3️⃣',num:3},
+      {en:'Four',ar:'أربعة',emoji:'4️⃣',num:4},
+      {en:'Five',ar:'خمسة',emoji:'5️⃣',num:5},
+      {en:'Six',ar:'ستة',emoji:'6️⃣',num:6},
+      {en:'Seven',ar:'سبعة',emoji:'7️⃣',num:7},
+      {en:'Eight',ar:'ثمانية',emoji:'8️⃣',num:8},
+      {en:'Nine',ar:'تسعة',emoji:'9️⃣',num:9},
+      {en:'Ten',ar:'عشرة',emoji:'🔟',num:10}
+    ]},
+    {id:'fruits',emoji:'🍎',nameAr:'الفواكه',nameEn:'Fruits',color:'#e67e22',words:[
+      {en:'Apple',ar:'تفاحة',emoji:'🍎'},
+      {en:'Banana',ar:'موزة',emoji:'🍌'},
+      {en:'Orange',ar:'برتقالة',emoji:'🍊'},
+      {en:'Grape',ar:'عنب',emoji:'🍇'},
+      {en:'Watermelon',ar:'بطيخ',emoji:'🍉'},
+      {en:'Strawberry',ar:'فراولة',emoji:'🍓'},
+      {en:'Mango',ar:'مانجو',emoji:'🥭'},
+      {en:'Pineapple',ar:'أناناس',emoji:'🍍'},
+      {en:'Peach',ar:'خوخ',emoji:'🍑'},
+      {en:'Cherry',ar:'كرز',emoji:'🍒'}
+    ]},
+    {id:'family',emoji:'👨‍👩‍👧‍👦',nameAr:'الأسرة',nameEn:'Family',color:'#9b59b6',words:[
+      {en:'Mother',ar:'أم',emoji:'👩'},
+      {en:'Father',ar:'أب',emoji:'👨'},
+      {en:'Sister',ar:'أخت',emoji:'👧'},
+      {en:'Brother',ar:'أخ',emoji:'👦'},
+      {en:'Grandmother',ar:'جدة',emoji:'👵'},
+      {en:'Grandfather',ar:'جد',emoji:'👴'},
+      {en:'Baby',ar:'طفل',emoji:'👶'},
+      {en:'Family',ar:'عائلة',emoji:'👨‍👩‍👧‍👦'}
+    ]},
+    {id:'body',emoji:'🖐️',nameAr:'الجسم',nameEn:'Body',color:'#1abc9c',words:[
+      {en:'Head',ar:'رأس',emoji:'🗣️'},
+      {en:'Eye',ar:'عين',emoji:'👁️'},
+      {en:'Ear',ar:'أذن',emoji:'👂'},
+      {en:'Nose',ar:'أنف',emoji:'👃'},
+      {en:'Mouth',ar:'فم',emoji:'👄'},
+      {en:'Hand',ar:'يد',emoji:'✋'},
+      {en:'Foot',ar:'قدم',emoji:'🦶'},
+      {en:'Arm',ar:'ذراع',emoji:'💪'},
+      {en:'Leg',ar:'ساق',emoji:'🦵'},
+      {en:'Heart',ar:'قلب',emoji:'❤️'}
+    ]},
+    {id:'food',emoji:'🍕',nameAr:'الطعام',nameEn:'Food',color:'#f39c12',words:[
+      {en:'Bread',ar:'خبز',emoji:'🍞'},
+      {en:'Milk',ar:'حليب',emoji:'🥛'},
+      {en:'Egg',ar:'بيضة',emoji:'🥚'},
+      {en:'Cheese',ar:'جبنة',emoji:'🧀'},
+      {en:'Rice',ar:'أرز',emoji:'🍚'},
+      {en:'Cake',ar:'كعكة',emoji:'🎂'},
+      {en:'Candy',ar:'حلوى',emoji:'🍬'},
+      {en:'Ice cream',ar:'آيس كريم',emoji:'🍦'}
+    ]},
+    {id:'nature',emoji:'🌳',nameAr:'الطبيعة',nameEn:'Nature',color:'#2ecc71',words:[
+      {en:'Sun',ar:'شمس',emoji:'☀️'},
+      {en:'Moon',ar:'قمر',emoji:'🌙'},
+      {en:'Star',ar:'نجمة',emoji:'⭐'},
+      {en:'Cloud',ar:'سحابة',emoji:'☁️'},
+      {en:'Rain',ar:'مطر',emoji:'🌧️'},
+      {en:'Tree',ar:'شجرة',emoji:'🌳'},
+      {en:'Flower',ar:'زهرة',emoji:'🌸'},
+      {en:'Sea',ar:'بحر',emoji:'🌊'},
+      {en:'Mountain',ar:'جبل',emoji:'⛰️'},
+      {en:'Snow',ar:'ثلج',emoji:'❄️'}
+    ]}
+  ]
+};
+
+var kidsState={currentCategory:null,wordsLearned:{},quizScore:0,gameMode:null};
+
+function getKidsProgress(){try{return JSON.parse(ls('kids_progress')||'{}')}catch(e){return{}}}
+function saveKidsProgress(p){lss('kids_progress',JSON.stringify(p));}
+function isKidsWordLearned(catId,wordIdx){var p=getKidsProgress();return p[catId]&&p[catId][wordIdx];}
+function markKidsWordLearned(catId,wordIdx){var p=getKidsProgress();if(!p[catId])p[catId]={};p[catId][wordIdx]=true;saveKidsProgress(p);}
+function getKidsCatProgress(catId){var p=getKidsProgress();var cat=KIDS_DATA.categories.find(function(c){return c.id===catId});if(!cat)return 0;var learned=0;cat.words.forEach(function(w,i){if(p[catId]&&p[catId][i])learned++});return Math.round(learned/cat.words.length*100);}
+
+// ─── MAIN KIDS PAGE ───
+function showKidsZone(){
+  hideAllViews();
+  var v=document.getElementById('kidsView');
+  if(!v){v=document.createElement('div');v.id='kidsView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var totalWords=0,totalLearned=0;
+  KIDS_DATA.categories.forEach(function(cat){
+    totalWords+=cat.words.length;
+    var learned=0;
+    cat.words.forEach(function(w,i){if(isKidsWordLearned(cat.id,i))learned++});
+    totalLearned+=learned;
+  });
+  var overallPct=totalWords?Math.round(totalLearned/totalWords*100):0;
+  var html='<div class="kids-zone">';
+  html+='<div class="kids-header">';
+  html+='<div class="kids-mascot">🧸</div>';
+  html+='<h2>🌟 عالم الأطفال 🌟</h2>';
+  html+='<p>تعلم الإنجليزية بالمرح!</p>';
+  html+='<div class="kids-progress-main">';
+  html+='<div class="kids-progress-bar"><div class="kids-progress-fill" style="width:'+overallPct+'%"></div></div>';
+  html+='<span>'+totalLearned+'/'+totalWords+' كلمة</span>';
+  html+='</div></div>';
+  html+='<div class="kids-categories">';
+  KIDS_DATA.categories.forEach(function(cat){
+    var pct=getKidsCatProgress(cat.id);
+    html+='<div class="kids-cat-card" style="border-left:5px solid '+cat.color+'" onclick="showKidsCategory(\''+cat.id+'\')">';
+    html+='<div class="kids-cat-emoji">'+cat.emoji+'</div>';
+    html+='<div class="kids-cat-info">';
+    html+='<h3>'+cat.nameAr+'</h3>';
+    html+='<p>'+cat.nameEn+'</p>';
+    html+='<div class="kids-cat-bar"><div class="kids-cat-fill" style="width:'+pct+'%;background:'+cat.color+'"></div></div>';
+    html+='<span>'+pct+'%</span>';
+    html+='</div></div>';
+  });
+  html+='</div>';
+  html+='<div class="kids-games">';
+  html+='<h3>🎮 ألعاب</h3>';
+  html+='<div class="kids-game-cards">';
+  html+='<div class="kids-game-card" onclick="startKidsGame(\'match\')" style="background:linear-gradient(135deg,#e74c3c,#c0392b)"><span class="kids-game-icon">🎯</span><span>مطابقة</span></div>';
+  html+='<div class="kids-game-card" onclick="startKidsGame(\'quiz\')" style="background:linear-gradient(135deg,#3498db,#2980b9)"><span class="kids-game-icon">❓</span><span>اختبار</span></div>';
+  html+='<div class="kids-game-card" onclick="startKidsGame(\'memory\')" style="background:linear-gradient(135deg,#27ae60,#219a52)"><span class="kids-game-icon">🧠</span><span>ذاكرة</span></div>';
+  html+='<div class="kids-game-card" onclick="startKidsGame(\'draw\')" style="background:linear-gradient(135deg,#9b59b6,#8e44ad)"><span class="kids-game-icon">🎨</span><span>تلوين</span></div>';
+  html+='</div></div>';
+  html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="margin-top:15px">'+t('back')+'</button>';
+  html+='</div>';
+  v.innerHTML=html;
+}
+
+// ─── KIDS CATEGORY VIEW ───
+function showKidsCategory(catId){
+  var cat=KIDS_DATA.categories.find(function(c){return c.id===catId});
+  if(!cat)return;
+  kidsState.currentCategory=catId;
+  hideAllViews();
+  var v=document.getElementById('kidsCatView');
+  if(!v){v=document.createElement('div');v.id='kidsCatView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var html='<div class="kids-zone">';
+  html+='<div class="kids-header" style="background:linear-gradient(135deg,'+cat.color+','+cat.color+'dd)">';
+  html+='<h2>'+cat.emoji+' '+cat.nameAr+'</h2>';
+  html+='<p>'+cat.nameEn+'</p>';
+  html+='</div>';
+  html+='<div class="kids-words-grid">';
+  cat.words.forEach(function(w,i){
+    var learned=isKidsWordLearned(catId,i);
+    html+='<div class="kids-word-card'+(learned?' learned':'')+'" onclick="showKidsWord(\''+catId+'\',\''+w.en+'\',\''+w.ar+'\',\''+w.emoji+'\')">';
+    html+='<div class="kids-word-emoji">'+w.emoji+'</div>';
+    html+='<div class="kids-word-en">'+w.en+'</div>';
+    html+='<div class="kids-word-ar">'+w.ar+'</div>';
+    if(learned)html+='<div class="kids-word-check">✅</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  html+='<button class="back-btn" onclick="showKidsZone()" style="margin-top:15px">'+t('back')+'</button>';
+  html+='</div>';
+  v.innerHTML=html;
+}
+
+// ─── KIDS WORD POPUP ───
+function showKidsWord(catId,en,ar,emoji){
+  var overlay=document.createElement('div');
+  overlay.className='kids-overlay';
+  overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
+  var card=document.createElement('div');
+  card.className='kids-word-popup';
+  card.innerHTML='<div class="kids-word-popup-emoji">'+emoji+'</div>'+
+    '<h2 class="kids-word-popup-en">'+en+'</h2>'+
+    '<p class="kids-word-popup-ar">'+ar+'</p>'+
+    '<div class="kids-word-popup-actions">'+
+    '<button class="kids-speak-btn" onclick="speakWord(\''+en+'\')">🔊 اسمع</button>'+
+    '<button class="kids-learn-btn" onclick="markKidsWordLearned(\''+catId+'\',getKidsWordIdx(\''+catId+'\',\''+en+'\'));this.textContent=\'✅ تعلمت!\';this.disabled=true">📝 تعلمت</button>'+
+    '</div>'+
+    '<button class="kids-close-btn" onclick="this.closest(\'.kids-overlay\').remove()">✖</button>';
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+  speakWord(en);
+}
+function getKidsWordIdx(catId,en){
+  var cat=KIDS_DATA.categories.find(function(c){return c.id===catId});
+  if(!cat)return 0;
+  var idx=cat.words.findIndex(function(w){return w.en===en});
+  return idx>=0?idx:0;
+}
+
+// ─── KIDS MATCHING GAME ───
+function startKidsGame(mode){
+  kidsState.gameMode=mode;
+  if(mode==='match')startMatchGame();
+  else if(mode==='quiz')startKidsQuiz();
+  else if(mode==='memory')startMemoryGame();
+  else if(mode==='draw')startColoringGame();
+}
+function startMatchGame(){
+  var words=[];
+  KIDS_DATA.categories.forEach(function(cat){
+    cat.words.slice(0,4).forEach(function(w){words.push(w)});
+  });
+  words=shuffleArray(words).slice(0,6);
+  var pairs=words.map(function(w){return{en:w.en,ar:w.ar,emoji:w.emoji}});
+  var shuffledAr=shuffleArray(pairs.map(function(p){return{text:p.ar,en:p.en}}));
+  var shuffledEn=shuffleArray(pairs.map(function(p){return{text:p.en,ar:p.ar}}));
+  hideAllViews();
+  var v=document.getElementById('kidsGameView');
+  if(!v){v=document.createElement('div');v.id='kidsGameView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var html='<div class="kids-zone">';
+  html+='<h2>🎯 لعبة المطابقة</h2>';
+  html+='<p>اضغط على الكلمة الإنجليزية ثم العربية المطابقة</p>';
+  html+='<div class="kids-match-area">';
+  html+='<div class="kids-match-col">';
+  shuffledEn.forEach(function(item,i){
+    html+='<div class="kids-match-en" id="men_'+i+'" data-en="'+item.en+'" onclick="selectMatchItem(this,\'en\')">'+item.text+'</div>';
+  });
+  html+='</div>';
+  html+='<div class="kids-match-col">';
+  shuffledAr.forEach(function(item,i){
+    html+='<div class="kids-match-ar" id="mar_'+i+'" data-en="'+item.en+'" onclick="selectMatchItem(this,\'ar\')">'+item.text+'</div>';
+  });
+  html+='</div></div>';
+  html+='<div id="matchResult" style="text-align:center;margin-top:15px;font-size:1.2em"></div>';
+  html+='<button class="back-btn" onclick="showKidsZone()" style="margin-top:15px">'+t('back')+'</button>';
+  html+='</div>';
+  v.innerHTML=html;
+  v._matchPairs=pairs;v._matchSelected=null;v._matchCorrect=0;
+}
+function selectMatchItem(el,type){
+  if(el.classList.contains('matched')||el.classList.contains('wrong'))return;
+  var v=document.getElementById('kidsGameView');
+  if(!v)return;
+  var pairs=v._matchPairs;
+  if(!v._matchSelected){
+    v._matchSelected={el:el,type:type};
+    el.style.transform='scale(1.1)';el.style.boxShadow='0 4px 15px rgba(0,0,0,.3)';
+  }else{
+    var prev=v._matchSelected;
+    if(prev.type===type){
+      prev.el.style.transform='';prev.el.style.boxShadow='';
+      v._matchSelected={el:el,type:type};
+      el.style.transform='scale(1.1)';el.style.boxShadow='0 4px 15px rgba(0,0,0,.3)';
+      return;
+    }
+    var enWord=type==='en'?el.dataset.en:prev.el.dataset.en;
+    var isCorrect=pairs.some(function(p){return p.en===enWord});
+    if(isCorrect){
+      el.classList.add('matched');prev.el.classList.add('matched');
+      el.style.transform='';el.style.boxShadow='';prev.el.style.transform='';prev.el.style.boxShadow='';
+      v._matchCorrect++;
+      speakWord(enWord);
+      var res=document.getElementById('matchResult');
+      if(res)res.innerHTML='✅ أحسنت! '+v._matchCorrect+'/'+pairs.length;
+      if(v._matchCorrect>=pairs.length){
+        if(res)res.innerHTML='🎉 أحسنت! فزت!';
+        fireConfetti();
+      }
+    }else{
+      el.classList.add('wrong');prev.el.classList.add('wrong');
+      el.style.transform='';el.style.boxShadow='';prev.el.style.transform='';prev.el.style.boxShadow='';
+      setTimeout(function(){el.classList.remove('wrong');prev.el.classList.remove('wrong')},800);
+    }
+    v._matchSelected=null;
+  }
+}
+
+// ─── KIDS QUIZ ───
+function startKidsQuiz(){
+  var words=[];
+  KIDS_DATA.categories.forEach(function(cat){
+    cat.words.forEach(function(w){words.push(w)});
+  });
+  words=shuffleArray(words).slice(0,10);
+  var questions=words.map(function(w){
+    var others=shuffleArray(KIDS_DATA.categories.reduce(function(a,c){return a.concat(c.words)},[]).filter(function(x){return x.en!==w.en})).slice(0,3);
+    var opts=shuffleArray([w].concat(others));
+    return{word:w,options:opts,correctIdx:opts.indexOf(w)};
+  });
+  hideAllViews();
+  var v=document.getElementById('kidsGameView');
+  if(!v){v=document.createElement('div');v.id='kidsGameView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var html='<div class="kids-zone">';
+  html+='<h2>❓ اختبار سريع</h2>';
+  html+='<div id="kidsQuizContainer">';
+  html+='<div class="kids-quiz-progress">0/'+questions.length+'</div>';
+  renderKidsQuizQuestion(0,questions,0);
+  html+='</div>';
+  html+='<button class="back-btn" onclick="showKidsZone()" style="margin-top:15px">'+t('back')+'</button>';
+  html+='</div>';
+  v.innerHTML=html;
+  v._quizQuestions=questions;v._quizIdx=0;v._quizCorrect=0;
+}
+function renderKidsQuizQuestion(idx,questions,correct){
+  if(idx>=questions.length){
+    var pct=Math.round(correct/questions.length*100);
+    var emoji=pct>=80?'🎉':pct>=60?'👍':'💪';
+    document.getElementById('kidsQuizContainer').innerHTML='<div class="kids-quiz-result">'+emoji+'<h2>'+correct+'/'+questions.length+'</h2><p>'+pct+'% '+('صحيح')+'</p></div>';
+    if(pct>=80)fireConfetti();
+    return;
+  }
+  var q=questions[idx];
+  var container=document.getElementById('kidsQuizContainer');
+  if(!container)return;
+  var html='<div class="kids-quiz-card">';
+  html+='<div class="kids-quiz-emoji">'+q.word.emoji+'</div>';
+  html+='<h3>ما معنى '+q.word.en+'؟</h3>';
+  html+='<div class="kids-quiz-options">';
+  q.options.forEach(function(opt,i){
+    html+='<button class="kids-quiz-opt" onclick="kidsQuizAnswer(this,'+idx+','+i+','+q.correctIdx+','+questions.length+','+correct+')">'+opt.emoji+' '+opt.ar+'</button>';
+  });
+  html+='</div></div>';
+  container.innerHTML=html;
+}
+function kidsQuizAnswer(el,qIdx,optIdx,correctIdx,total,correct){
+  var container=document.getElementById('kidsQuizContainer');
+  if(!container)return;
+  var opts=container.querySelectorAll('.kids-quiz-opt');
+  opts.forEach(function(o){o.onclick=null});
+  if(optIdx===correctIdx){
+    el.classList.add('correct');
+    speakWord(KIDS_DATA.categories.reduce(function(a,c){return a.concat(c.words)},[]).find(function(w){return w===container._currentWord})?.en||'');
+    correct++;
+  }else{
+    el.classList.add('wrong');
+    opts[correctIdx].classList.add('correct');
+  }
+  setTimeout(function(){
+    renderKidsQuizQuestion(qIdx+1,container._questions||[],correct);
+  },1000);
+}
+
+// ─── KIDS MEMORY GAME ───
+function startMemoryGame(){
+  var words=[];
+  KIDS_DATA.categories.forEach(function(cat){
+    cat.words.slice(0,4).forEach(function(w){words.push(w)});
+  });
+  words=shuffleArray(words).slice(0,6);
+  var cards=[];
+  words.forEach(function(w){
+    cards.push({type:'emoji',content:w.emoji,en:w.en});
+    cards.push({type:'word',content:w.en,en:w.en});
+  });
+  cards=shuffleArray(cards);
+  hideAllViews();
+  var v=document.getElementById('kidsGameView');
+  if(!v){v=document.createElement('div');v.id='kidsGameView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var html='<div class="kids-zone">';
+  html+='<h2>🧠 لعبة الذاكرة</h2>';
+  html+='<p>افتح بطاقتين ومطابقتهما!</p>';
+  html+='<div class="kids-memory-grid">';
+  cards.forEach(function(c,i){
+    html+='<div class="kids-memory-card" data-en="'+c.en+'" data-type="'+c.type+'" onclick="flipMemoryCard(this)">';
+    html+='<div class="kids-memory-front">❓</div>';
+    html+='<div class="kids-memory-back">'+c.content+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  html+='<div id="memoryResult" style="text-align:center;margin-top:15px;font-size:1.2em"></div>';
+  html+='<button class="back-btn" onclick="showKidsZone()" style="margin-top:15px">'+t('back')+'</button>';
+  html+='</div>';
+  v.innerHTML=html;
+  v._memoryFlipped=[];v._memoryMatched=0;v._memoryTotal=words.length;
+}
+function flipMemoryCard(el){
+  if(el.classList.contains('flipped')||el.classList.contains('matched'))return;
+  el.classList.add('flipped');
+  var v=document.getElementById('kidsGameView');
+  if(!v)return;
+  if(!v._memoryFlipped)v._memoryFlipped=[];
+  v._memoryFlipped.push(el);
+  if(v._memoryFlipped.length===2){
+    var a=v._memoryFlipped[0],b=v._memoryFlipped[1];
+    if(a.dataset.en===b.dataset.en){
+      a.classList.add('matched');b.classList.add('matched');
+      v._memoryMatched++;
+      speakWord(a.dataset.en);
+      var res=document.getElementById('memoryResult');
+      if(res)res.innerHTML='✅ '+v._memoryMatched+'/'+v._memoryTotal;
+      if(v._memoryMatched>=v._memoryTotal){
+        if(res)res.innerHTML='🎉 أحسنت!';
+        fireConfetti();
+      }
+    }else{
+      setTimeout(function(){a.classList.remove('flipped');b.classList.remove('flipped')},800);
+    }
+    v._memoryFlipped=[];
+  }
+}
+
+// ─── KIDS COLORING GAME ───
+function startColoringGame(){
+  var colors=['#e74c3c','#3498db','#27ae60','#f1c40f','#9b59b6','#e67e22','#1abc9c','#e91e63'];
+  var shapes=[
+    {name:'شمس',draw:function(ctx,cx,cy,s,col){ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx,cy,s*.3,0,Math.PI*2);ctx.fill();for(var i=0;i<8;i++){var a=i*Math.PI/4;ctx.fillRect(cx+Math.cos(a)*s*.4-2,cy+Math.sin(a)*s*.4-2,4,s*.2)}}},
+    {name:'قلب',draw:function(ctx,cx,cy,s,col){ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(cx,cy+s*.3);ctx.bezierCurveTo(cx-s*.5,cy-s*.1,cx-s*.3,cy-s*.5,cx,cy-s*.3);ctx.bezierCurveTo(cx+s*.3,cy-s*.5,cx+s*.5,cy-s*.1,cx,cy+s*.3);ctx.fill()}},
+    {name:'نجمة',draw:function(ctx,cx,cy,s,col){ctx.fillStyle=col;ctx.beginPath();for(var i=0;i<5;i++){var a=i*2*Math.PI/5-Math.PI/2;var r1=s*.4,r2=s*.2;ctx.lineTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1);a+=Math.PI/5;ctx.lineTo(cx+Math.cos(a)*r2,cy+Math.sin(a)*r2)}ctx.closePath();ctx.fill()}},
+    {name:'زهرة',draw:function(ctx,cx,cy,s,col){ctx.fillStyle=col;for(var i=0;i<5;i++){var a=i*2*Math.PI/5-Math.PI/2;ctx.beginPath();ctx.arc(cx+Math.cos(a)*s*.2,cy+Math.sin(a)*s*.2,s*.15,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#f1c40f';ctx.beginPath();ctx.arc(cx,cy,s*.1,0,Math.PI*2);ctx.fill()}}
+  ];
+  var shape=shapes[Math.floor(Math.random()*shapes.length)];
+  var selectedColor=colors[0];
+  hideAllViews();
+  var v=document.getElementById('kidsGameView');
+  if(!v){v=document.createElement('div');v.id='kidsGameView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var html='<div class="kids-zone">';
+  html+='<h2>🎨 تلوين: '+shape.name+'</h2>';
+  html+='<div class="kids-color-palette">';
+  colors.forEach(function(c,i){
+    html+='<div class="kids-color-btn'+(i===0?' active':'')+'" style="background:'+c+'" onclick="selectKidsColor(this,\''+c+'\')"></div>';
+  });
+  html+='</div>';
+  html+='<div style="text-align:center"><canvas id="kidsCanvas" width="300" height="300" style="border:3px solid var(--border);border-radius:15px;background:#fff;cursor:crosshair"></canvas></div>';
+  html+='<div style="text-align:center;margin-top:10px"><button class="check-btn" onclick="clearKidsCanvas()">🗑 مسح</button></div>';
+  html+='<button class="back-btn" onclick="showKidsZone()" style="margin-top:15px">'+t('back')+'</button>';
+  html+='</div>';
+  v.innerHTML=html;
+  setTimeout(function(){
+    var canvas=document.getElementById('kidsCanvas');
+    if(!canvas)return;
+    var ctx=canvas.getContext('2d');
+    shape.draw(ctx,150,150,200,'#ddd');
+    var drawing=false;
+    canvas.onmousedown=function(e){drawing=true;drawKidsPixel(ctx,e,canvas,selectedColor)};
+    canvas.onmousemove=function(e){if(drawing)drawKidsPixel(ctx,e,canvas,selectedColor)};
+    canvas.onmouseup=function(){drawing=false};
+    canvas.ontouchstart=function(e){e.preventDefault();drawing=true;drawKidsPixel(ctx,e.touches[0],canvas,selectedColor)};
+    canvas.ontouchmove=function(e){e.preventDefault();if(drawing)drawKidsPixel(ctx,e.touches[0],canvas,selectedColor)};
+    canvas.ontouchend=function(){drawing=false};
+    v._kidsShape=shape;v._kidsColors=colors;
+  },100);
+}
+function selectKidsColor(el,color){
+  document.querySelectorAll('.kids-color-btn').forEach(function(b){b.classList.remove('active')});
+  el.classList.add('active');
+  window._kidsSelectedColor=color;
+}
+function drawKidsPixel(ctx,e,canvas,color){
+  var rect=canvas.getBoundingClientRect();
+  ctx.fillStyle=window._kidsSelectedColor||color;
+  ctx.beginPath();
+  ctx.arc(e.clientX-rect.left,e.clientY-rect.top,8,0,Math.PI*2);
+  ctx.fill();
+}
+function clearKidsCanvas(){
+  var canvas=document.getElementById('kidsCanvas');
+  if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,300,300);
+  var v=document.getElementById('kidsGameView');
+  if(v&&v._kidsShape)v._kidsShape.draw(ctx,150,150,200,'#ddd');
+}
+
+// ─── UTILITIES ───
+function shuffleArray(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=a[i];a[i]=a[j];a[j]=tmp}
+  return a;
+}
+
+// ─── ADD KIDS BUTTON TO HEADER ───
+var origNavSetup=navSetup;
+navSetup=function(){
+  origNavSetup();
+  var headerRight=document.querySelector('.header-right');
+  if(headerRight&&!document.getElementById('navKids')){
+    var kidsBtn=document.createElement('button');
+    kidsBtn.className='nav-btn';
+    kidsBtn.id='navKids';
+    kidsBtn.title='عالم الأطفال';
+    kidsBtn.textContent='🧸';
+    kidsBtn.onclick=function(){showKidsZone()};
+    headerRight.insertBefore(kidsBtn,headerRight.firstChild);
+  }
+};
+
+// ─── KIDS ZONE CSS ───
+(function(){
+  var css=document.createElement('style');
+  css.textContent=`
+    .kids-zone{padding:10px}
+    .kids-header{text-align:center;padding:25px;background:linear-gradient(135deg,#ff6b6b,#ffa502,#ff6348);color:#fff;border-radius:20px;margin-bottom:20px}
+    .kids-mascot{font-size:80px;margin-bottom:10px;animation:kidsBounce 1.5s ease-in-out infinite alternate}
+    @keyframes kidsBounce{from{transform:translateY(0) rotate(-5deg)}to{transform:translateY(-15px) rotate(5deg)}}
+    .kids-progress-main{margin-top:15px}
+    .kids-progress-bar{height:12px;background:rgba(255,255,255,.3);border-radius:6px;overflow:hidden}
+    .kids-progress-fill{height:100%;background:#fff;border-radius:6px;transition:width .5s}
+    .kids-categories{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+    .kids-cat-card{background:var(--surface);border-radius:15px;padding:15px;cursor:pointer;transition:all .3s;box-shadow:var(--card-shadow);display:flex;align-items:center;gap:12px}
+    .kids-cat-card:hover{transform:translateY(-5px);box-shadow:0 8px 25px rgba(0,0,0,.15)}
+    .kids-cat-emoji{font-size:40px}
+    .kids-cat-info{flex:1}
+    .kids-cat-info h3{margin:0;font-size:1em}
+    .kids-cat-info p{margin:2px 0 5px;font-size:.8em;color:var(--text-light)}
+    .kids-cat-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+    .kids-cat-fill{height:100%;border-radius:3px;transition:width .5s}
+    .kids-cat-info span{font-size:.75em;color:var(--text-light)}
+    .kids-games{margin-bottom:20px}
+    .kids-games h3{text-align:center;margin-bottom:12px}
+    .kids-game-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .kids-game-card{color:#fff;border-radius:15px;padding:20px;text-align:center;cursor:pointer;transition:all .3s;box-shadow:var(--card-shadow)}
+    .kids-game-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.2)}
+    .kids-game-icon{font-size:40px;display:block;margin-bottom:8px}
+    .kids-words-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
+    .kids-word-card{background:var(--surface);border-radius:15px;padding:15px 10px;text-align:center;cursor:pointer;transition:all .3s;box-shadow:var(--card-shadow);position:relative}
+    .kids-word-card:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(0,0,0,.15)}
+    .kids-word-card.learned{border:3px solid #27ae60;background:#f0fff4}
+    .kids-word-emoji{font-size:45px;margin-bottom:5px}
+    .kids-word-en{font-size:1em;font-weight:700;color:var(--accent)}
+    .kids-word-ar{font-size:.85em;color:var(--text-light)}
+    .kids-word-check{position:absolute;top:5px;right:5px;font-size:1.2em}
+    .kids-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+    .kids-word-popup{background:#fff;border-radius:25px;padding:40px;text-align:center;max-width:350px;width:100%;position:relative;animation:popIn .3s}
+    @keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+    .kids-word-popup-emoji{font-size:100px;margin-bottom:15px;animation:kidsBounce 1s ease-in-out infinite alternate}
+    .kids-word-popup-en{font-size:2em;color:#333;margin:0}
+    .kids-word-popup-ar{font-size:1.5em;color:#666;margin:10px 0}
+    .kids-word-popup-actions{display:flex;gap:10px;justify-content:center;margin-top:15px}
+    .kids-speak-btn,.kids-learn-btn{padding:12px 25px;border:none;border-radius:25px;font-size:1em;cursor:pointer;font-weight:700;transition:all .2s}
+    .kids-speak-btn{background:#3498db;color:#fff}
+    .kids-speak-btn:hover{background:#2980b9}
+    .kids-learn-btn{background:#27ae60;color:#fff}
+    .kids-learn-btn:hover{background:#219a52}
+    .kids-close-btn{position:absolute;top:10px;left:10px;background:none;border:none;font-size:1.5em;cursor:pointer;color:#999}
+    .kids-match-area{display:flex;gap:20px;justify-content:center}
+    .kids-match-col{display:flex;flex-direction:column;gap:8px}
+    .kids-match-en,.kids-match-ar{padding:12px 20px;background:var(--surface);border:2px solid var(--border);border-radius:12px;cursor:pointer;font-size:1.1em;transition:all .2s;text-align:center;min-width:120px}
+    .kids-match-en:hover,.kids-match-ar:hover{background:var(--test-option-hover);transform:scale(1.05)}
+    .kids-match-en.matched,.kids-match-ar.matched{background:#d4edda;border-color:#27ae60;pointer-events:none}
+    .kids-match-en.wrong,.kids-match-ar.wrong{background:#f8d7da;border-color:#e74c3c}
+    .kids-quiz-card{text-align:center;padding:20px;background:var(--surface);border-radius:20px;box-shadow:var(--card-shadow)}
+    .kids-quiz-emoji{font-size:80px;margin-bottom:10px}
+    .kids-quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+    .kids-quiz-opt{padding:15px;border:2px solid var(--border);border-radius:15px;font-size:1em;cursor:pointer;transition:all .2s;background:var(--surface)}
+    .kids-quiz-opt:hover{background:var(--test-option-hover);transform:scale(1.02)}
+    .kids-quiz-opt.correct{background:#d4edda;border-color:#27ae60}
+    .kids-quiz-opt.wrong{background:#f8d7da;border-color:#e74c3c}
+    .kids-quiz-progress{text-align:center;font-size:1.2em;font-weight:700;color:var(--accent);margin-bottom:10px}
+    .kids-quiz-result{text-align:center;padding:30px;font-size:1.5em}
+    .kids-quiz-result h2{font-size:2em;color:var(--accent)}
+    .kids-memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:400px;margin:0 auto}
+    .kids-memory-card{height:80px;cursor:pointer;perspective:600px}
+    .kids-memory-front,.kids-memory-back{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.8em;border-radius:12px;transition:transform .4s;backface-visibility:hidden;position:absolute}
+    .kids-memory-front{background:var(--accent);color:#fff;transform:rotateY(0)}
+    .kids-memory-back{background:var(--surface);border:2px solid var(--accent);transform:rotateY(180deg)}
+    .kids-memory-card .kids-memory-front,.kids-memory-card .kids-memory-back{position:absolute}
+    .kids-memory-card{position:relative}
+    .kids-memory-card.flipped .kids-memory-front{transform:rotateY(180deg)}
+    .kids-memory-card.flipped .kids-memory-back{transform:rotateY(0)}
+    .kids-memory-card.matched{pointer-events:none;opacity:.7}
+    .kids-color-palette{display:flex;gap:8px;justify-content:center;margin:15px 0;flex-wrap:wrap}
+    .kids-color-btn{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .2s}
+    .kids-color-btn:hover{transform:scale(1.2)}
+    .kids-color-btn.active{border-color:#333;transform:scale(1.2)}
+    @media(max-width:480px){
+      .kids-categories{grid-template-columns:repeat(2,1fr)}
+      .kids-words-grid{grid-template-columns:repeat(3,1fr)}
+      .kids-memory-grid{grid-template-columns:repeat(3,1fr)}
+      .kids-match-area{flex-direction:column;align-items:center}
+      .kids-quiz-options{grid-template-columns:1fr}
+    }
+  `;
+  document.head.appendChild(css);
+})();
+
+// ─── INIT REMINDER + TEACHER + KIDS ON LOAD ───
 (function(){
   var origDOMContentLoaded=document.addEventListener;
   setTimeout(function(){
