@@ -1,0 +1,12 @@
+{
+  "name": "english-learning-app",
+  "version": "1.0.0",
+  "description": "English learning app for Teacher Yasser Ibrahim",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

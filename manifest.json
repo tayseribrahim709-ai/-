@@ -1,0 +1,15 @@
+{
+  "name": "استاذ ياسر ابراهيم - دورة كامبردج",
+  "short_name": "استاذ ياسر",
+  "description": "دورة كاملة لتعليم اللغة الإنجليزية",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#2c3e50",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}

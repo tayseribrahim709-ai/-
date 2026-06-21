@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>استاذ ياسر ابراهيم - دورة كامبردج الإنجليزية</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2c3e50">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="استاذ ياسر">
+</head>
+<body>
+<header>
+  <div class="header-left">
+    <button class="nav-btn" id="navDashboard" title="لوحة التقدم">📊</button>
+    <button class="nav-btn" id="navVocab" title="بنك المفردات">📖</button>
+    <button class="nav-btn" id="navGrammar" title="مرجع القواعد">📜</button>
+    <button class="nav-btn" id="navPlacement" title="اختبار تحديد المستوى">🔍</button>
+    <button class="nav-btn" id="navSettings" title="الإعدادات">⚙️</button>
+    <button class="nav-btn" id="navSync" title="مزامنة">☁️</button>
+  </div>
+  <img src="teacher.jpg" class="header-avatar" alt="استاذ ياسر" onerror="this.style.display='none'">
+  <h1>📚 استاذ ياسر ابراهيم</h1>
+  <div class="header-right">
+    <div id="curriculumSelector"></div>
+    <button class="music-btn" id="musicBtn" onclick="showMusicSection()">🎵 تعلم الموسيقي</button>
+    <button class="lang-btn" id="langToggle" onclick="toggleLang()">🌐 العربية</button>
+    <button class="nav-btn" id="navAbout" title="عن الاستاذ">ℹ️</button>
+    <button class="nav-btn" id="navCV" title="السيرة الذاتية">📋</button>
+    <button class="nav-btn" id="navDeveloper" title="المطور" onclick="showDeveloper()">👨‍💻</button>
+    <button class="dark-toggle-btn" id="darkToggle" onclick="toggleDark()" title="وضع الليل">🌙</button>
+  </div>
+</header>
+<div id="resumeBanner"></div>
+<div id="curriculumTabs"></div>
+
+<div id="content">
+  <div class="controls">
+    <input type="text" id="lessonSearch" placeholder="🔍 ابحث عن درس..." oninput="filterLessons(this.value)">
+    <button onclick="toggleAll()" id="toggleAllBtn">📂 فتح الكل</button>
+  </div>
+
+  <div id="stats"></div>
+  <nav id="toc"></nav>
+
+  <div class="welcome" id="welcome">
+    <div id="loadingSpinner" class="loading-spinner"><div class="spinner"></div><p>جاري تحميل البيانات...</p></div>
+    <div id="welcomeContent" style="display:none">
+      <h2>مرحباً بك في تطبيق استاذ ياسر ابراهيم</h2>
+      <p>دورة كاملة لتعليم اللغة الإنجليزية وفق الإطار الأوروبي المرجعي المشترك (CEFR) ومنهج السودان.</p>
+      <p>اختر درساً من القائمة لبدء التعلم، أو استخدم أزرار التنقل في الأعلى للوحة التقدم وبنك المفردات.</p>
+    </div>
+  </div>
+
+  <div id="lessonView" style="display:none"></div>
+</div>
+
+<footer>
+  <p>استاذ ياسر ابراهيم &copy; 2026 — جميع المناهج</p>
+</footer>
+
+<script src="app.js?v=10"></script>
+</body>
+</html>

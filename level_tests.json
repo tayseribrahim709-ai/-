@@ -1,0 +1,1125 @@
+{
+  "pass_percentage": 70,
+  "tests": [
+    {
+      "id": "cambridge_A1_to_A2",
+      "curriculum": "cambridge",
+      "from_level": "A1",
+      "to_level": "A2",
+      "title": "اختبار الانتقال من A1 إلى A2",
+      "pass_percentage": 70,
+      "questions": [
+        {
+          "question": "Complete: 'She ___ a teacher.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "be"
+          ],
+          "answer": "is"
+        },
+        {
+          "question": "What is the plural of 'child'?",
+          "options": [
+            "childs",
+            "children",
+            "childes",
+            "childen"
+          ],
+          "answer": "children"
+        },
+        {
+          "question": "'I ___ breakfast at 7 AM.' (have)",
+          "options": [
+            "has",
+            "have",
+            "having",
+            "had"
+          ],
+          "answer": "have"
+        },
+        {
+          "question": "Which word means 'عائلة'?",
+          "options": [
+            "family",
+            "friendly",
+            "familiar",
+            "famous"
+          ],
+          "answer": "family"
+        },
+        {
+          "question": "Complete: 'He ___ from London.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "be"
+          ],
+          "answer": "is"
+        },
+        {
+          "question": "What does 'hello' mean?",
+          "options": [
+            "وداعاً",
+            "مرحباً",
+            "شكراً",
+            "مع السلامة"
+          ],
+          "answer": "مرحباً"
+        },
+        {
+          "question": "'___ you like coffee?'",
+          "options": [
+            "Does",
+            "Do",
+            "Is",
+            "Are"
+          ],
+          "answer": "Do"
+        },
+        {
+          "question": "Which is correct?",
+          "options": [
+            "I am go",
+            "I going",
+            "I go",
+            "I goes"
+          ],
+          "answer": "I go"
+        },
+        {
+          "question": "Complete: 'We ___ students.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "be"
+          ],
+          "answer": "are"
+        },
+        {
+          "question": "How do you say 'شكراً' in English?",
+          "options": [
+            "please",
+            "sorry",
+            "thank you",
+            "goodbye"
+          ],
+          "answer": "thank you"
+        },
+        {
+          "question": "'What ___ your name?'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "be"
+          ],
+          "answer": "is"
+        },
+        {
+          "question": "'This ___ my book.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "be"
+          ],
+          "answer": "is"
+        },
+        {
+          "question": "'They ___ from Egypt.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "be"
+          ],
+          "answer": "are"
+        },
+        {
+          "question": "'___ you speak Arabic?'",
+          "options": [
+            "Does",
+            "Do",
+            "Is",
+            "Are"
+          ],
+          "answer": "Do"
+        },
+        {
+          "question": "'I ___ a teacher. I teach English.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "be"
+          ],
+          "answer": "am"
+        }
+      ]
+    },
+    {
+      "id": "cambridge_A2_to_B1",
+      "curriculum": "cambridge",
+      "from_level": "A2",
+      "to_level": "B1",
+      "title": "اختبار الانتقال من A2 إلى B1",
+      "pass_percentage": 70,
+      "questions": [
+        {
+          "question": "Past of 'go':",
+          "options": [
+            "goed",
+            "went",
+            "gone",
+            "going"
+          ],
+          "answer": "went"
+        },
+        {
+          "question": "'She ___ to school yesterday.'",
+          "options": [
+            "go",
+            "goes",
+            "went",
+            "going"
+          ],
+          "answer": "went"
+        },
+        {
+          "question": "Complete: 'I have ___ been to London.' (ever/never)",
+          "options": [
+            "ever",
+            "never",
+            "always",
+            "sometimes"
+          ],
+          "answer": "never"
+        },
+        {
+          "question": "'___ you like some tea?'",
+          "options": [
+            "Would",
+            "Do",
+            "Are",
+            "Have"
+          ],
+          "answer": "Would"
+        },
+        {
+          "question": "Comparative of 'good':",
+          "options": [
+            "gooder",
+            "better",
+            "more good",
+            "best"
+          ],
+          "answer": "better"
+        },
+        {
+          "question": "'She is ___ than her sister.' (tall)",
+          "options": [
+            "tall",
+            "taller",
+            "tallest",
+            "more tall"
+          ],
+          "answer": "taller"
+        },
+        {
+          "question": "Future: 'I ___ visit my family tomorrow.'",
+          "options": [
+            "will",
+            "am",
+            "going",
+            "was"
+          ],
+          "answer": "will"
+        },
+        {
+          "question": "'There ___ a book on the table.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "be"
+          ],
+          "answer": "is"
+        },
+        {
+          "question": "'How ___ apples do you want?'",
+          "options": [
+            "much",
+            "many",
+            "some",
+            "any"
+          ],
+          "answer": "many"
+        },
+        {
+          "question": "Present Perfect: 'I ___ finished my homework.'",
+          "options": [
+            "have",
+            "has",
+            "had",
+            "am"
+          ],
+          "answer": "have"
+        },
+        {
+          "question": "'She ___ breakfast at 8 AM yesterday.' (have)",
+          "options": [
+            "has",
+            "have",
+            "had",
+            "having"
+          ],
+          "answer": "had"
+        },
+        {
+          "question": "'We ___ going to visit our family next week.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "was"
+          ],
+          "answer": "are"
+        },
+        {
+          "question": "'I like ___ books in my free time.' (read)",
+          "options": [
+            "read",
+            "reads",
+            "reading",
+            "readed"
+          ],
+          "answer": "reading"
+        },
+        {
+          "question": "'The children ___ playing in the garden now.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "was"
+          ],
+          "answer": "are"
+        },
+        {
+          "question": "'She ___ to music every evening.' (listen)",
+          "options": [
+            "listen",
+            "listens",
+            "listening",
+            "listened"
+          ],
+          "answer": "listens"
+        }
+      ]
+    },
+    {
+      "id": "cambridge_B1_to_B2",
+      "curriculum": "cambridge",
+      "from_level": "B1",
+      "to_level": "B2",
+      "title": "اختبار الانتقال من B1 إلى B2",
+      "pass_percentage": 70,
+      "questions": [
+        {
+          "question": "'If I ___ rich, I would travel.' (be)",
+          "options": [
+            "am",
+            "was",
+            "were",
+            "will be"
+          ],
+          "answer": "were"
+        },
+        {
+          "question": "Passive: 'The book ___ by Shakespeare.'",
+          "options": [
+            "wrote",
+            "was written",
+            "is writing",
+            "has written"
+          ],
+          "answer": "was written"
+        },
+        {
+          "question": "'I ___ been studying for hours.'",
+          "options": [
+            "have",
+            "has",
+            "had",
+            "am"
+          ],
+          "answer": "have"
+        },
+        {
+          "question": "'She said she ___ coming.'",
+          "options": [
+            "is",
+            "was",
+            "will be",
+            "has been"
+          ],
+          "answer": "was"
+        },
+        {
+          "question": "Define 'generous':",
+          "options": [
+            "mean",
+            "kind and giving",
+            "lazy",
+            "angry"
+          ],
+          "answer": "kind and giving"
+        },
+        {
+          "question": "'He drives ___ than me.' (carefully)",
+          "options": [
+            "more carefully",
+            "most carefully",
+            "carefuller",
+            "carefully"
+          ],
+          "answer": "more carefully"
+        },
+        {
+          "question": "'I wish I ___ more time.' (have)",
+          "options": [
+            "have",
+            "had",
+            "would have",
+            "will have"
+          ],
+          "answer": "had"
+        },
+        {
+          "question": "Which is a phrasal verb?",
+          "options": [
+            "run",
+            "run into",
+            "runner",
+            "running"
+          ],
+          "answer": "run into"
+        },
+        {
+          "question": "'The meeting ___ at 3 PM.' (start - passive)",
+          "options": [
+            "starts",
+            "started",
+            "was started",
+            "is started"
+          ],
+          "answer": "starts"
+        },
+        {
+          "question": "What does 'environment' mean?",
+          "options": [
+            "البيئة",
+            "المجتمع",
+            "الاقتصاد",
+            "التعليم"
+          ],
+          "answer": "البيئة"
+        },
+        {
+          "question": "'I have been ___ English for 3 years.' (study)",
+          "options": [
+            "study",
+            "studied",
+            "studying",
+            "studies"
+          ],
+          "answer": "studying"
+        },
+        {
+          "question": "'She told me that she ___ arrive late.'",
+          "options": [
+            "will",
+            "would",
+            "is",
+            "was"
+          ],
+          "answer": "would"
+        },
+        {
+          "question": "'The book ___ by millions of people.' (read)",
+          "options": [
+            "is read",
+            "was read",
+            "is reading",
+            "has read"
+          ],
+          "answer": "is read"
+        },
+        {
+          "question": "'If you heat water, it ___ .' (boil)",
+          "options": [
+            "boils",
+            "boiled",
+            "will boil",
+            "would boil"
+          ],
+          "answer": "boils"
+        },
+        {
+          "question": "'I'm used to ___ up early.' (get)",
+          "options": [
+            "get",
+            "gets",
+            "getting",
+            "got"
+          ],
+          "answer": "getting"
+        }
+      ]
+    },
+    {
+      "id": "cambridge_B2_to_C1",
+      "curriculum": "cambridge",
+      "from_level": "B2",
+      "to_level": "C1",
+      "title": "اختبار الانتقال من B2 إلى C1",
+      "pass_percentage": 70,
+      "questions": [
+        {
+          "question": "'Had I known, I ___ come earlier.'",
+          "options": [
+            "will",
+            "would",
+            "would have",
+            "had"
+          ],
+          "answer": "would have"
+        },
+        {
+          "question": "'Not only ___ she speak French, but also German.'",
+          "options": [
+            "does",
+            "did",
+            "do",
+            "is"
+          ],
+          "answer": "does"
+        },
+        {
+          "question": "'It is essential that he ___ on time.' (be)",
+          "options": [
+            "is",
+            "was",
+            "be",
+            "will be"
+          ],
+          "answer": "be"
+        },
+        {
+          "question": "'The report needs ___ by Friday.' (submit)",
+          "options": [
+            "submit",
+            "submitting",
+            "to be submitted",
+            "submits"
+          ],
+          "answer": "to be submitted"
+        },
+        {
+          "question": "'She ___ have finished by now.' (strong certainty)",
+          "options": [
+            "must",
+            "can",
+            "might",
+            "should"
+          ],
+          "answer": "must"
+        },
+        {
+          "question": "Define 'paradigm':",
+          "options": [
+            "نموذج فكري",
+            "مفارقة",
+            "تحليل",
+            "فرضية"
+          ],
+          "answer": "نموذج فكري"
+        },
+        {
+          "question": "'___ the weather, we will go out.' (despite)",
+          "options": [
+            "Despite",
+            "Although",
+            "Because",
+            "However"
+          ],
+          "answer": "Despite"
+        },
+        {
+          "question": "'She is ___ to win the award.' (likely)",
+          "options": [
+            "like",
+            "likely",
+            "likelihood",
+            "liking"
+          ],
+          "answer": "likely"
+        },
+        {
+          "question": "Which word is formal for 'get'?",
+          "options": [
+            "obtain",
+            "grab",
+            "fetch",
+            "catch"
+          ],
+          "answer": "obtain"
+        },
+        {
+          "question": "'The data ___ analyzed carefully.' (present passive)",
+          "options": [
+            "is",
+            "are",
+            "was",
+            "were"
+          ],
+          "answer": "are"
+        },
+        {
+          "question": "'___ I known earlier, I would have helped.'",
+          "options": [
+            "If",
+            "Had",
+            "Have",
+            "Should"
+          ],
+          "answer": "Had"
+        },
+        {
+          "question": "'The professor suggested that the student ___ further research.'",
+          "options": [
+            "does",
+            "do",
+            "did",
+            "done"
+          ],
+          "answer": "do"
+        },
+        {
+          "question": "'___ his help, I would have failed.'",
+          "options": [
+            "Despite",
+            "But for",
+            "Although",
+            "Because"
+          ],
+          "answer": "But for"
+        },
+        {
+          "question": "'He spoke ___ about the issue.' (convincing)",
+          "options": [
+            "convincing",
+            "convincingly",
+            "convinced",
+            "convinces"
+          ],
+          "answer": "convincingly"
+        },
+        {
+          "question": "'The findings ___ in the report.' (summarize - passive)",
+          "options": [
+            "summarize",
+            "summarized",
+            "are summarized",
+            "have summarized"
+          ],
+          "answer": "are summarized"
+        }
+      ]
+    },
+    {
+      "id": "cambridge_C1_to_C2",
+      "curriculum": "cambridge",
+      "from_level": "C1",
+      "to_level": "C2",
+      "title": "اختبار الانتقال من C1 إلى C2",
+      "pass_percentage": 70,
+      "questions": [
+        {
+          "question": "'Never before ___ such a beautiful sunset.'",
+          "options": [
+            "I saw",
+            "have I seen",
+            "I have seen",
+            "saw I"
+          ],
+          "answer": "have I seen"
+        },
+        {
+          "question": "'His speech was full of ___ .' (rhetorical questions)",
+          "options": [
+            "rhetoric",
+            "rhetoricals",
+            "rhetorics",
+            "rhetorical"
+          ],
+          "answer": "rhetoric"
+        },
+        {
+          "question": "Define 'ephemeral':",
+          "options": [
+            "أبدي",
+            "مؤقت/زائل",
+            "قوي",
+            "ضعيف"
+          ],
+          "answer": "مؤقت/زائل"
+        },
+        {
+          "question": "'The implication of his words was clear.' Implication means:",
+          "options": [
+            "تضمين/دلالة",
+            "تعقيد",
+            "بساطة",
+            "توضيح"
+          ],
+          "answer": "تضمين/دلالة"
+        },
+        {
+          "question": "'She alluded to the problem without mentioning it.' Alluded means:",
+          "options": [
+            "أشار ضمنياً",
+            "شرح",
+            "ناقش",
+            "حل"
+          ],
+          "answer": "أشار ضمنياً"
+        },
+        {
+          "question": "'___ hard the task, she never gives up.'",
+          "options": [
+            "However",
+            "Whatever",
+            "Whenever",
+            "Wherever"
+          ],
+          "answer": "However"
+        },
+        {
+          "question": "'It is imperative that the matter ___ resolved.'",
+          "options": [
+            "is",
+            "be",
+            "was",
+            "will be"
+          ],
+          "answer": "be"
+        },
+        {
+          "question": "'His argument was ___ .' (impeccable)",
+          "options": [
+            "ضعيف",
+            "لا يُشق له غبار",
+            "مثير للجدل",
+            "غامض"
+          ],
+          "answer": "لا يُشق له غبار"
+        },
+        {
+          "question": "Which is a distancing technique?",
+          "options": [
+            "I think",
+            "It appears that",
+            "I know",
+            "Definitely"
+          ],
+          "answer": "It appears that"
+        },
+        {
+          "question": "'She delivered a ___ performance.' (flawless)",
+          "options": [
+            "flawed",
+            "flawless",
+            "flavorful",
+            "flattering"
+          ],
+          "answer": "flawless"
+        },
+        {
+          "question": "'___ the complexity, the project succeeded.'",
+          "options": [
+            "Despite",
+            "Nevertheless",
+            "However",
+            "Although"
+          ],
+          "answer": "Despite"
+        },
+        {
+          "question": "'The author ___ to Shakespeare in his speech.' (refer indirectly)",
+          "options": [
+            "referred",
+            "alluded",
+            "mentioned",
+            "cited"
+          ],
+          "answer": "alluded"
+        },
+        {
+          "question": "'___ is the study of meaning in context.'",
+          "options": [
+            "Syntax",
+            "Semantics",
+            "Pragmatics",
+            "Phonology"
+          ],
+          "answer": "Pragmatics"
+        },
+        {
+          "question": "'The ___ of the argument was flawed.' (foundation)",
+          "options": [
+            "basis",
+            "base",
+            "basic",
+            "basics"
+          ],
+          "answer": "basis"
+        },
+        {
+          "question": "'Her ___ vocabulary is impressive.' (related to books/literature)",
+          "options": [
+            "literal",
+            "literary",
+            "literate",
+            "literacy"
+          ],
+          "answer": "literary"
+        }
+      ]
+    },
+    {
+      "id": "sudan_A1_to_A2",
+      "curriculum": "sudan",
+      "from_level": "A1",
+      "to_level": "A2",
+      "title": "اختبار الانتقال من المستوى الأول إلى الثاني",
+      "pass_percentage": 70,
+      "questions": [
+        {
+          "question": "'I ___ a student in Khartoum.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "be"
+          ],
+          "answer": "am"
+        },
+        {
+          "question": "What does 'school' mean in Arabic?",
+          "options": [
+            "مستشفى",
+            "مدرسة",
+            "جامعة",
+            "مكتبة"
+          ],
+          "answer": "مدرسة"
+        },
+        {
+          "question": "'We eat ___ for breakfast in Sudan.'",
+          "options": [
+            "ful medames",
+            "pizza",
+            "sushi",
+            "pasta"
+          ],
+          "answer": "ful medames"
+        },
+        {
+          "question": "Complete: 'She ___ from Omdurman.'",
+          "options": [
+            "am",
+            "is",
+            "are",
+            "be"
+          ],
+          "answer": "is"
+        },
+        {
+          "question": "'___ you like ful medames?'",
+          "options": [
+            "Does",
+            "Do",
+            "Is",
+            "Are"
+          ],
+          "answer": "Do"
+        },
+        {
+          "question": "'My family ___ in Khartoum.' (live)",
+          "options": [
+            "live",
+            "lives",
+            "living",
+            "lived"
+          ],
+          "answer": "lives"
+        },
+        {
+          "question": "The Nile is a ___ in Sudan.",
+          "options": [
+            "mountain",
+            "river",
+            "desert",
+            "city"
+          ],
+          "answer": "river"
+        },
+        {
+          "question": "'I ___ to school every day.' (go)",
+          "options": [
+            "go",
+            "goes",
+            "going",
+            "went"
+          ],
+          "answer": "go"
+        },
+        {
+          "question": "What does 'book' mean?",
+          "options": [
+            "قلم",
+            "كتاب",
+            "مقلمة",
+            "دفتر"
+          ],
+          "answer": "كتاب"
+        },
+        {
+          "question": "'We have English class on ___.'",
+          "options": [
+            "Monday",
+            "January",
+            "Summer",
+            "Nile"
+          ],
+          "answer": "Monday"
+        },
+        {
+          "question": "'I am ___ Sudan.' (from)",
+          "options": [
+            "from",
+            "in",
+            "at",
+            "on"
+          ],
+          "answer": "from"
+        },
+        {
+          "question": "'We have ___ in our school.' (teacher)",
+          "options": [
+            "a teacher",
+            "teacher",
+            "an teacher",
+            "teachers"
+          ],
+          "answer": "a teacher"
+        },
+        {
+          "question": "'The capital of Sudan is ___.'",
+          "options": [
+            "Omdurman",
+            "Khartoum",
+            "Port Sudan",
+            "Kassala"
+          ],
+          "answer": "Khartoum"
+        },
+        {
+          "question": "'Goodbye' in Arabic is:",
+          "options": [
+            "مرحباً",
+            "مع السلامة",
+            "شكراً",
+            "من فضلك"
+          ],
+          "answer": "مع السلامة"
+        },
+        {
+          "question": "'I ___ to school by bus.' (go)",
+          "options": [
+            "go",
+            "goes",
+            "going",
+            "went"
+          ],
+          "answer": "go"
+        }
+      ]
+    },
+    {
+      "id": "sudan_A2_to_B1",
+      "curriculum": "sudan",
+      "from_level": "A2",
+      "to_level": "B1",
+      "title": "اختبار الانتقال من المستوى الثاني إلى الثالث",
+      "pass_percentage": 70,
+      "questions": [
+        {
+          "question": "'Yesterday, I ___ to Port Sudan.' (go)",
+          "options": [
+            "go",
+            "went",
+            "gone",
+            "going"
+          ],
+          "answer": "went"
+        },
+        {
+          "question": "'She is ___ than her brother.' (tall)",
+          "options": [
+            "taller",
+            "tall",
+            "tallest",
+            "more tall"
+          ],
+          "answer": "taller"
+        },
+        {
+          "question": "'I have lived in Kassala ___ 2015.'",
+          "options": [
+            "for",
+            "since",
+            "from",
+            "in"
+          ],
+          "answer": "since"
+        },
+        {
+          "question": "What is the capital of Sudan?",
+          "options": [
+            "Omdurman",
+            "Khartoum",
+            "Port Sudan",
+            "Nyala"
+          ],
+          "answer": "Khartoum"
+        },
+        {
+          "question": "'We should ___ the Nile clean.' (keep)",
+          "options": [
+            "keeping",
+            "kept",
+            "keep",
+            "keeps"
+          ],
+          "answer": "keep"
+        },
+        {
+          "question": "'Traditional Sudanese food includes ___.'",
+          "options": [
+            "kisra",
+            "pizza",
+            "burger",
+            "sushi"
+          ],
+          "answer": "kisra"
+        },
+        {
+          "question": "'If it rains, we ___ stay home.'",
+          "options": [
+            "will",
+            "would",
+            "are",
+            "have"
+          ],
+          "answer": "will"
+        },
+        {
+          "question": "'She ___ English very well.' (speak)",
+          "options": [
+            "speak",
+            "speaks",
+            "speaking",
+            "spoke"
+          ],
+          "answer": "speaks"
+        },
+        {
+          "question": "'There are many ___ in Sudan.' (city)",
+          "options": [
+            "citys",
+            "cities",
+            "cityes",
+            "citie"
+          ],
+          "answer": "cities"
+        },
+        {
+          "question": "'What is your ___ job?' (dream)",
+          "options": [
+            "dream",
+            "dreams",
+            "dreaming",
+            "dreamed"
+          ],
+          "answer": "dream"
+        },
+        {
+          "question": "'She ___ to Nyala last year.' (travel)",
+          "options": [
+            "travel",
+            "travels",
+            "travelled",
+            "travelling"
+          ],
+          "answer": "travelled"
+        },
+        {
+          "question": "'The Nile is the longest ___ in the world.'",
+          "options": [
+            "mountain",
+            "river",
+            "sea",
+            "lake"
+          ],
+          "answer": "river"
+        },
+        {
+          "question": "'Traditional Sudanese clothes include ___.'",
+          "options": [
+            "jalabiya",
+            "shirt",
+            "jacket",
+            "coat"
+          ],
+          "answer": "jalabiya"
+        },
+        {
+          "question": "'We ___ protect our environment.' (should)",
+          "options": [
+            "should",
+            "must to",
+            "can to",
+            "need"
+          ],
+          "answer": "should"
+        },
+        {
+          "question": "'I have been studying English ___ three years.'",
+          "options": [
+            "since",
+            "for",
+            "from",
+            "in"
+          ],
+          "answer": "for"
+        }
+      ]
+    }
+  ]
+}
