@@ -154,7 +154,7 @@ function toggleDark(){document.body.classList.toggle('dark-mode');const b=docume
 
 function toast(m){let e=document.getElementById('toast');if(!e){e=document.createElement('div');e.id='toast';e.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;background:var(--accent,#27ae60);color:#fff;z-index:9999;font-size:14px;transition:all .3s;max-width:90%;text-align:center';document.body.appendChild(e)}e.textContent=m;e.style.display='block';setTimeout(()=>{e.style.display='none'},3000)}
 
-function hideAllViews(){['welcome','lessonView','aboutView','cvView','settingsView','dashboardView','vocabBankView','grammarRefView','placementView','syncView','flashcardsView','levelTestView','notesView','achieveView','musicWelcomeView','developerView'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});}
+function hideAllViews(){['welcome','lessonView','aboutView','cvView','settingsView','dashboardView','vocabBankView','grammarRefView','placementView','syncView','flashcardsView','levelTestView','notesView','achieveView','musicWelcomeView','developerView','vocabQuizView','planView','adminView'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});}
 
 function showWelcome(){hideAllViews();const w=document.getElementById('welcome');if(w)w.style.display='block';clearResumeBanner();}
 
@@ -200,7 +200,7 @@ function restoreScrollPos(lid){const pos=ls('scroll_'+lid);if(pos){const el=docu
 // ─── TOC ───
 function renderTOC(levelIdx){hideAllViews();const idx=levelIdx||0;const lvl=courseData.levels&&courseData.levels[idx];if(!lvl){document.getElementById('content').innerHTML='<p style="padding:20px;text-align:center">'+t('noTest')+'</p>';return;}renderStats(idx);const toc=document.getElementById('toc');if(!toc)return;let html='<div class="level-header"><h2>'+lvl.level_name+'</h2><p>'+(lvl.description||'')+'</p></div>';lvl.modules&&lvl.modules.forEach((m,mi)=>{html+='<div class="module"><div class="mod-title" onclick="toggleModule(this)"><span>'+m.module_title+'</span><span class="mod-icon">▼</span></div><div class="mod-lessons">';m.lessons&&m.lessons.forEach(ls=>{const lid=ls.lesson_id||(lvl.level_name+'_'+mi+'_'+ls.lesson_title);const fav=isFav(lid)?'⭐':'☆';const done=isLessonComplete(lid)?'✅':'⬜';html+='<div class="lesson-item" onclick="showLesson('+idx+','+mi+',\''+lid+'\')"><span class="done-icon" onclick="event.stopPropagation();toggleLessonComplete(\''+lid+'\',this)">'+done+'</span><span class="fav-icon" onclick="event.stopPropagation();toggleFavLesson(this,\''+lid+'\')">'+fav+'</span><span>'+ls.lesson_title+'</span></div>';});html+='</div></div>';});toc.innerHTML=html;const statsEl=document.getElementById('stats');if(statsEl)statsEl.style.display='block';}
 
-function renderStats(idx){const lvl=courseData.levels&&courseData.levels[idx];if(!lvl)return;let total=0,done=0;lvl.modules&&lvl.modules.forEach(m=>{if(m.lessons){m.lessons.forEach(ls=>{total++;var lid=ls.lesson_id||(lvl.level_name+'_'+idx+'_'+ls.lesson_title);if(isLessonComplete(lid))done++})}});const p=getLevelProgress(activeCurriculum,idx);const el=document.getElementById('stats');if(el)el.innerHTML='<div class="stats-bar"><span>📚 '+t('lessons')+': '+done+'/'+total+'</span><span>'+t('passedLevels')+': '+(p.passed?t('passMsg'):t('failMsg'))+'</span></div>';}
+function renderStats(idx){const lvl=courseData.levels&&courseData.levels[idx];if(!lvl)return;let total=0,done=0;lvl.modules&&lvl.modules.forEach((m,mi)=>{if(m.lessons){m.lessons.forEach(ls=>{total++;var lid=ls.lesson_id||(lvl.level_name+'_'+mi+'_'+ls.lesson_title);if(isLessonComplete(lid))done++})}});const p=getLevelProgress(activeCurriculum,idx);const el=document.getElementById('stats');if(el)el.innerHTML='<div class="stats-bar"><span>📚 '+t('lessons')+': '+done+'/'+total+'</span><span>'+t('passedLevels')+': '+(p.passed?t('passMsg'):t('failMsg'))+'</span></div>';}
 
 function toggleModule(el){const parent=el.parentElement;const lessons=parent.querySelector('.mod-lessons');if(lessons)lessons.classList.toggle('open');const icon=el.querySelector('.mod-icon');if(icon)icon.textContent=lessons&&lessons.classList.contains('open')?'▲':'▼';}
 
@@ -216,17 +216,17 @@ function showLesson(ln,mi,lid){hideAllViews();const found=findFullLesson(ln,mi,l
 function getExplanationAr(ls){
   var ar=ls.explanation_ar;
   if(ar)return ar;
-  var t=ls.lesson_title||'';
-  if(/Hello|Introducing|Family|Numbers 1-20/.test(t)) return 'يتعلم الطالب في هذا الدرس المفردات والتراكيب الأساسية للتحدث عن "'+t+'" بالإنجليزية. يشمل تمارين النطق والقراءة والكتابة.';
-  if(/Classroom|Teachers|Subject|Objects/.test(t)) return 'يركز هذا الدرس على المفردات المتعلقة بـ"'+t+'" في سياق المدرسة مع أمثلة وتمارين تفاعلية.';
-  if(/Rooms|Members|Routines|Colors/.test(t)) return 'يشرح هذا الدرس كيفية التحدث عن "'+t+'" بالإنجليزية مع مفردات جديدة وتطبيقات عملية.';
-  if(/Meals|Fruits|Drinks|Market/.test(t)) return 'يتناول هذا الدرس "'+t+'" مع مفردات وعبارات يومية وتمارين للتحدث والاستماع.';
-  if(/Animals|Pets|Nile|Weather/.test(t)) return 'يقدم هذا الدرس مفردات عن "'+t+'" بالإنجليزية ويساعد على وصف الظواهر والكائنات.';
-  if(/Neighborhood|Helping|Shopping|Festivals/.test(t)) return 'يتعلم الطالب التعبير عن "'+t+'" بالإنجليزية من خلال حوارات وتمارين تفاعلية.';
-  if(/Daily Life|Travel|Transport|Health|Body|Nature|Culture|Stories/.test(t)) return 'يغطي هذا الدرس "'+t+'" مع تطوير مهارات القراءة والكتابة والمحادثة.';
-  if(/Education|Sudan|Work|Careers|Media|Technology|Environment|Society|Values/.test(t)) return 'يتناول هذا الدرس "'+t+'" بمستوى متقدم مع مفردات أكاديمية وتمارين شاملة.';
-  if(/Sheet Music|Note|Rhythm|Musical|Time Sign/.test(t)) return 'درس موسيقي بعنوان "'+t+'" يشرح المفاهيم الموسيقية الأساسية بطريقة مبسطة.';
-  return 'درس "'+t+'" باللغة الإنجليزية. يغطي المفردات والقواعد والمهارات اللغوية من خلال أمثلة وتطبيقات عملية.';
+  var title=ls.lesson_title||'';
+  if(/Hello|Introducing|Family|Numbers 1-20/.test(title)) return 'يتعلم الطالب في هذا الدرس المفردات والتراكيب الأساسية للتحدث عن "'+title+'" بالإنجليزية. يشمل تمارين النطق والقراءة والكتابة.';
+  if(/Classroom|Teachers|Subject|Objects/.test(title)) return 'يركز هذا الدرس على المفردات المتعلقة بـ"'+title+'" في سياق المدرسة مع أمثلة وتمارين تفاعلية.';
+  if(/Rooms|Members|Routines|Colors/.test(title)) return 'يشرح هذا الدرس كيفية التحدث عن "'+title+'" بالإنجليزية مع مفردات جديدة وتطبيقات عملية.';
+  if(/Meals|Fruits|Drinks|Market/.test(title)) return 'يتناول هذا الدرس "'+title+'" مع مفردات وعبارات يومية وتمارين للتحدث والاستماع.';
+  if(/Animals|Pets|Nile|Weather/.test(title)) return 'يقدم هذا الدرس مفردات عن "'+title+'" بالإنجليزية ويساعد على وصف الظواهر والكائنات.';
+  if(/Neighborhood|Helping|Shopping|Festivals/.test(title)) return 'يتعلم الطالب التعبير عن "'+title+'" بالإنجليزية من خلال حوارات وتمارين تفاعلية.';
+  if(/Daily Life|Travel|Transport|Health|Body|Nature|Culture|Stories/.test(title)) return 'يغطي هذا الدرس "'+title+'" مع تطوير مهارات القراءة والكتابة والمحادثة.';
+  if(/Education|Sudan|Work|Careers|Media|Technology|Environment|Society|Values/.test(title)) return 'يتناول هذا الدرس "'+title+'" بمستوى متقدم مع مفردات أكاديمية وتمارين شاملة.';
+  if(/Sheet Music|Note|Rhythm|Musical|Time Sign/.test(title)) return 'درس موسيقي بعنوان "'+title+'" يشرح المفاهيم الموسيقية الأساسية بطريقة مبسطة.';
+  return 'درس "'+title+'" باللغة الإنجليزية. يغطي المفردات والقواعد والمهارات اللغوية من خلال أمثلة وتطبيقات عملية.';
 }
 // All string concatenation uses proper escaping: ' for strings with ", " for strings with '
 function renderLesson(ls,lid){
@@ -348,7 +348,7 @@ function renderLesson(ls,lid){
     html+='<div class="section"><h3>'+t('writeTask')+'</h3><p>'+prompt+'</p>'+
       '<textarea rows="6" placeholder="'+t('writeHere')+'"></textarea>';
     if(model){
-      var escModel=model.replace(/'/g,"\\'");
+      var escModel=model.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\n/g,'\\n').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       // Use onclick with escaped single quotes
       html+="<button class=\"check-btn\" onclick=\"alert('"+escModel+"')\">"+t('showAns')+'</button>';
     }
@@ -365,6 +365,7 @@ function renderLesson(ls,lid){
         var l=dlines[di].trim();
         if(l)html+='<p>'+l+'</p>';
       }
+      html+='</div>';
       html+='</div>';
     }else{
       var d=ls.dialogue;
@@ -437,7 +438,7 @@ function showVocabBank(){hideAllViews();let v=document.getElementById('vocabBank
 function filterVocab(q){const items=document.querySelectorAll('.vocab-item');items.forEach(item=>{const text=item.textContent.toLowerCase();item.style.display=!q||text.includes(q.toLowerCase())?'flex':'none';});}
 
 // ─── GRAMMAR REF ───
-function showGrammarRef(){hideAllViews();let v=document.getElementById('grammarRefView');if(!v){v=document.createElement('div');v.id='grammarRefView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);let html='<h2>'+t('gramTitle')+'</h2><input type="text" id="grammarSearch" placeholder="'+t('searchGram')+'" oninput="filterGrammar(this.value)" style="width:100%;padding:10px;margin:10px 0;border:1px solid var(--border,#ddd);border-radius:6px;"><div id="grammarList">';const topics=[];if(appData&&appData.curricula){appData.curricula.forEach((c,ci)=>{c.levels&&c.levels.forEach(l=>{l.modules&&l.modules.forEach(m=>{const gf=m.grammar_focus||m.grammar||'';const gLvl=l.cefr_level||l.level||'';if(gf)topics.push({topic:gf,level:gLvl,module:m.module_title});if(m.lessons){m.lessons.forEach(ls=>{if(ls.grammar_focus||ls.explanation){topics.push({topic:ls.grammar_focus||ls.explanation.slice(0,80),level:l.cefr_level,module:m.module_title,lesson:ls.lesson_title})}})}})})});}if(topics.length===0)html+='<p>'+t('noGrammar')+'</p>';else{topics.forEach(t=>{html+='<div class="grammar-item"><strong>'+t.topic+'</strong><span class="grammar-lvl">'+t.level+'</span></div>';});}html+='</div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';v.innerHTML=html;}
+function showGrammarRef(){hideAllViews();let v=document.getElementById('grammarRefView');if(!v){v=document.createElement('div');v.id='grammarRefView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);let html='<h2>'+t('gramTitle')+'</h2><input type="text" id="grammarSearch" placeholder="'+t('searchGram')+'" oninput="filterGrammar(this.value)" style="width:100%;padding:10px;margin:10px 0;border:1px solid var(--border,#ddd);border-radius:6px;"><div id="grammarList">';const topics=[];if(appData&&appData.curricula){appData.curricula.forEach((c,ci)=>{c.levels&&c.levels.forEach(l=>{l.modules&&l.modules.forEach(m=>{const gf=m.grammar_focus||m.grammar||'';const gLvl=l.cefr_level||l.level||'';if(gf)topics.push({topic:gf,level:gLvl,module:m.module_title});if(m.lessons){m.lessons.forEach(ls=>{if(ls.grammar_focus||ls.explanation){topics.push({topic:ls.grammar_focus||ls.explanation.slice(0,80),level:l.cefr_level,module:m.module_title,lesson:ls.lesson_title})}})}})})});}if(topics.length===0)html+='<p>'+t('noGrammar')+'</p>';else{topics.forEach(topic=>{html+='<div class="grammar-item"><strong>'+topic.topic+'</strong><span class="grammar-lvl">'+topic.level+'</span></div>';});}html+='</div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';v.innerHTML=html;}
 
 function filterGrammar(q){const items=document.querySelectorAll('.grammar-item');items.forEach(item=>{const text=item.textContent.toLowerCase();item.style.display=!q||text.includes(q.toLowerCase())?'flex':'none';});}
 
@@ -544,7 +545,7 @@ function speakPractice(text,lang){if(!window.speechSynthesis||!window.SpeechSynt
 function showSpeaking(lid){const ls=findFullLesson(lastLessonLn,lastLessonMi,lid);if(!ls||!ls.explanation){toast(t('noTest'));return;}speakPractice(ls.explanation,'en');}
 
 // ─── EXPORT / PRINT ───
-function exportPDF(){const lv=document.getElementById('lessonView');if(!lv||!lv.innerHTML.trim()||lv.style.display==='none'){toast(t('noTest'));return;}const w=window.open('','_blank');w.document.write('<html><head><title>'+t('pdfTitle')+'</title><style>body{font-family:sans-serif;padding:20px;direction:rtl}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:8px}h2{color:#2c3e50}</style></head><body>');w.document.write(lv.innerHTML);w.document.write('</body></html>');w.document.close();w.print();}
+function exportPDF(){const lv=document.getElementById('lessonView');if(!lv||!lv.innerHTML.trim()||lv.style.display==='none'){toast(t('noTest'));return;}const w=window.open('','_blank');w.document.write('<html><head><title>'+t('pdfTitle')+'</title><style>body{font-family:sans-serif;padding:20px;direction:rtl}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:8px}h2{color:#2c3e50}</style></head><body>');w.document.write(lv.innerHTML);w.document.write('</body></html>');w.document.close();w.onload=function(){w.print();};}
 
 // ─── LAST LESSON TRACKING ───
 let lastLessonLn=0,lastLessonMi=0;
@@ -564,7 +565,7 @@ var origShowSettings=showSettings;showSettings=function(){origShowSettings();var
 
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded',function(){initApp();initSync();if(ls('eng_dark')==='1'){document.body.classList.add('dark-mode');const b=document.getElementById('darkToggle');if(b)b.textContent='☀️';}var devBtn=document.getElementById('navDeveloper');if(devBtn){devBtn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();showDeveloper();});}});
-if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).then(function(){navigator.serviceWorker.register('sw.js?'+Date.now()).catch(function(){})});}
+if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).then(function(){navigator.serviceWorker.register('sw.js?'+Date.now()).catch(function(e){console.warn('SW registration failed:',e)})});}
 // ─── STREAK ───
 function getStreak(){try{var d=JSON.parse(ls('eng_streak'));return d&&typeof d==='object'?d:{count:0,lastDate:''}}catch(e){return{count:0,lastDate:''}}}
 function saveStreak(s){lss('eng_streak',JSON.stringify(s));}

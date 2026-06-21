@@ -1,7 +1,7 @@
-const CACHE = 'opencode-v7';
+const CACHE = 'opencode-v8';
 const TS = Date.now();
 const FILES = [
-  '/', '/index.html?ts='+TS, '/style.css?ts='+TS, '/app.js?v=7&ts='+TS,
+  '/', '/index.html?ts='+TS, '/style.css?ts='+TS,   '/app.js?v=10&ts='+TS,
   '/app_data.json?ts='+TS, '/level_tests.json?ts='+TS, '/placement_test.json?ts='+TS,
   '/manifest.json?ts='+TS, '/icon-192.png', '/icon-512.png',
   '/teacher.jpg'
