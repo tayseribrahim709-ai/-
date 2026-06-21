@@ -600,3 +600,424 @@ showPlacementTest=function(){origShowPT();var pt=placementTest;if(!pt)return;var
 var touchStartX=0,touchStartY=0;
 document.addEventListener('touchstart',function(e){touchStartX=e.changedTouches[0].screenX;touchStartY=e.changedTouches[0].screenY});
 document.addEventListener('touchend',function(e){var dx=e.changedTouches[0].screenX-touchStartX;var dy=e.changedTouches[0].screenY-touchStartY;if(Math.abs(dx)>80&&Math.abs(dx)>Math.abs(dy)*1.5){if(dx>0)hideAllViews();else{var v=document.getElementById('lessonView');if(v&&v.style.display==='block')hideAllViews()}}});
+
+// ─── 1. WORD PRONUNCIATION (TTS) ───
+function speakWord(word,lang){
+  if(!('speechSynthesis' in window)){toast('❌ لا يدعم النطق');return;}
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(word);
+  u.lang=lang||'en-US';
+  u.rate=0.85;
+  u.pitch=1;
+  var voices=window.speechSynthesis.getVoices();
+  var enVoice=voices.find(function(v){return v.lang.startsWith('en')});
+  if(enVoice)u.voice=enVoice;
+  window.speechSynthesis.speak(u);
+}
+function speakText(text,lang){speakWord(text,lang);}
+function speakLesson(title,explanation){
+  speakWord(title,'en-US');
+  if(explanation)setTimeout(function(){speakWord(explanation,'en-US');},2000);
+}
+function addSpeakButtons(){
+  document.querySelectorAll('.vocab-table td:first-child').forEach(function(td){
+    if(td.querySelector('.speak-btn'))return;
+    var btn=document.createElement('button');
+    btn.className='speak-btn';
+    btn.textContent='🔊';
+    btn.title='نطق';
+    btn.onclick=function(e){e.stopPropagation();speakWord(td.textContent.trim());};
+    td.style.cursor='pointer';
+    td.onclick=function(){speakWord(td.textContent.trim());};
+    td.insertBefore(btn,td.firstChild);
+  });
+  document.querySelectorAll('.example p, .dialogue-line, .bilingual .en-content p').forEach(function(el){
+    if(el.querySelector('.speak-btn'))return;
+    var btn=document.createElement('button');
+    btn.className='speak-btn';
+    btn.textContent='🔊';
+    btn.onclick=function(e){e.stopPropagation();speakWord(el.textContent.trim());};
+    el.style.cursor='pointer';
+    el.insertBefore(btn,el.firstChild);
+  });
+}
+if('speechSynthesis' in window){
+  speechSynthesis.onvoiceschanged=function(){};
+}
+
+// ─── 2. LESSON RATING (1-5 STARS) ───
+function getLessonRatings(){try{return JSON.parse(ls('eng_ratings')||'{}')}catch(e){return{}}}
+function saveLessonRatings(r){lss('eng_ratings',JSON.stringify(r));}
+function getLessonRating(lid){var r=getLessonRatings();return r[lid]||0;}
+function setLessonRating(lid,stars){
+  var r=getLessonRatings();r[lid]=stars;saveLessonRatings(r);
+  var el=document.getElementById('rating_'+lid);
+  if(el)renderStars(el,lid,stars);
+  toast('⭐ '+stars+'/5');
+}
+function renderStars(container,lid,current){
+  var html='<div class="lesson-rating" style="display:inline-flex;gap:2px;margin:5px 0">';
+  for(var i=1;i<=5;i++){
+    html+='<span class="star-btn" onclick="setLessonRating(\''+lid+'\','+i+')" style="cursor:pointer;font-size:1.3em;color:'+(i<=current?'#f1c40f':'#ccc')+';transition:color .2s">'+(i<=current?'★':'☆')+'</span>';
+  }
+  html+='</div>';
+  container.innerHTML=html;
+}
+function addRatingToLesson(lid){
+  var current=getLessonRating(lid);
+  return '<div id="rating_'+lid+'"></div>';
+}
+
+// ─── 3. DAILY REMINDER ───
+function getReminderSettings(){try{return JSON.parse(ls('eng_reminder')||'{"enabled":false,"hour":20,"minute":0}')}catch(e){return{enabled:false,hour:20,minute:0}}}
+function saveReminderSettings(s){lss('eng_reminder',JSON.stringify(s));}
+function toggleReminder(){
+  var s=getReminderSettings();
+  s.enabled=!s.enabled;
+  saveReminderSettings(s);
+  if(s.enabled){
+    if('Notification' in window && Notification.permission==='default'){
+      Notification.requestPermission();
+    }
+    scheduleReminder();
+    toast('🔔 التذكير مفعّل');
+  }else{
+    toast('🔕 التذكير معطّل');
+  }
+  showSettings();
+}
+function scheduleReminder(){
+  var s=getReminderSettings();
+  if(!s.enabled)return;
+  var now=new Date();
+  var target=new Date();
+  target.setHours(s.hour,s.minute,0,0);
+  if(target<=now)target.setDate(target.getDate()+1);
+  var delay=target-now;
+  setTimeout(function(){
+    if(s.enabled && 'Notification' in window && Notification.permission==='granted'){
+      new Notification('📚 استاذ ياسر ابراهيم',{body:'حان وقت الدراسة! لا تنسَ الدروس اليومية.',icon:'icon-192.png'});
+    }
+    scheduleReminder();
+  },delay);
+}
+
+// ─── 4. DETAILED STATISTICS ───
+function showDetailedStats(){
+  hideAllViews();
+  var v=document.getElementById('statsDetailedView');
+  if(!v){v=document.createElement('div');v.id='statsDetailedView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var completed=getCompletedLessons();
+  var streak=getStreak();
+  var favs=getFavorites();
+  var ratings=getLessonRatings();
+  var html='<h2>📊 '+('إحصائيات مفصلة')+'</h2>';
+  html+='<div class="stats-grid">';
+  html+='<div class="stat-card"><div class="num">'+completed.length+'</div><div class="label">دروس مكتملة</div></div>';
+  html+='<div class="stat-card"><div class="num">'+streak.count+'</div><div class="label">سلسلة الأيام</div></div>';
+  html+='<div class="stat-card"><div class="num">'+favs.length+'</div><div class="label">دروس مفضلة</div></div>';
+  html+='<div class="stat-card"><div class="num">'+Object.keys(ratings).length+'</div><div class="label">دروس مقيّمة</div></div>';
+  html+='</div>';
+  html+='<h3>📈 تقدم المستويات</h3>';
+  html+='<div class="stats-levels">';
+  if(appData&&appData.curricula){
+    appData.curricula.forEach(function(c,ci){
+      c.levels&&c.levels.forEach(function(l,li){
+        var total=0,done=0;
+        l.modules&&l.modules.forEach(function(m,mi){
+          m.lessons&&m.lessons.forEach(function(ls){
+            total++;
+            var lid=ls.lesson_id||(l.level_name+'_'+mi+'_'+ls.lesson_title);
+            if(isLessonComplete(lid))done++;
+          });
+        });
+        var pct=total?Math.round(done/total*100):0;
+        var p=getLevelProgress(ci,li);
+        html+='<div class="stats-level"><span style="min-width:80px;font-weight:600">'+(l.level_name||l.cefr_level||'')+'</span>';
+        html+='<div class="stats-bar"><div class="stats-fill" style="width:'+pct+'%"></div></div>';
+        html+='<span class="stats-pct">'+pct+'%</span>';
+        html+='<span style="font-size:.8em;color:var(--text-light)">'+done+'/'+total+'</span>';
+        if(p.passed)html+=' <span style="color:var(--success)">✅</span>';
+        html+='</div>';
+      });
+    });
+  }
+  html+='</div>';
+  html+='<h3>⭐ تقييمات الدروس</h3>';
+  var ratedKeys=Object.keys(ratings);
+  if(ratedKeys.length===0){
+    html+='<p style="color:var(--text-light)">لم تقيّم أي درس بعد</p>';
+  }else{
+    var totalStars=0;
+    ratedKeys.forEach(function(k){totalStars+=ratings[k]});
+    var avgStars=(totalStars/ratedKeys.length).toFixed(1);
+    html+='<p>متوسط التقييم: <strong style="color:#f1c40f">'+avgStars+'/5</strong> ('+ratedKeys.length+' درس)</p>';
+    html+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">';
+    ratedKeys.forEach(function(k){
+      var stars=ratings[k];
+      var starStr='';
+      for(var i=0;i<5;i++)starStr+=i<stars?'★':'☆';
+      html+='<span style="background:var(--surface);border:1px solid var(--border);padding:4px 10px;border-radius:15px;font-size:.85em">'+k.split('_').pop()+' <span style="color:#f1c40f">'+starStr+'</span></span>';
+    });
+    html+='</div>';
+  }
+  html+='<br><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';
+  v.innerHTML=html;
+}
+
+// ─── 5. SHARE LESSONS ───
+function shareLesson(lid,title){
+  var url=location.origin+'?lesson='+encodeURIComponent(lid);
+  var text='📚 '+title+'\n\nتعلم اللغة الإنجليزية مع استاذ ياسر ابراهيم\n'+url;
+  if(navigator.share){
+    navigator.share({title:'استاذ ياسر ابراهيم - '+title,text:text,url:url}).catch(function(){});
+  }else if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(function(){
+      toast('✅ تم نسخ رابط الدرس');
+    }).catch(function(){toast('❌ فشل النسخ')});
+  }else{
+    var ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    toast('✅ تم نسخ رابط الدرس');
+  }
+}
+
+// ─── 6. TEACHER MODE ───
+function getTeacherMode(){return ls('eng_teacher_mode')==='1';}
+function toggleTeacherMode(){
+  var current=getTeacherMode();
+  if(!current){
+    var pin=prompt('🔐 أدخل رمز المدرب (الافتراضي: 1234):');
+    if(pin!==(ls('eng_admin_pin')||'1234')){toast('❌ رمز خطأ');return;}
+  }
+  lss('eng_teacher_mode',current?'0':'1');
+  toast(current?'🔒 وضع المعلم معطّل':'✅ وضع المعلم مفعّل');
+  showSettings();
+}
+function addTeacherLesson(){
+  hideAllViews();
+  var v=document.getElementById('teacherLessonView');
+  if(!v){v=document.createElement('div');v.id='teacherLessonView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var html='<h2>📝 إضافة درس جديد</h2>';
+  html+='<div class="settings-group">';
+  html+='<label>المنهج</label><select id="tchCurr" style="width:100%;padding:8px;margin:4px 0">';
+  if(appData&&appData.curricula){appData.curricula.forEach(function(c,i){html+='<option value="'+i+'">'+c.name+'</option>'})}
+  html+='</select>';
+  html+='<label>المستوى</label><input id="tchLevel" value="A1" style="width:100%;padding:8px;margin:4px 0;border:1px solid var(--border);border-radius:6px">';
+  html+='<label>الوحدة</label><input id="tchModule" placeholder="Module 1" style="width:100%;padding:8px;margin:4px 0;border:1px solid var(--border);border-radius:6px">';
+  html+='<label>عنوان الدرس</label><input id="tchTitle" placeholder="Lesson Title" style="width:100%;padding:8px;margin:4px 0;border:1px solid var(--border);border-radius:6px">';
+  html+='<label>رابط الفيديو (اختياري)</label><input id="tchVideo" placeholder="https://youtube.com/..." style="width:100%;padding:8px;margin:4px 0;border:1px solid var(--border);border-radius:6px">';
+  html+='<label>الأهداف (كل هدف في سطر)</label><textarea id="tchObjectives" rows="3" placeholder="1. Learn vocabulary\n2. Practice grammar" style="width:100%;padding:8px;margin:4px 0;border:1px solid var(--border);border-radius:6px"></textarea>';
+  html+='<label>الشرح بالإنجليزي</label><textarea id="tchExplanation" rows="4" placeholder="In this lesson..." style="width:100%;padding:8px;margin:4px 0;border:1px solid var(--border);border-radius:6px"></textarea>';
+  html+='<label>الشرح بالعربي</label><textarea id="tchExplanationAr" rows="4" placeholder="في هذا الدرس..." style="width:100%;padding:8px;margin:4px 0;border:1px solid var(--border);border-radius:6px"></textarea>';
+  html+='<label>المفردات (كلمة = ترجمة)</label><textarea id="tchVocab" rows="3" placeholder="hello = مرحبا\ngoodbye = وداعا" style="width:100%;padding:8px;margin:4px 0;border:1px solid var(--border);border-radius:6px"></textarea>';
+  html+='<label>تمارين (سؤال = إجابة)</label><textarea id="tchExercises" rows="3" placeholder="What is your name? = My name is..." style="width:100%;padding:8px;margin:4px 0;border:1px solid var(--border);border-radius:6px"></textarea>';
+  html+='<button class="check-btn" onclick="saveTeacherLesson()" style="margin-top:10px;font-size:1em;padding:10px 20px">💾 حفظ الدرس</button>';
+  html+='</div>';
+  html+='<h3>📋 الدروس المحفوظة</h3>';
+  var lessons=getAdminLessons();
+  if(lessons.length===0){html+='<p style="color:var(--text-light)">لا توجد دروس مضافة بعد</p>'}
+  else{lessons.forEach(function(ls,i){
+    html+='<div style="border:1px solid var(--border);border-radius:8px;padding:10px;margin:8px 0;display:flex;justify-content:space-between;align-items:center">';
+    html+='<span><strong>'+(ls.lesson_title||'')+'</strong> <small style="color:var(--text-light)">'+(ls.level||'')+'</small></span>';
+    html+='<button class="check-btn" style="background:#e74c3c" onclick="deleteTeacherLesson('+i+')">🗑</button>';
+    html+='</div>';
+  })}
+  html+='<br><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';
+  v.innerHTML=html;
+}
+function saveTeacherLesson(){
+  var curr=document.getElementById('tchCurr');
+  var level=document.getElementById('tchLevel');
+  var mod=document.getElementById('tchModule');
+  var title=document.getElementById('tchTitle');
+  var video=document.getElementById('tchVideo');
+  var obj=document.getElementById('tchObjectives');
+  var expl=document.getElementById('tchExplanation');
+  var explAr=document.getElementById('tchExplanationAr');
+  var voc=document.getElementById('tchVocab');
+  var exer=document.getElementById('tchExercises');
+  if(!title||!title.value.trim()){toast('❌ أدخل عنوان الدرس');return;}
+  var objectives=[];
+  if(obj&&obj.value.trim()){objectives=obj.value.split('\n').map(function(s){return s.trim()}).filter(function(s){return s})}
+  var vocabulary=[];
+  if(voc&&voc.value.trim()){voc.value.split('\n').forEach(function(line){var parts=line.split('=').map(function(s){return s.trim()});if(parts.length===2&&parts[0]&&parts[1]){vocabulary.push({word:parts[0],translation:parts[1]})}})}
+  var exercises=[];
+  if(exer&&exer.value.trim()){exer.value.split('\n').forEach(function(line){var parts=line.split('=').map(function(s){return s.trim()});if(parts.length===2&&parts[0]&&parts[1]){exercises.push({question:parts[0],answer:parts[1]})}})}
+  var lesson={
+    curriculumIdx:curr?parseInt(curr.value):0,
+    level:level?level.value.trim():'A1',
+    moduleTitle:mod?mod.value.trim():'',
+    lesson_title:title.value.trim(),
+    video_url:video?video.value.trim():'',
+    objectives:objectives,
+    explanation:expl?expl.value.trim():'',
+    explanation_ar:explAr?explAr.value.trim():'',
+    vocabulary:vocabulary,
+    quiz:exercises,
+    lesson_id:'teacher_'+Date.now(),
+    dateAdded:Date.now(),
+    source:'teacher'
+  };
+  var lessons=getAdminLessons();
+  lessons.push(lesson);
+  saveAdminLessons(lessons);
+  toast('✅ تم حفظ الدرس');
+  addTeacherLesson();
+}
+function deleteTeacherLesson(idx){
+  if(!confirm('🗑 حذف هذا الدرس؟'))return;
+  var lessons=getAdminLessons();
+  lessons.splice(idx,1);
+  saveAdminLessons(lessons);
+  toast('✅ تم الحذف');
+  addTeacherLesson();
+}
+
+// ─── INJECT TEACHER LESSONS INTO APP ───
+function getTeacherLessons(){return getAdminLessons().filter(function(ls){return ls.source==='teacher'})}
+function getTeacherCurriculum(){
+  var lessons=getTeacherLessons();
+  if(lessons.length===0)return null;
+  var levels={};
+  lessons.forEach(function(ls){
+    var key=ls.level||'A1';
+    if(!levels[key])levels[key]={level_name:key,modules:[]};
+    var mod=levels[key].modules.find(function(m){return m.module_title===ls.moduleTitle});
+    if(!mod){mod={module_title:ls.moduleTitle||'Lessons',lessons:[]};levels[key].modules.push(mod)}
+    mod.lessons.push(ls);
+  });
+  return{levels:Object.values(levels)};
+}
+function mergeTeacherData(){
+  if(!appData)return;
+  var tc=getTeacherCurriculum();
+  if(!tc)return;
+  appData.curricula.push({
+    id:'teacher_lessons',
+    name:'📚 دروس المعلم',
+    name_en:'Teacher Lessons',
+    levels:tc.levels
+  });
+  flatLessons=[];
+  appData.curricula.forEach(function(c,ci){
+    c.levels&&c.levels.forEach(function(l,li){
+      l.modules&&l.modules.forEach(function(m){
+        m.lessons&&m.lessons.forEach(function(ls){
+          flatLessons.push({lesson_id:ls.lesson_id||ls.lesson_title,lesson_title:ls.lesson_title,curriculumIdx:ci,levelIdx:li})
+        })
+      })
+    })
+  });
+  renderCurriculumSelector();
+  switchCurriculum(appData.curricula.length-1);
+}
+function injectTeacherLessons(){
+  var origInit=initApp;
+  initApp=function(){
+    origInit();
+    var lessons=getTeacherLessons();
+    if(lessons.length>0&&appData){
+      setTimeout(mergeTeacherData,500);
+    }
+  };
+}
+
+// ─── PATCH renderLesson TO ADD FEATURES ───
+var origRenderLesson=renderLesson;
+renderLesson=function(ls,lid){
+  origRenderLesson(ls,lid);
+  setTimeout(function(){
+    addSpeakButtons();
+    var lv=document.getElementById('lessonView');
+    if(!lv)return;
+    var header=lv.querySelector('.lesson-header');
+    if(header){
+      var ratingDiv=document.createElement('div');
+      ratingDiv.id='rating_'+lid;
+      ratingDiv.style.cssText='margin:5px 0';
+      header.appendChild(ratingDiv);
+      renderStars(ratingDiv,lid,getLessonRating(lid));
+      var shareBtn=document.createElement('button');
+      shareBtn.className='tool-btn';
+      shareBtn.textContent='📤 مشاركة';
+      shareBtn.onclick=function(){shareLesson(lid,ls.lesson_title)};
+      header.appendChild(shareBtn);
+      var speakBtn=document.createElement('button');
+      speakBtn.className='tool-btn';
+      speakBtn.textContent='🔊 نطق الدرس';
+      speakBtn.onclick=function(){speakLesson(ls.lesson_title,ls.explanation)};
+      header.appendChild(speakBtn);
+    }
+  },200);
+};
+
+// ─── PATCH showWelcome TO SHOW STUDY PLAN + STATS ───
+var origShowWelcome=showWelcome;
+showWelcome=function(){
+  origShowWelcome();
+  var w=document.getElementById('welcomeContent');
+  if(!w)return;
+  var s=getStreak();
+  var completed=getCompletedLessons();
+  var html=w.innerHTML;
+  if(s.count>0){
+    html='<div class="streak-bar"><span class="streak-icon">🔥</span><span class="streak-info">'+t('streakTitle')+': <strong>'+s.count+' '+t('streakDays')+'</strong></span></div>'+html;
+  }
+  html+='<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:15px">';
+  html+='<button class="check-btn" onclick="showDetailedStats()">📊 إحصائيات مفصلة</button>';
+  html+='<button class="check-btn" onclick="showStudyPlan()">📅 خطة الدراسة</button>';
+  html+='<button class="check-btn" onclick="showVocabQuiz()">🎯 اختبار المفردات</button>';
+  html+='<button class="check-btn" onclick="toggleReminder()">🔔 التذكير اليومي</button>';
+  if(getTeacherMode()){
+    html+='<button class="check-btn" style="background:#9b59b6" onclick="addTeacherLesson()">📝 إضافة درس</button>';
+  }
+  html+='</div>';
+  w.innerHTML=html;
+};
+
+// ─── PATCH showSettings TO ADD REMINDER + TEACHER ───
+var origShowSettings=showSettings;
+showSettings=function(){
+  origShowSettings();
+  var v=document.getElementById('settingsView');
+  if(!v)return;
+  var s=getReminderSettings();
+  var html=v.innerHTML;
+  html+='<div class="settings-group">';
+  html+='<h3>🔔 التذكير اليومي</h3>';
+  html+='<p style="color:var(--text-light);font-size:.9em;margin-bottom:8px">يُرسل إشعاراً يومياً لتذكيرك بالدراسة</p>';
+  html+='<div style="display:flex;align-items:center;gap:10px">';
+  html+='<button class="day-btn '+(s.enabled?'active':'')+'" onclick="toggleReminder()">'+(s.enabled?'🔔 مفعّل':'🔕 معطّل')+'</button>';
+  if(s.enabled){
+    html+='<input type="time" id="reminderTime" value="'+(s.hour<10?'0':'')+s.hour+':'+(s.minute<10?'0':'')+s.minute+'" onchange="updateReminderTime(this.value)" style="padding:6px;border:1px solid var(--border);border-radius:6px">';
+  }
+  html+='</div></div>';
+  html+='<div class="settings-group">';
+  html+='<h3>👨‍🏫 وضع المعلم</h3>';
+  html+='<p style="color:var(--text-light);font-size:.9em;margin-bottom:8px">يُمكّنك من إضافة دروس جديدة</p>';
+  html+='<button class="day-btn '+(getTeacherMode()?'active':'')+'" onclick="toggleTeacherMode()">'+(getTeacherMode()?'✅ مفعّل':'🔒 معطّل')+'</button>';
+  html+='</div>';
+  v.innerHTML=html;
+};
+function updateReminderTime(val){
+  var parts=val.split(':');
+  var s=getReminderSettings();
+  s.hour=parseInt(parts[0]);s.minute=parseInt(parts[1]);
+  saveReminderSettings(s);
+  if(s.enabled)scheduleReminder();
+  toast('⏰ تم تحديث الوقت');
+}
+
+// ─── INIT REMINDER + TEACHER ON LOAD ───
+(function(){
+  var origDOMContentLoaded=document.addEventListener;
+  setTimeout(function(){
+    var rs=getReminderSettings();
+    if(rs.enabled)scheduleReminder();
+    injectTeacherLessons();
+  },1000);
+})();
