@@ -21,4 +21,4 @@ h.createServer(function(q, r) {
     r.writeHead(200, { 'Content-Type': m[x] || 'text/plain', 'Cache-Control': 'no-store, no-cache, must-revalidate' });
     r.end(b);
   });
-}).listen(8080, function() { console.log('Server running on http://localhost:8080/'); });
+}).listen(process.env.PORT || 8080, function() { console.log('Server running on http://localhost:' + (process.env.PORT || 8080)); });
