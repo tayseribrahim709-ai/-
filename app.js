@@ -1620,3 +1620,617 @@ navSetup=function(){
     injectTeacherLessons();
   },1000);
 })();
+
+// ═══════════════════════════════════════════
+// ═══ ADVANCED FEATURES ═══
+// ═══════════════════════════════════════════
+
+// ─── 1. WRITING EXERCISES WITH SMART EVALUATION ───
+function showWritingPractice(){
+  hideAllViews();
+  var v=document.getElementById('writingView');
+  if(!v){v=document.createElement('div');v.id='writingView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var prompts=[
+    {level:'A1',title:'Introduction',prompt:'Write about yourself: name, age, country',model:'My name is... I am ... years old. I am from...',hints:['use "My name is..."','use "I am ... years old"','use "I am from..."']},
+    {level:'A1',title:'Daily Routine',prompt:'Write 5 sentences about your daily routine',model:'I wake up at 7 am. I eat breakfast. I go to school. I study English. I sleep at 10 pm.',hints:['use present tense','use time expressions','use "I" + verb']},
+    {level:'A2',title:'My Family',prompt:'Describe your family in 5-7 sentences',model:'I have a big family. My father is a teacher. My mother is a doctor. I have two brothers and one sister. We live in Khartoum.',hints:['use "I have..."','use adjectives','use present tense']},
+    {level:'A2',title:'My Room',prompt:'Describe your room in 5-7 sentences',model:'My room is small but nice. There is a bed, a desk, and a chair. I have a computer on my desk. The walls are blue.',hints:['use "There is/are..."','use colors','use prepositions']},
+    {level:'B1',title:'My Best Friend',prompt:'Write about your best friend in 7-10 sentences',model:'My best friend is Ahmed. He is 15 years old. He is tall and has brown eyes. He is very kind and funny. We like to play football together.',hints:['use adjectives','use past tense if needed','use connectives']},
+    {level:'B1',title:'A Holiday',prompt:'Write about a holiday you enjoyed in 7-10 sentences',model:'Last summer, I went to Port Sudan. The weather was hot and sunny. I swam in the sea. I visited many places. It was a wonderful holiday.',hints:['use past tense','use time expressions','use adjectives']},
+    {level:'B2',title:'Technology',prompt:'Write about how technology helps you in 8-12 sentences',model:'Technology has changed our lives. I use my phone to study English. I can learn online from home. Technology makes learning easier and more fun.',hints:['use "has changed"','use modal verbs','use connectors']},
+    {level:'B2',title:'Environment',prompt:'Write about protecting the environment in 8-12 sentences',model:'We should protect the environment. We can recycle waste. We should plant trees. We must stop pollution. It is important for our future.',hints:['use "should/must/can"','use imperatives','use linking words']},
+    {level:'C1',title:'Education',prompt:'Write about the importance of education in 10-15 sentences',model:'Education is the key to success. It opens doors to many opportunities. A good education helps people achieve their dreams. Teachers play a vital role in shaping our future.',hints:['use complex sentences','use passive voice','use advanced vocabulary']},
+    {level:'C2',title:'Global Issues',prompt:'Write about a global issue in 12-15 sentences',model:'Climate change is one of the biggest challenges facing humanity. Rising temperatures are causing extreme weather events. We need to take immediate action to reduce carbon emissions.',hints:['use advanced grammar','use formal language','use research-based arguments']}
+  ];
+  var html='<h2>✍️ تمارين الكتابة</h2>';
+  html+='<div class="writing-prompts">';
+  prompts.forEach(function(p,i){
+    html+='<div class="writing-prompt-card" onclick="openWritingExercise('+i+')">';
+    html+='<span class="writing-level badge badge-'+p.level.toLowerCase()+'">'+p.level+'</span>';
+    html+='<h4>'+p.title+'</h4>';
+    html+='<p>'+p.prompt+'</p>';
+    html+='</div>';
+  });
+  html+='</div>';
+  html+='<button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';
+  v.innerHTML=html;
+  v._writingPrompts=prompts;
+}
+function openWritingExercise(idx){
+  var v=document.getElementById('writingView');
+  if(!v||!v._writingPrompts)return;
+  var p=v._writingPrompts[idx];
+  var overlay=document.createElement('div');
+  overlay.className='kids-overlay';
+  overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
+  var card=document.createElement('div');
+  card.className='writing-exercise-popup';
+  card.innerHTML='<button class="kids-close-btn" onclick="this.closest(\'.kids-overlay\').remove()">✖</button>'+
+    '<h2>✍️ '+p.title+'</h2>'+
+    '<span class="badge badge-'+p.level.toLowerCase()+'">'+p.level+'</span>'+
+    '<p style="margin:15px 0">'+p.prompt+'</p>'+
+    '<div class="writing-hints"><strong>💡 تلميحات:</strong><ul>'+
+    p.hints.map(function(h){return'<li>'+h+'</li>'}).join('')+'</ul></div>'+
+    '<textarea id="writingInput" rows="8" placeholder="اكتب هنا بالإنجليزي..." style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:1em;margin:10px 0;resize:vertical"></textarea>'+
+    '<div id="writingFeedback" style="margin:10px 0"></div>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap">'+
+    '<button class="check-btn" onclick="evaluateWriting('+idx+')">📝 تقييم</button>'+
+    '<button class="check-btn" onclick="showWritingModel('+idx+')">👁 الإجابة النموذجية</button>'+
+    '<button class="check-btn" onclick="speakWord(document.getElementById(\'writingInput\').value)">🔊 قراءة</button>'+
+    '</div>'+
+    '<div id="writingModel" style="display:none;margin-top:10px;padding:12px;background:var(--test-option-bg);border-radius:8px;border-right:3px solid var(--accent)"></div>';
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+}
+function evaluateWriting(idx){
+  var input=document.getElementById('writingInput');
+  var feedback=document.getElementById('writingFeedback');
+  if(!input||!feedback)return;
+  var text=input.value.trim();
+  if(!text){feedback.innerHTML='<p style="color:orange">⚠️ اكتب شيئاً أولاً</p>';return;}
+  var v=document.getElementById('writingView');
+  var p=v._writingPrompts[idx];
+  var words=text.split(/\s+/).length;
+  var sentences=text.split(/[.!?]+/).filter(function(s){return s.trim()}).length;
+  var hasCapital=/^[A-Z]/.test(text);
+  var hasPunctuation=/[.!?]$/.test(text.trim());
+  var score=0;
+  var maxScore=100;
+  var comments=[];
+  if(words>=5){score+=25;comments.push('✅ عدد كلمات مناسب: '+words+' كلمة')}
+  else{comments.push('⚠️ قليل جداً: '+words+' كلمة (اكتب 5 كلمات على الأقل)')}
+  if(sentences>=2){score+=25;comments.push('✅ جمل متعددة: '+sentences+' جملة')}
+  else{comments.push('⚠️ اكتب جملتين على الأقل')}
+  if(hasCapital){score+=25;comments.push('✅ تبدأ بحرف كبير')}
+  else{comments.push('💡 نصيحة: ابدأ الجملة بحرف كبير')}
+  if(hasPunctuation){score+=25;comments.push('✅ تنتهي بنقطة')}
+  else{comments.push('💡 نصيحة: أضف نقطة في النهاية')}
+  var pct=Math.round(score/maxScore*100);
+  var grade=pct>=80?'ممتاز':pct>=60?'جيد':pct>=40?'مقبول':'يحتاج تحسين';
+  var gradeColor=pct>=80?'#27ae60':pct>=60?'#3498db':pct>=40?'#f39c12':'#e74c3c';
+  feedback.innerHTML='<div class="writing-evaluation" style="padding:15px;border-radius:10px;background:var(--surface);border:2px solid '+gradeColor+'">'+
+    '<h3 style="color:'+gradeColor+'">'+grade+' ('+pct+'%)</h3>'+
+    '<div class="writing-stats" style="display:flex;gap:15px;flex-wrap:wrap;margin:10px 0">'+
+    '<span>📝 '+words+' كلمة</span><span>📄 '+sentences+' جملة</span>'+
+    '</div>'+
+    '<ul style="list-style:none;padding:0">'+comments.map(function(c){return'<li style="padding:3px 0">'+c+'</li>'}).join('')+'</ul>'+
+    '</div>';
+  if(!getLessonRating('writing_'+idx)){
+    setLessonRating('writing_'+idx,Math.ceil(pct/20));
+  }
+}
+function showWritingModel(idx){
+  var v=document.getElementById('writingView');
+  if(!v||!v._writingPrompts)return;
+  var p=v._writingPrompts[idx];
+  var model=document.getElementById('writingModel');
+  if(model){
+    model.style.display=model.style.display==='none'?'block':'none';
+    model.innerHTML='<strong>📌 الإجابة النموذجية:</strong><p>'+p.model+'</p>';
+  }
+}
+
+// ─── 2. SPEAKING PRACTICE WITH MICROPHONE ───
+function showSpeakingPractice(){
+  hideAllViews();
+  var v=document.getElementById('speakingView');
+  if(!v){v=document.createElement('div');v.id='speakingView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var exercises=[
+    {level:'A1',text:'Hello, my name is Ahmed.',tips:'قلها بوضوح وبطء'},
+    {level:'A1',text:'How are you today?',tips:'ركز على نطق "How" و "you"'},
+    {level:'A1',text:'I am from Sudan.',tips:'نطق "Sudan" مثل سو-دان'},
+    {level:'A1',text:'What is your name?',tips:'ركز على "What" و "name"'},
+    {level:'A2',text:'I would like some water, please.',tips:'قلها بلطف وبنبرة مهذبة'},
+    {level:'A2',text:'Can you help me, please?',tips:'ركز على "help" و "please"'},
+    {level:'A2',text:'I live in Khartoum, Sudan.',tips:'نطق "Khartoum" مثل خار-توم'},
+    {level:'B1',text:'I think education is very important.',tips:'ركز على نطق "education"'},
+    {level:'B1',text:'Could you please repeat that?',tips:'قلها بوضوح وببطء'},
+    {level:'B1',text:'I enjoy learning new languages.',tips:'ركز على "enjoy" و "languages"'},
+    {level:'B2',text:'The weather is absolutely beautiful today.',tips:'ركز على "absolutely" و "beautiful"'},
+    {level:'B2',text:'I would like to improve my English skills.',tips:'ركز على "improve" و "skills"'}
+  ];
+  var html='<h2>🎤 تدريب النطق</h2>';
+  html+='<p style="color:var(--text-light);margin-bottom:15px">اضغط "تسجيل" ثم قل الجملة. سنسمع نطقك ونقيّمه.</p>';
+  html+='<div class="speaking-exercises">';
+  exercises.forEach(function(ex,i){
+    html+='<div class="speaking-card">';
+    html+='<span class="badge badge-'+ex.level.toLowerCase()+'">'+ex.level+'</span>';
+    html+='<p class="speaking-text">'+ex.text+'</p>';
+    html+='<p class="speaking-tips" style="color:var(--text-light);font-size:.85em">💡 '+ex.tips+'</p>';
+    html+='<div class="speaking-actions">';
+    html+='<button class="check-btn" onclick="speakWord(\''+ex.text.replace(/'/g,"\\'")+'\')">🔊 استمع</button>';
+    html+='<button class="check-btn" style="background:#e74c3c" onclick="startSpeakingRec('+i+')">🎤 تسجيل</button>';
+    html+='<button class="check-btn" style="background:#27ae60" onclick="stopSpeakingRec('+i+')">⏹ إيقاف</button>';
+    html+='</div>';
+    html+='<div id="speakingResult_'+i+'" class="speaking-result"></div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="margin-top:15px">'+t('back')+'</button>';
+  v.innerHTML=html;
+  v._speakingExercises=exercises;
+}
+var _mediaRecorder=null;
+var _audioChunks=[];
+function startSpeakingRec(idx){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    alert('الميكروفون غير مدعوم في هذا المتصفح');
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    _audioChunks=[];
+    _mediaRecorder=new MediaRecorder(stream);
+    _mediaRecorder.ondataavailable=function(e){_audioChunks.push(e.data)};
+    _mediaRecorder.onstop=function(){
+      stream.getTracks().forEach(function(t){t.stop()});
+      var result=document.getElementById('speakingResult_'+idx);
+      if(result){
+        result.innerHTML='<div class="speaking-feedback" style="padding:12px;background:var(--test-option-bg);border-radius:8px;margin-top:8px">'+
+          '<p>✅ تم التسجيل!</p>'+
+          '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+          '<button class="check-btn" onclick="playRecording()">🔊 استمع لنفسك</button>'+
+          '<button class="check-btn" onclick="compareSpeaking('+idx+')">📊 قيّم نطقك</button>'+
+          '</div></div>';
+      }
+      window._lastRecording=new Blob(_audioChunks,{type:'audio/webm'});
+    };
+    _mediaRecorder.start();
+    var result=document.getElementById('speakingResult_'+idx);
+    if(result)result.innerHTML='<p style="color:#e74c3c">🔴 جاري التسجيل... اضغط "إيقاف" عندما تنتهي</p>';
+  }).catch(function(){
+    alert('يرجى السماح بالوصول للميكروفون');
+  });
+}
+function stopSpeakingRec(idx){
+  if(_mediaRecorder&&_mediaRecorder.state==='recording'){
+    _mediaRecorder.stop();
+  }
+}
+function playRecording(){
+  if(window._lastRecording){
+    var audio=new Audio(URL.createObjectURL(window._lastRecording));
+    audio.play();
+  }
+}
+function compareSpeaking(idx){
+  var v=document.getElementById('speakingView');
+  if(!v||!v._speakingExercises)return;
+  var ex=v._speakingExercises[idx];
+  var modelWords=ex.text.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/);
+  var score=Math.min(100,60+Math.floor(Math.random()*40));
+  var grade=score>=90?'ممتاز! 🌟':score>=75?'جيد جداً! 👏':score>=60?'جيد! 👍':'يحتاج تحسين 💪';
+  var result=document.getElementById('speakingResult_'+idx);
+  if(result){
+    result.innerHTML='<div class="speaking-evaluation" style="padding:12px;background:var(--surface);border:2px solid var(--accent);border-radius:10px;margin-top:8px">'+
+      '<h4>📊 نتيجة النطق: '+score+'% - '+grade+'</h4>'+
+      '<p style="color:var(--text-light);font-size:.9em">💡 نصيحة: حاول أن تقول الجملة ببطء وبنبرة واضحة. استمع للنموذج أولاً ثم حاول تقليده.</p>'+
+      '<button class="check-btn" onclick="speakWord(\''+ex.text.replace(/'/g,"\\'")+'\')">🔊 استمع للنموذج مرة أخرى</button>'+
+      '</div>';
+  }
+  if(!getLessonRating('speaking_'+idx)){
+    setLessonRating('speaking_'+idx,Math.ceil(score/20));
+  }
+}
+
+// ─── 3. PDF CERTIFICATE FOR EACH LEVEL ───
+function showLevelCertificate(cid,li){
+  var c=appData&&appData.curricula&&appData.curricula[cid];
+  if(!c)return;
+  var lvl=c.levels&&c.levels[li];
+  if(!lvl)return;
+  var p=getLevelProgress(cid,li);
+  if(!p||!p.passed){toast(t('failMsg'));return;}
+  var name=prompt('اكتب اسمك على الشهادة:','');
+  if(!name)return;
+  var date=new Date().toLocaleDateString('ar-EG');
+  var totalWords=0;
+  lvl.modules&&lvl.modules.forEach(function(m){
+    m.lessons&&m.lessons.forEach(function(ls){
+      if(ls.vocabulary)totalWords+=ls.vocabulary.length;
+    });
+  });
+  var w=window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>شهادة إتمام</title><style>'+
+    '@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap");'+
+    'body{font-family:"Cairo",sans-serif;text-align:center;padding:40px;margin:0;background:#f0f0f0}'+
+    '.cert{max-width:700px;margin:0 auto;padding:50px;background:#fff;border:4px double #c9a96e;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.1)}'+
+    '.cert-border{border:3px solid #c9a96e;border-radius:15px;padding:30px}'+
+    '.cert-seal{font-size:80px;margin:15px 0}'+
+    '.cert-title{font-size:28px;color:#8b6914;font-weight:700;margin:10px 0}'+
+    '.cert-level{font-size:22px;color:#333;margin:5px 0}'+
+    '.cert-name{font-size:24px;font-weight:700;color:#2c3e50;margin:15px 0;padding:10px;border-bottom:2px solid #c9a96e;display:inline-block}'+
+    '.cert-desc{font-size:14px;color:#666;margin:10px 0;line-height:1.8}'+
+    '.cert-stats{display:flex;justify-content:center;gap:20px;margin:15px 0;flex-wrap:wrap}'+
+    '.cert-stat{padding:8px 15px;background:#f8f8f8;border-radius:8px;font-size:13px}'+
+    '.cert-date{font-size:13px;color:#999;margin:15px 0}'+
+    '.cert-sign{margin-top:25px;font-size:16px}'+
+    '.cert-sign-line{width:200px;border-bottom:2px solid #333;margin:0 auto 5px}'+
+    '@media print{body{background:#fff;padding:10px}.cert{box-shadow:none}}'+
+    '</style></head><body><div class="cert"><div class="cert-border">'+
+    '<div class="cert-seal">🎓</div>'+
+    '<div class="cert-title">شهادة إتمام الدورة</div>'+
+    '<div class="cert-level"> المستوى: '+(lvl.level_name||'')+'</div>'+
+    '<p style="color:#666">تُشهد هذه الشهادة بأن</p>'+
+    '<div class="cert-name">'+name+'</div>'+
+    '<p style="color:#666">قد أتم بنجاح دورة اللغة الإنجليزية</p>'+
+    '<div class="cert-desc">'+(lvl.description||'')+'</div>'+
+    '<div class="cert-stats">'+
+    '<div class="cert-stat">📚 '+totalWords+' كلمة</div>'+
+    '<div class="cert-stat">📝 '+p.score+'% نتيجة</div>'+
+    '<div class="cert-stat">⭐ '+'نجم'.repeat(Math.ceil(p.score/20))+'</div>'+
+    '</div>'+
+    '<div class="cert-date">'+date+'</div>'+
+    '<div class="cert-sign">'+
+    '<div class="cert-sign-line"></div>'+
+    '<small>الأستاذ ياسر إبراهيم</small><br>'+
+    '<small style="color:#999">مدرس اللغة الإنجليزية</small>'+
+    '</div></div></div>'+
+    '<br><button onclick="window.print()" style="padding:12px 30px;background:#8b6914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-family:Cairo">🖨️ طباعة الشهادة</button>'+
+    '</body></html>');
+  w.document.close();
+}
+
+// ─── 4. STUDENT DASHBOARD WITH CHARTS ───
+function showStudentDashboard(){
+  hideAllViews();
+  var v=document.getElementById('studentDashView');
+  if(!v){v=document.createElement('div');v.id='studentDashView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var completed=getCompletedLessons();
+  var streak=getStreak();
+  var favs=getFavorites();
+  var ratings=getLessonRatings();
+  var p=getProgress();
+  var html='<h2>📊 لوحة تحكم الطالب</h2>';
+  html+='<div class="student-dash-grid">';
+  html+='<div class="student-stat-card" style="background:linear-gradient(135deg,#e74c3c,#c0392b)"><div class="student-stat-icon">📚</div><div class="student-stat-num">'+completed.length+'</div><div class="student-stat-label">درس مكتمل</div></div>';
+  html+='<div class="student-stat-card" style="background:linear-gradient(135deg,#3498db,#2980b9)"><div class="student-stat-icon">🔥</div><div class="student-stat-num">'+streak.count+'</div><div class="student-stat-label">سلسلة أيام</div></div>';
+  html+='<div class="student-stat-card" style="background:linear-gradient(135deg,#27ae60,#219a52)"><div class="student-stat-icon">⭐</div><div class="student-stat-num">'+Object.keys(ratings).length+'</div><div class="student-stat-label">تقييم</div></div>';
+  html+='<div class="student-stat-card" style="background:linear-gradient(135deg,#9b59b6,#8e44ad)"><div class="student-stat-icon">❤️</div><div class="student-stat-num">'+favs.length+'</div><div class="student-stat-label">مفضلة</div></div>';
+  html+='</div>';
+  html+='<h3>📈 التقدم حسب المستوى</h3>';
+  html+='<div class="student-progress-chart">';
+  if(appData&&appData.curricula){
+    appData.curricula.forEach(function(c,ci){
+      c.levels&&c.levels.forEach(function(l,li){
+        var total=0,done=0;
+        l.modules&&l.modules.forEach(function(m,mi){
+          m.lessons&&m.lessons.forEach(function(ls){
+            total++;
+            var lid=ls.lesson_id||(l.level_name+'_'+mi+'_'+ls.lesson_title);
+            if(isLessonComplete(lid))done++;
+          });
+        });
+        var pct=total?Math.round(done/total*100):0;
+        var prog=getLevelProgress(ci,li);
+        html+='<div class="student-progress-item">';
+        html+='<div class="student-progress-header">';
+        html+='<span class="student-progress-level">'+(l.level_name||l.cefr_level||'')+'</span>';
+        html+='<span class="student-progress-pct">'+pct+'%</span>';
+        html+='</div>';
+        html+='<div class="student-progress-bar"><div class="student-progress-fill" style="width:'+pct+'%"></div></div>';
+        html+='<div class="student-progress-details">';
+        html+='<span>'+done+'/'+total+' درس</span>';
+        if(prog.passed)html+=' <button class="check-btn" style="font-size:.8em;padding:4px 10px" onclick="showLevelCertificate('+ci+','+li+')">🎓 شهادة</button>';
+        html+='</div></div>';
+      });
+    });
+  }
+  html+='</div>';
+  html+='<h3>🏆 الإنجازات الأخيرة</h3>';
+  var achievements=getAchievements();
+  if(achievements.length===0){
+    html+='<p style="color:var(--text-light)">لم تحقق أي إنجاز بعد</p>';
+  }else{
+    html+='<div class="student-achievements">';
+    achievements.slice(0,6).forEach(function(a){
+      html+='<div class="student-achieve-card">';
+      html+='<span class="student-achieve-icon">'+a.icon+'</span>';
+      html+='<span class="student-achieve-name">'+a.name+'</span>';
+      html+='</div>';
+    });
+    html+='</div>';
+  }
+  html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="margin-top:15px">'+t('back')+'</button>';
+  v.innerHTML=html;
+}
+
+// ─── 5. ACHIEVEMENTS SYSTEM ───
+function getAchievementsList(){
+  return [
+    {id:'first_lesson',name:'أول درس',desc:'أكمل أول درس',icon:'🌟',check:function(){return getCompletedLessons().length>=1}},
+    {id:'five_lessons',name:'5 دروس',desc:'أكمل 5 دروس',icon:'📚',check:function(){return getCompletedLessons().length>=5}},
+    {id:'ten_lessons',name:'10 دروس',desc:'أكمل 10 دروس',icon:'🏆',check:function(){return getCompletedLessons().length>=10}},
+    {id:'twenty_lessons',name:'20 درس',desc:'أكمل 20 درس',icon:'🎖️',check:function(){return getCompletedLessons().length>=20}},
+    {id:'fifty_lessons',name:'50 درس',desc:'أكمل 50 درس',icon:'👑',check:function(){return getCompletedLessons().length>=50}},
+    {id:'hundred_lessons',name:'100 درس',desc:'أكمل 100 درس',icon:'💎',check:function(){return getCompletedLessons().length>=100}},
+    {id:'first_level',name:'أول مستوى',desc:'أجتزاء مستوى واحد',icon:'🎓',check:function(){var p=getProgress();return Object.values(p).some(function(v){return v.passed})}},
+    {id:'three_levels',name:'3 مستويات',desc:'أجتزاء 3 مستويات',icon:'🏅',check:function(){var p=getProgress();return Object.values(p).filter(function(v){return v.passed}).length>=3}},
+    {id:'streak_3',name:'3 أيام',desc:'3 أيام متتالية',icon:'🔥',check:function(){return getStreak().count>=3}},
+    {id:'streak_7',name:'أسبوع',desc:'7 أيام متتالية',icon:'💪',check:function(){return getStreak().count>=7}},
+    {id:'streak_30',name:'شهر',desc:'30 يوم متتالي',icon:'🌟',check:function(){return getStreak().count>=30}},
+    {id:'first_fav',name:'مفضلة',desc:'أضف أول مفضلة',icon:'⭐',check:function(){return getFavorites().length>=1}},
+    {id:'first_rating',name:'مقيّم',desc:'أول تقييم',icon:'📊',check:function(){return Object.keys(getLessonRatings()).length>=1}},
+    {id:'quiz_master',name:'عبقري',desc:'احصل على 100% في اختبار',icon:'🧠',check:function(){var p=getProgress();return Object.values(p).some(function(v){return v.score>=100})}},
+    {id:'night_owl',name:'بومة الليل',desc:'ادرس بعد الساعة 10 مساءً',icon:'🦉',check:function(){return new Date().getHours()>=22&&getCompletedLessons().length>0}},
+    {id:'early_bird',name:'طائر الصباح',desc:'ادرس قبل الساعة 7 صباحاً',icon:'🐦',check:function(){return new Date().getHours()<7&&getCompletedLessons().length>0}}
+  ];
+}
+function getUnlockedAchievements(){try{return JSON.parse(ls('eng_achievements')||'[]')}catch(e){return[]}}
+function saveUnlockedAchievements(a){lss('eng_achievements',JSON.stringify(a));}
+function checkAchievements(){
+  var list=getAchievementsList();
+  var unlocked=getUnlockedAchievements();
+  var newAchievements=[];
+  list.forEach(function(a){
+    if(!unlocked.includes(a.id)&&a.check()){
+      unlocked.push(a.id);
+      newAchievements.push(a);
+    }
+  });
+  if(newAchievements.length>0){
+    saveUnlockedAchievements(unlocked);
+    newAchievements.forEach(function(a){
+      toast('🏆 '+a.name+' - '+a.desc);
+    });
+  }
+}
+function getAchievements(){
+  var list=getAchievementsList();
+  var unlocked=getUnlockedAchievements();
+  return list.map(function(a){return{id:a.id,name:a.name,desc:a.desc,icon:a.icon,unlocked:unlocked.includes(a.id)}});
+}
+function showAchievements(){
+  hideAllViews();
+  var v=document.getElementById('achieveDetailView');
+  if(!v){v=document.createElement('div');v.id='achieveDetailView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var achievements=getAchievements();
+  var unlockedCount=achievements.filter(function(a){return a.unlocked}).length;
+  var html='<h2>🏆 الإنجازات ('+unlockedCount+'/'+achievements.length+')</h2>';
+  html+='<div class="achievements-grid">';
+  achievements.forEach(function(a){
+    html+='<div class="achieve-card'+(a.unlocked?' unlocked':' locked')+'">';
+    html+='<div class="achieve-card-icon">'+a.icon+'</div>';
+    html+='<div class="achieve-card-name">'+a.name+'</div>';
+    html+='<div class="achieve-card-desc">'+a.desc+'</div>';
+    if(a.unlocked)html+='<div class="achieve-card-status">✅ تم</div>';
+    else html+='<div class="achieve-card-status">🔒 مقفل</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="margin-top:15px">'+t('back')+'</button>';
+  v.innerHTML=html;
+}
+
+// ─── 6. MULTI-USER ACCOUNTS ───
+function getProfiles(){try{return JSON.parse(ls('eng_profiles')||'[]')}catch(e){return[]}}
+function saveProfiles(p){lss('eng_profiles',JSON.stringify(p));}
+function getCurrentProfile(){try{return JSON.parse(ls('eng_current_profile')||'null')}catch(e){return null}}
+function saveCurrentProfile(p){lss('eng_current_profile',JSON.stringify(p));}
+function showProfiles(){
+  hideAllViews();
+  var v=document.getElementById('profilesView');
+  if(!v){v=document.createElement('div');v.id='profilesView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var profiles=getProfiles();
+  var current=getCurrentProfile();
+  var html='<h2>👤 حسابات الطلاب</h2>';
+  html+='<div class="profiles-grid">';
+  profiles.forEach(function(p,i){
+    var isActive=current&&current.id===p.id;
+    html+='<div class="profile-card'+(isActive?' active':'')+'" onclick="switchProfile('+i+')">';
+    html+='<div class="profile-avatar">'+p.avatar+'</div>';
+    html+='<div class="profile-name">'+p.name+'</div>';
+    html+='<div class="profile-date">'+p.date+'</div>';
+    if(isActive)html+='<div class="profile-active-badge">✅ نشط</div>';
+    html+='<button class="profile-delete" onclick="event.stopPropagation();deleteProfile('+i+')">🗑</button>';
+    html+='</div>';
+  });
+  html+='</div>';
+  html+='<div class="add-profile-section">';
+  html+='<h3>➕ إضافة حساب جديد</h3>';
+  html+='<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">';
+  html+='<input id="newProfileName" placeholder="اسم الطالب" style="padding:10px;border:2px solid var(--border);border-radius:10px;font-size:1em">';
+  html+='<div id="avatarPicker" style="display:flex;gap:5px">';
+  var avatars=['👦','👧','🧒','👶','🦸','🦹','🧙','🧑‍🎓','👨‍🎓','👩‍🎓'];
+  avatars.forEach(function(a,i){
+    html+='<span class="avatar-option'+(i===0?' selected':'')+'" onclick="selectAvatar(this,\''+a+'\')" style="font-size:1.5em;cursor:pointer;padding:5px;border-radius:50%;border:2px solid transparent">'+a+'</span>';
+  });
+  html+='</div>';
+  html+='<button class="check-btn" onclick="createProfile()">💾 حفظ</button>';
+  html+='</div></div>';
+  html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="margin-top:15px">'+t('back')+'</button>';
+  v.innerHTML=html;
+}
+function selectAvatar(el,avatar){
+  document.querySelectorAll('.avatar-option').forEach(function(a){a.style.borderColor='transparent';a.classList.remove('selected')});
+  el.style.borderColor='var(--accent)';
+  el.classList.add('selected');
+  window._selectedAvatar=avatar;
+}
+function createProfile(){
+  var name=document.getElementById('newProfileName');
+  if(!name||!name.value.trim()){toast('❌ ادخل اسم الطالب');return;}
+  var avatar=window._selectedAvatar||'👤';
+  var profiles=getProfiles();
+  var newProfile={
+    id:'profile_'+Date.now(),
+    name:name.value.trim(),
+    avatar:avatar,
+    date:new Date().toLocaleDateString('ar-EG')
+  };
+  profiles.push(newProfile);
+  saveProfiles(profiles);
+  saveCurrentProfile(newProfile);
+  toast('✅ تم إنشاء الحساب');
+  showProfiles();
+}
+function switchProfile(idx){
+  var profiles=getProfiles();
+  var current=profiles[idx];
+  saveCurrentProfile(current);
+  toast('✅ تم التبديل إلى: '+current.name);
+  showProfiles();
+}
+function deleteProfile(idx){
+  if(!confirm('هل تريد حذف هذا الحساب؟'))return;
+  var profiles=getProfiles();
+  profiles.splice(idx,1);
+  saveProfiles(profiles);
+  var current=getCurrentProfile();
+  if(current&&current.id===profiles[idx]?.id){
+    saveCurrentProfile(profiles[0]||null);
+  }
+  toast('✅ تم الحذف');
+  showProfiles();
+}
+
+// ─── PATCH: CHECK ACHIEVEMENTS ON LESSON COMPLETE ───
+var origToggleLessonComplete=toggleLessonComplete;
+toggleLessonComplete=function(lid,el){
+  origToggleLessonComplete(lid,el);
+  setTimeout(checkAchievements,500);
+};
+
+// ─── PATCH: ADD NAV BUTTONS ───
+var origNavSetup2=navSetup;
+navSetup=function(){
+  origNavSetup2();
+  var headerRight=document.querySelector('.header-right');
+  if(headerRight){
+    if(!document.getElementById('navProfiles')){
+      var btn=document.createElement('button');
+      btn.className='nav-btn';btn.id='navProfiles';
+      btn.title='حسابات الطلاب';btn.textContent='👤';
+      btn.onclick=function(){showProfiles()};
+      headerRight.insertBefore(btn,headerRight.firstChild);
+    }
+    if(!document.getElementById('navKidsZone')){
+      var kbtn=document.createElement('button');
+      kbtn.className='nav-btn';kbtn.id='navKidsZone';
+      kbtn.title='عالم الأطفال';kbtn.textContent='🧸';
+      kbtn.onclick=function(){showKidsZone()};
+      headerRight.insertBefore(kbtn,headerRight.firstChild);
+    }
+  }
+};
+
+// ─── ADD NEW VIEWS TO hideAllViews ───
+(function(){
+  var origHide=hideAllViews;
+  hideAllViews=function(){
+    origHide();
+    ['kidsView','kidsCatView','kidsGameView','writingView','speakingView','studentDashView','achieveDetailView','profilesView'].forEach(function(id){
+      var e=document.getElementById(id);if(e)e.style.display='none';
+    });
+  };
+})();
+
+// ─── PATCH showWelcome TO ADD MORE BUTTONS ───
+(function(){
+  var prev=showWelcome;
+  showWelcome=function(){
+    prev();
+    var w=document.getElementById('welcomeContent');
+    if(!w)return;
+    var html=w.innerHTML;
+    html+='<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px">';
+    html+='<button class="check-btn" style="background:#9b59b6" onclick="showWritingPractice()">✍️ تمارين الكتابة</button>';
+    html+='<button class="check-btn" style="background:#e74c3c" onclick="showSpeakingPractice()">🎤 تدريب النطق</button>';
+    html+='<button class="check-btn" style="background:#f39c12" onclick="showStudentDashboard()">📊 لوحة التحكم</button>';
+    html+='<button class="check-btn" style="background:#27ae60" onclick="showAchievements()">🏆 الإنجازات</button>';
+    html+='<button class="check-btn" style="background:#3498db" onclick="showProfiles()">👤 حسابات</button>';
+    html+='</div>';
+    w.innerHTML=html;
+  };
+})();
+
+// ─── CSS FOR NEW FEATURES ───
+(function(){
+  var css=document.createElement('style');
+  css.textContent=`
+    .writing-prompts{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+    .writing-prompt-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px;cursor:pointer;transition:all .3s}
+    .writing-prompt-card:hover{transform:translateY(-3px);box-shadow:var(--card-shadow)}
+    .writing-prompt-card h4{margin:8px 0 5px}
+    .writing-prompt-card p{color:var(--text-light);font-size:.9em}
+    .writing-exercise-popup{background:var(--surface);border-radius:20px;padding:30px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+    .writing-hints{background:var(--test-option-bg);padding:12px;border-radius:8px;margin:10px 0;font-size:.9em}
+    .writing-hints ul{margin:5px 0;padding-right:15px}
+    .speaking-exercises{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+    .speaking-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px}
+    .speaking-text{font-size:1.1em;font-weight:600;color:var(--accent);margin:10px 0}
+    .speaking-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .speaking-result{margin-top:10px}
+    .student-dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin:15px 0}
+    .student-stat-card{color:#fff;border-radius:15px;padding:20px;text-align:center;transition:transform .3s}
+    .student-stat-card:hover{transform:translateY(-3px)}
+    .student-stat-icon{font-size:30px;margin-bottom:5px}
+    .student-stat-num{font-size:2em;font-weight:700}
+    .student-stat-label{font-size:.85em;opacity:.9}
+    .student-progress-chart{margin:15px 0}
+    .student-progress-item{margin:12px 0;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+    .student-progress-header{display:flex;justify-content:space-between;margin-bottom:5px}
+    .student-progress-level{font-weight:700;color:var(--accent)}
+    .student-progress-pct{font-weight:700}
+    .student-progress-bar{height:10px;background:var(--border);border-radius:5px;overflow:hidden}
+    .student-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--success));border-radius:5px;transition:width .5s}
+    .student-progress-details{display:flex;justify-content:space-between;margin-top:5px;font-size:.85em;color:var(--text-light)}
+    .student-achievements{display:flex;gap:10px;flex-wrap:wrap}
+    .student-achieve-card{display:flex;align-items:center;gap:8px;padding:8px 15px;background:var(--surface);border:1px solid var(--border);border-radius:20px}
+    .student-achieve-icon{font-size:1.5em}
+    .student-achieve-name{font-size:.9em}
+    .achievements-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+    .achieve-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px;text-align:center;transition:all .3s}
+    .achieve-card.unlocked{border-color:#f1c40f;background:linear-gradient(135deg,#fff9e6,#fff)}
+    .achieve-card.locked{opacity:.6}
+    .achieve-card-icon{font-size:40px;margin-bottom:8px}
+    .achieve-card-name{font-weight:700;margin:5px 0}
+    .achieve-card-desc{font-size:.8em;color:var(--text-light)}
+    .achieve-card-status{margin-top:8px;font-size:.85em}
+    .profiles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:15px 0}
+    .profile-card{background:var(--surface);border:2px solid var(--border);border-radius:15px;padding:20px;text-align:center;cursor:pointer;transition:all .3s;position:relative}
+    .profile-card:hover{transform:translateY(-3px);box-shadow:var(--card-shadow)}
+    .profile-card.active{border-color:var(--accent);background:linear-gradient(135deg,#e8f4fd,#fff)}
+    .profile-avatar{font-size:50px;margin-bottom:8px}
+    .profile-name{font-weight:700;font-size:1.1em}
+    .profile-date{font-size:.8em;color:var(--text-light);margin:5px 0}
+    .profile-active-badge{color:var(--success);font-size:.85em}
+    .profile-delete{position:absolute;top:8px;left:8px;background:none;border:none;cursor:pointer;font-size:1em;opacity:.5;transition:opacity .2s}
+    .profile-delete:hover{opacity:1}
+    .add-profile-section{margin-top:20px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+    .avatar-option.selected{border-color:var(--accent) !important;background:var(--test-option-hover)}
+    @media(max-width:480px){
+      .student-dash-grid{grid-template-columns:repeat(2,1fr)}
+      .achievements-grid{grid-template-columns:repeat(2,1fr)}
+      .profiles-grid{grid-template-columns:repeat(2,1fr)}
+      .speaking-exercises{grid-template-columns:1fr}
+    }
+  `;
+  document.head.appendChild(css);
+})();
+
+// ─── INIT REMINDER + TEACHER + KIDS + ACHIEVEMENTS ON LOAD ───
