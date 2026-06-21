@@ -1246,65 +1246,80 @@ function startMatchGame(){
   });
   words=shuffleArray(words).slice(0,6);
   var pairs=words.map(function(w){return{en:w.en,ar:w.ar,emoji:w.emoji}});
-  var shuffledAr=shuffleArray(pairs.map(function(p){return{text:p.ar,en:p.en}}));
-  var shuffledEn=shuffleArray(pairs.map(function(p){return{text:p.en,ar:p.ar}}));
+  var shuffledAr=shuffleArray(pairs.map(function(p){return{text:p.ar,en:p.en,ar:p.ar}}));
+  var shuffledEn=shuffleArray(pairs.map(function(p){return{text:p.en,en:p.en,ar:p.ar}}));
   hideAllViews();
   var v=document.getElementById('kidsGameView');
   if(!v){v=document.createElement('div');v.id='kidsGameView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
   v.style.display='block';
   var html='<div class="kids-zone">';
   html+='<h2>🎯 لعبة المطابقة</h2>';
-  html+='<p>اضغط على الكلمة الإنجليزية ثم العربية المطابقة</p>';
+  html+='<p style="text-align:center;color:var(--text-light)">اختر كلمة إنجليزية ثم كلمة عربية مطابقة</p>';
+  html+='<div class="match-counter" id="matchCounter" style="text-align:center;margin:10px 0;font-size:1.2em">0/'+pairs.length+'</div>';
   html+='<div class="kids-match-area">';
   html+='<div class="kids-match-col">';
+  html+='<h4 style="text-align:center;color:var(--accent)">🇬🇧 English</h4>';
   shuffledEn.forEach(function(item,i){
-    html+='<div class="kids-match-en" id="men_'+i+'" data-en="'+item.en+'" onclick="selectMatchItem(this,\'en\')">'+item.text+'</div>';
+    html+='<div class="kids-match-en" id="men_'+i+'" data-en="'+item.en+'" data-ar="'+item.ar+'" onclick="selectMatchItem(this,\'en\')">'+item.text+'</div>';
   });
   html+='</div>';
   html+='<div class="kids-match-col">';
+  html+='<h4 style="text-align:center;color:var(--accent)">🇸🇦 العربية</h4>';
   shuffledAr.forEach(function(item,i){
-    html+='<div class="kids-match-ar" id="mar_'+i+'" data-en="'+item.en+'" onclick="selectMatchItem(this,\'ar\')">'+item.text+'</div>';
+    html+='<div class="kids-match-ar" id="mar_'+i+'" data-en="'+item.en+'" data-ar="'+item.ar+'" onclick="selectMatchItem(this,\'ar\')">'+item.text+'</div>';
   });
   html+='</div></div>';
-  html+='<div id="matchResult" style="text-align:center;margin-top:15px;font-size:1.2em"></div>';
-  html+='<button class="back-btn" onclick="showKidsZone()" style="margin-top:15px">'+t('back')+'</button>';
+  html+='<div id="matchResult" style="text-align:center;margin-top:15px"></div>';
+  html+='<button class="back-btn" onclick="showKidsZone()" style="margin:15px auto;display:block">'+t('back')+'</button>';
   html+='</div>';
   v.innerHTML=html;
   v._matchPairs=pairs;v._matchSelected=null;v._matchCorrect=0;
 }
 function selectMatchItem(el,type){
-  if(el.classList.contains('matched')||el.classList.contains('wrong'))return;
+  if(el.classList.contains('matched'))return;
   var v=document.getElementById('kidsGameView');
   if(!v)return;
   var pairs=v._matchPairs;
   if(!v._matchSelected){
     v._matchSelected={el:el,type:type};
-    el.style.transform='scale(1.1)';el.style.boxShadow='0 4px 15px rgba(0,0,0,.3)';
+    el.classList.add('selected');
+    el.style.transform='scale(1.05)';
   }else{
     var prev=v._matchSelected;
     if(prev.type===type){
-      prev.el.style.transform='';prev.el.style.boxShadow='';
+      prev.el.classList.remove('selected');
+      prev.el.style.transform='';
       v._matchSelected={el:el,type:type};
-      el.style.transform='scale(1.1)';el.style.boxShadow='0 4px 15px rgba(0,0,0,.3)';
+      el.classList.add('selected');
+      el.style.transform='scale(1.05)';
       return;
     }
     var enWord=type==='en'?el.dataset.en:prev.el.dataset.en;
-    var isCorrect=pairs.some(function(p){return p.en===enWord});
-    if(isCorrect){
-      el.classList.add('matched');prev.el.classList.add('matched');
-      el.style.transform='';el.style.boxShadow='';prev.el.style.transform='';prev.el.style.boxShadow='';
+    var arWord=type==='ar'?el.dataset.ar:prev.el.dataset.ar;
+    var isMatch=pairs.some(function(p){return p.en===enWord&&p.ar===arWord});
+    prev.el.classList.remove('selected');
+    prev.el.style.transform='';
+    el.style.transform='';
+    if(isMatch){
+      el.classList.add('matched');
+      prev.el.classList.add('matched');
       v._matchCorrect++;
       speakWord(enWord);
       var res=document.getElementById('matchResult');
-      if(res)res.innerHTML='✅ أحسنت! '+v._matchCorrect+'/'+pairs.length;
+      if(res)res.innerHTML='<div class="match-feedback correct">✅ مطابقة صحيحة! '+v._matchCorrect+'/'+pairs.length+'</div>';
       if(v._matchCorrect>=pairs.length){
-        if(res)res.innerHTML='🎉 أحسنت! فزت!';
+        if(res)res.innerHTML='<div class="match-feedback win">🎉 أحسنت! فزت بكل المطابقات!</div>';
         fireConfetti();
       }
     }else{
-      el.classList.add('wrong');prev.el.classList.add('wrong');
-      el.style.transform='';el.style.boxShadow='';prev.el.style.transform='';prev.el.style.boxShadow='';
-      setTimeout(function(){el.classList.remove('wrong');prev.el.classList.remove('wrong')},800);
+      el.classList.add('wrong');
+      prev.el.classList.add('wrong');
+      var res=document.getElementById('matchResult');
+      if(res)res.innerHTML='<div class="match-feedback wrong">❌ مطابقة خاطئة! حاول مرة أخرى</div>';
+      setTimeout(function(){
+        el.classList.remove('wrong');
+        prev.el.classList.remove('wrong');
+      },800);
     }
     v._matchSelected=null;
   }
@@ -1574,8 +1589,16 @@ navSetup=function(){
     .kids-match-col{display:flex;flex-direction:column;gap:8px}
     .kids-match-en,.kids-match-ar{padding:12px 20px;background:var(--surface);border:2px solid var(--border);border-radius:12px;cursor:pointer;font-size:1.1em;transition:all .2s;text-align:center;min-width:120px}
     .kids-match-en:hover,.kids-match-ar:hover{background:var(--test-option-hover);transform:scale(1.05)}
-    .kids-match-en.matched,.kids-match-ar.matched{background:#d4edda;border-color:#27ae60;pointer-events:none}
-    .kids-match-en.wrong,.kids-match-ar.wrong{background:#f8d7da;border-color:#e74c3c}
+    .kids-match-en.matched,.kids-match-ar.matched{background:#d4edda;border-color:#27ae60;pointer-events:none;animation:matchPulse .5s}
+    .kids-match-en.wrong,.kids-match-ar.wrong{background:#f8d7da;border-color:#e74c3c;animation:shake .5s}
+    .kids-match-en.selected,.kids-match-ar.selected{border-color:var(--accent);box-shadow:0 0 10px rgba(52,152,219,.5);transform:scale(1.05)}
+    .match-feedback{padding:12px 20px;border-radius:10px;font-weight:700;font-size:1.1em;animation:popIn .3s}
+    .match-feedback.correct{background:#d4edda;color:#155724;border:2px solid #27ae60}
+    .match-feedback.wrong{background:#f8d7da;color:#721c24;border:2px solid #e74c3c}
+    .match-feedback.win{background:linear-gradient(135deg,#f1c40f,#f39c12);color:#fff;border:2px solid #f1c40f;font-size:1.3em}
+    .match-counter{font-weight:700;color:var(--accent)}
+    @keyframes matchPulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
     .kids-quiz-card{text-align:center;padding:20px;background:var(--surface);border-radius:20px;box-shadow:var(--card-shadow)}
     .kids-quiz-emoji{font-size:80px;margin-bottom:10px}
     .kids-quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
