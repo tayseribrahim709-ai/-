@@ -1,7 +1,7 @@
 var h = require('http');
 var fs = require('fs');
 var p = require('path');
-var d = 'C:\\Users\\tito\\Desktop\\استاذ ياسر ابراهيم';
+var d = __dirname;
 var m = {
   '': 'text/html;charset=utf-8',
   '.html': 'text/html;charset=utf-8',
