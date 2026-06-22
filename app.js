@@ -1280,10 +1280,12 @@ function selectMatchItem(el,type){
   var v=document.getElementById('kidsGameView');
   if(!v)return;
   var pairs=v._matchPairs;
+  var res=document.getElementById('matchResult');
   if(!v._matchSelected){
     v._matchSelected={el:el,type:type};
     el.classList.add('selected');
     el.style.transform='scale(1.05)';
+    if(res)res.innerHTML='';
   }else{
     var prev=v._matchSelected;
     if(prev.type===type){
@@ -1292,6 +1294,7 @@ function selectMatchItem(el,type){
       v._matchSelected={el:el,type:type};
       el.classList.add('selected');
       el.style.transform='scale(1.05)';
+      if(res)res.innerHTML='';
       return;
     }
     var enWord=type==='en'?el.dataset.en:prev.el.dataset.en;
@@ -1304,22 +1307,20 @@ function selectMatchItem(el,type){
       el.classList.add('matched');
       prev.el.classList.add('matched');
       v._matchCorrect++;
-      speakWord(enWord);
-      var res=document.getElementById('matchResult');
-      if(res)res.innerHTML='<div class="match-feedback correct">✅ مطابقة صحيحة! '+v._matchCorrect+'/'+pairs.length+'</div>';
+      if(res)res.innerHTML='<div class="match-feedback correct" style="display:block">✅ مطابقة صحيحة! '+v._matchCorrect+'/'+pairs.length+'</div>';
       if(v._matchCorrect>=pairs.length){
-        if(res)res.innerHTML='<div class="match-feedback win">🎉 أحسنت! فزت بكل المطابقات!</div>';
+        if(res)res.innerHTML='<div class="match-feedback win" style="display:block">🎉 أحسنت! فزت بكل المطابقات!</div>';
         fireConfetti();
       }
+      speakWord(enWord);
     }else{
       el.classList.add('wrong');
       prev.el.classList.add('wrong');
-      var res=document.getElementById('matchResult');
-      if(res)res.innerHTML='<div class="match-feedback wrong">❌ مطابقة خاطئة! حاول مرة أخرى</div>';
+      if(res)res.innerHTML='<div class="match-feedback wrong" style="display:block">❌ مطابقة خاطئة! حاول مرة أخرى</div>';
       setTimeout(function(){
         el.classList.remove('wrong');
         prev.el.classList.remove('wrong');
-      },800);
+      },1000);
     }
     v._matchSelected=null;
   }
