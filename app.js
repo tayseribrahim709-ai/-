@@ -1854,13 +1854,17 @@ function showCertificate(cid,li){
   if(!name)return;
   var date=new Date().toLocaleDateString(isAr?'ar-EG':'en-US');
   var totalLessons=0,doneLessons=0,totalWords=0;
+  var moduleList=[];
   lvl.modules&&lvl.modules.forEach(function(m){
+    var modLessons=0,modDone=0;
     m.lessons&&m.lessons.forEach(function(ls){
       totalLessons++;
       var lid=ls.lesson_id||(lvl.level_name+'_'+m.module_title+'_'+ls.lesson_title);
-      if(p.completed&&p.completed.indexOf(lid)!==-1)doneLessons++;
+      if(p.completed&&p.completed.indexOf(lid)!==-1){doneLessons++;modDone++;}
       if(ls.vocabulary)totalWords+=ls.vocabulary.length;
+      modLessons++;
     });
+    if(modLessons>0)moduleList.push({title:m.module_title||m.title||'',done:modDone,total:modLessons});
   });
   var cefr=lvl.cefr_level||lvl.level||'';
   var stars='⭐'.repeat(Math.min(Math.ceil((p.score||0)/20),5));
@@ -1924,6 +1928,12 @@ function showCertificate(cid,li){
     '<div class="cert-stat"><span class="stat-num">'+(p.score||0)+'%</span><span class="stat-label">'+(isAr?'النتيجة':'Score')+'</span></div>'+
     '<div class="cert-stat"><span class="stat-num">'+date+'</span><span class="stat-label">'+(isAr?'التاريخ':'Date')+'</span></div>'+
     '</div>'+
+    (moduleList.length?'<div class="cert-modules" style="margin:15px auto;max-width:500px;text-align:'+(isAr?'right':'left')+'">'+
+      '<div style="font-size:12px;color:#999;margin-bottom:6px;font-weight:700">'+(isAr?'الوحدات الدراسية':'Course Modules')+'</div>'+
+      moduleList.map(function(m){return '<div style="display:flex;justify-content:space-between;padding:4px 8px;border-bottom:1px solid #f0f0f0;font-size:13px;color:#555">'+
+        '<span>'+(m.title.length>35?m.title.slice(0,35)+'…':m.title)+'</span>'+
+        '<span style="color:'+(m.done===m.total?'var(--accent,green)':'#ccc)')+'">'+(isAr?m.done+'/'+m.total+' درس':m.done+'/'+m.total)+'</span></div>'}).join('')+
+      '</div>':'')+
     '<div class="cert-footer">'+
     '<div class="cert-sign-col">'+
     '<div class="cert-sign-line"></div>'+
