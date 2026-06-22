@@ -193,12 +193,13 @@ function toggleFavLesson(btn,id){toggleFav(id);btn.textContent=isFav(id)?t('favO
 
 // ─── RESUME ───
 function saveResume(lid,ln,mi){lss('eng_resume',JSON.stringify({lid,ln,mi,date:Date.now()}));}
-function checkResume(){try{const r=JSON.parse(ls('eng_resume'));if(r&&r.lid&&Date.now()-r.date<86400000){const b=document.getElementById('resumeBanner');if(b)b.innerHTML='<div class="resume-banner" onclick="showLesson('+r.ln+','+r.mi+',\''+r.lid+'\')"><span>'+t('resumeMsg')+'</span><button class="resume-btn">'+t('resumeBtn')+'</button></div>';}}catch(e){}}
+function esc(v){return String(v).replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+function checkResume(){try{const r=JSON.parse(ls('eng_resume'));if(r&&r.lid&&Date.now()-r.date<86400000){const b=document.getElementById('resumeBanner');if(b)b.innerHTML='<div class="resume-banner" onclick="showLesson('+r.ln+','+r.mi+',\''+esc(r.lid)+'\')"><span>'+t('resumeMsg')+'</span><button class="resume-btn">'+t('resumeBtn')+'</button></div>';}}catch(e){}}
 function saveScrollPos(lid){const el=document.getElementById('lessonView');if(el)lss('scroll_'+lid,el.scrollTop+'');}
 function restoreScrollPos(lid){const pos=ls('scroll_'+lid);if(pos){const el=document.getElementById('lessonView');if(el)setTimeout(()=>el.scrollTop=parseInt(pos),300);}}
 
 // ─── TOC ───
-function renderTOC(levelIdx){hideAllViews();const idx=levelIdx||0;const lvl=courseData.levels&&courseData.levels[idx];if(!lvl){document.getElementById('content').innerHTML='<p style="padding:20px;text-align:center">'+t('noTest')+'</p>';return;}renderStats(idx);const toc=document.getElementById('toc');if(!toc)return;let html='<div class="level-header"><h2>'+lvl.level_name+'</h2><p>'+(lvl.description||'')+'</p><button class="check-btn" onclick="showLevelTest('+idx+')" style="margin-top:8px;font-size:.85em;padding:6px 14px">🧪 '+t('levelTest')+'</button></div>';lvl.modules&&lvl.modules.forEach((m,mi)=>{html+='<div class="module"><div class="mod-title" onclick="toggleModule(this)"><span>'+m.module_title+'</span><span class="mod-icon">▼</span></div><div class="mod-lessons">';m.lessons&&m.lessons.forEach(ls=>{const lid=ls.lesson_id||(lvl.level_name+'_'+mi+'_'+ls.lesson_title);const fav=isFav(lid)?'⭐':'☆';const done=isLessonComplete(lid)?'✅':'⬜';html+='<div class="lesson-item" onclick="showLesson('+idx+','+mi+',\''+lid+'\')"><span class="done-icon" onclick="event.stopPropagation();toggleLessonComplete(\''+lid+'\',this)">'+done+'</span><span class="fav-icon" onclick="event.stopPropagation();toggleFavLesson(this,\''+lid+'\')">'+fav+'</span><span>'+ls.lesson_title+'</span></div>';});html+='</div></div>';});toc.innerHTML=html;const statsEl=document.getElementById('stats');if(statsEl)statsEl.style.display='block';}
+function renderTOC(levelIdx){hideAllViews();const idx=levelIdx||0;const lvl=courseData.levels&&courseData.levels[idx];if(!lvl){document.getElementById('content').innerHTML='<p style="padding:20px;text-align:center">'+t('noTest')+'</p>';return;}renderStats(idx);const toc=document.getElementById('toc');if(!toc)return;let html='<div class="level-header"><h2>'+lvl.level_name+'</h2><p>'+(lvl.description||'')+'</p><button class="check-btn" onclick="showLevelTest('+idx+')" style="margin-top:8px;font-size:.85em;padding:6px 14px">🧪 '+t('levelTest')+'</button></div>';lvl.modules&&lvl.modules.forEach((m,mi)=>{html+='<div class="module"><div class="mod-title" onclick="toggleModule(this)"><span>'+m.module_title+'</span><span class="mod-icon">▼</span></div><div class="mod-lessons">';m.lessons&&m.lessons.forEach(ls=>{const lid=ls.lesson_id||(lvl.level_name+'_'+mi+'_'+ls.lesson_title);const elid=esc(lid);const fav=isFav(lid)?'⭐':'☆';const done=isLessonComplete(lid)?'✅':'⬜';html+='<div class="lesson-item" onclick="showLesson('+idx+','+mi+',\''+elid+'\')"><span class="done-icon" onclick="event.stopPropagation();toggleLessonComplete(\''+elid+'\',this)">'+done+'</span><span class="fav-icon" onclick="event.stopPropagation();toggleFavLesson(this,\''+elid+'\')">'+fav+'</span><span>'+esc(ls.lesson_title)+'</span></div>';});html+='</div></div>';});toc.innerHTML=html;const statsEl=document.getElementById('stats');if(statsEl)statsEl.style.display='block';}
 
 function renderStats(idx){const lvl=courseData.levels&&courseData.levels[idx];if(!lvl)return;let total=0,done=0;lvl.modules&&lvl.modules.forEach((m,mi)=>{if(m.lessons){m.lessons.forEach(ls=>{total++;var lid=ls.lesson_id||(lvl.level_name+'_'+mi+'_'+ls.lesson_title);if(isLessonComplete(lid))done++})}});const p=getLevelProgress(activeCurriculum,idx);const el=document.getElementById('stats');if(el)el.innerHTML='<div class="stats-bar"><span>📚 '+t('lessons')+': '+done+'/'+total+'</span><span>'+t('passedLevels')+': '+(p.passed?t('passMsg'):t('failMsg'))+'</span></div>';}
 
@@ -893,6 +894,8 @@ function mergeTeacherData(){
   if(!appData)return;
   var tc=getTeacherCurriculum();
   if(!tc)return;
+  var exists=appData.curricula.some(function(c){return c.id==='teacher_lessons'});
+  if(exists)return;
   appData.curricula.push({
     id:'teacher_lessons',
     name:'📚 دروس المعلم',
@@ -1855,12 +1858,13 @@ function showCertificate(cid,li){
   var date=new Date().toLocaleDateString(isAr?'ar-EG':'en-US');
   var totalLessons=0,doneLessons=0,totalWords=0;
   var moduleList=[];
+  var allCompleted=getCompletedLessons();
   lvl.modules&&lvl.modules.forEach(function(m){
     var modLessons=0,modDone=0;
     m.lessons&&m.lessons.forEach(function(ls){
       totalLessons++;
       var lid=ls.lesson_id||(lvl.level_name+'_'+m.module_title+'_'+ls.lesson_title);
-      if(p.completed&&p.completed.indexOf(lid)!==-1){doneLessons++;modDone++;}
+      if(allCompleted.indexOf(lid)!==-1){doneLessons++;modDone++;}
       if(ls.vocabulary)totalWords+=ls.vocabulary.length;
       modLessons++;
     });
@@ -2150,16 +2154,20 @@ function switchProfile(idx){
   var profiles=getProfiles();
   var current=profiles[idx];
   saveCurrentProfile(current);
+  lss('eng_activeProfile',current.name);
+  var pkey='eng_progress_'+current.name;
+  if(!ls(pkey))lss(pkey,JSON.stringify({completed:[],streak:0,lastDate:'',levelTests:{}}));
   toast('✅ تم التبديل إلى: '+current.name);
   showProfiles();
 }
 function deleteProfile(idx){
   if(!confirm('هل تريد حذف هذا الحساب؟'))return;
   var profiles=getProfiles();
+  var deleted=profiles[idx];
   profiles.splice(idx,1);
   saveProfiles(profiles);
   var current=getCurrentProfile();
-  if(current&&current.id===profiles[idx]?.id){
+  if(current&&deleted&&current.id===deleted.id){
     saveCurrentProfile(profiles[0]||null);
   }
   toast('✅ تم الحذف');
@@ -2640,8 +2648,6 @@ function addToSpacedReview(word,meaning){var sr=spacedData();if(!sr[word]){sr[wo
 
 // Listening
 function showListeningTest(){hideAllViews();var v=document.getElementById('listeningView');if(!v){v=document.createElement('div');v.id='listeningView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var lessons=[];if(appData&&appData.curricula){appData.curricula.forEach(function(c){c.levels&&c.levels.forEach(function(l){l.modules&&l.modules.forEach(function(m){m.lessons&&m.lessons.forEach(function(ls){if(ls.dialogue||ls.explanation)lessons.push(ls)})})})})}if(!lessons.length){v.innerHTML='<h2>'+t('listeningTitle')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return}var ls=lessons[Math.floor(Math.random()*lessons.length)];var passage=ls.dialogue||(typeof ls.explanation==='string'?ls.explanation.slice(0,500):'');var words=ls.vocabulary||[];var questions=(ls.quiz||[]).slice(0,5);v.innerHTML='<h2>'+t('listeningTitle')+'</h2><div class="daily-word-card"><button class="check-btn" onclick="speakText(\''+passage.replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\n/g,'\\n')+'\')" style="font-size:1.5em;padding:15px 30px;margin:15px 0">🔊 استمع</button><div id="listeningPassage" style="display:none;background:var(--test-option-bg);padding:15px;border-radius:12px;margin:10px 0;text-align:right;line-height:1.8">'+passage+'</div><button class="check-btn" onclick="document.getElementById(\'listeningPassage\').style.display=\'block\'">📖 عرض النص</button></div>';if(words.length){v.innerHTML+='<h3>📝 '+t('vocabExer')+'</h3><div class="daily-word-card">';words.slice(0,5).forEach(function(w){var word=typeof w==='string'?w:w.word||'';var trans=typeof w==='string'?'':w.translation||w.meaning||'';v.innerHTML+='<p><strong>'+word+'</strong> - '+trans+'</p>'});v.innerHTML+='</div>'}if(questions.length){v.innerHTML+='<h3>❓ '+t('quiz')+'</h3><div id="ltQuestions">'+questions.map(function(q,i){return'<div class="quiz-item"><p>'+(i+1)+'. '+(q.question||q.q||'')+'</p>'+(q.options||q.choices||[]).map(function(o,oi){return'<label class="quiz-option" onclick="selectQuizOption(this,'+i+','+oi+')"><span>'+o+'</span></label>'}).join('')+'</div>'}).join('')+'</div><button class="check-btn" onclick="var c=0;var qs='+JSON.stringify(questions).replace(/</g,'\\u003C')+';for(var i=0;i<qs.length;i++){var s=document.querySelectorAll(\'#ltQuestions .quiz-item\')[i];var sel=s?s.querySelector(\'.quiz-option.selected\'):null;var t=sel?sel.textContent.trim():\'\';var a=qs[i].answer||qs[i].correct||\'\';if(t.toLowerCase()===a.toLowerCase())c++}toast(c+\'/\'+qs.length+\' '+t('correct')+'\')">'+t('checkBtn')+'</button>'}v.innerHTML+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';}
-function speakText(t){if('speechSynthesis'in window){var u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=0.8;speechSynthesis.cancel();speechSynthesis.speak(u)}}
-
 // Reading
 function showReadingTest(){hideAllViews();var v=document.getElementById('readingView');if(!v){v=document.createElement('div');v.id='readingView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var lessons=[];if(appData&&appData.curricula){appData.curricula.forEach(function(c){c.levels&&c.levels.forEach(function(l){l.modules&&l.modules.forEach(function(m){m.lessons&&m.lessons.forEach(function(ls){if(ls.explanation)lessons.push(ls)})})})})}if(!lessons.length){v.innerHTML='<h2>'+t('readingTitle')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return}var ls=lessons[Math.floor(Math.random()*lessons.length)];var text=ls.explanation.slice(0,600);var qs=(ls.quiz||[]).slice(0,5);v.innerHTML='<h2>'+t('readingTitle')+'</h2><div style="background:var(--test-option-bg);padding:20px;border-radius:12px;margin:10px 0;text-align:right;line-height:1.8;max-height:300px;overflow-y:auto">'+text+'</div>';if(qs.length){v.innerHTML+='<h3>❓ '+t('quiz')+'</h3><div id="rdQuestions">'+qs.map(function(q,i){return'<div class="quiz-item"><p>'+(i+1)+'. '+(q.question||q.q||'')+'</p>'+(q.options||q.choices||[]).map(function(o,oi){return'<label class="quiz-option" onclick="selectQuizOption(this,'+i+','+oi+')"><span>'+o+'</span></label>'}).join('')+'</div>'}).join('')+'</div><button class="check-btn" onclick="var c=0;var qs='+JSON.stringify(qs).replace(/</g,'\\u003C')+';for(var i=0;i<qs.length;i++){var s=document.querySelectorAll(\'#rdQuestions .quiz-item\')[i];var sel=s?s.querySelector(\'.quiz-option.selected\'):null;var t=sel?sel.textContent.trim():\'\';var a=qs[i].answer||qs[i].correct||\'\';if(t.toLowerCase()===a.toLowerCase())c++}toast(c+\'/\'+qs.length+\' '+t('correct')+'\')">'+t('checkBtn')+'</button>'}v.innerHTML+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';}
 
@@ -2726,17 +2732,13 @@ window.addEventListener('offline',showCachedStatus);
 // Cache all data on first load
 (function(){if('caches'in window){setTimeout(function(){caches.open('opencode-v9').then(function(c){var files=['/app_data.json','/level_tests.json','/placement_test.json'];files.forEach(function(f){fetch(f).then(function(r){if(r.ok)c.put(f,r)}).catch(function(){})})})},3000)}})();
 
-// 2. Study Reminder Notifications
-function requestNotiPermission(){if(!('Notification'in window)){toast('الإشعارات غير مدعومة');return}if(Notification.permission==='granted'){scheduleReminder()}else if(Notification.permission==='default'){Notification.requestPermission().then(function(p){if(p==='granted'){scheduleReminder();toast('✅ تم تفعيل الإشعارات')}})}}
-function scheduleReminder(){var s=getSettings();if(!s.reminderOn){toast('فعّل التذكير أولاً من الإعدادات');return}if(Notification.permission!=='granted'){requestNotiPermission();return}var now=new Date();var parts=s.reminderTime.split(':');var target=new Date();target.setHours(parseInt(parts[0])||9,target.setMinutes(parseInt(parts[1])||0,0,0));if(target<=now)target.setDate(target.getDate()+1);var diff=target-now;setTimeout(function(){new Notification(t('notiTitle'),{body:t('notiBody'),icon:'/icon-192.png'});scheduleReminder()},diff);toast('🔔 تم جدولة التذكير لـ '+s.reminderTime)}
+// 2. Study Reminder Notifications (uses old reminder system at line 669)
+function requestNotiPermission(){if(!('Notification'in window)){toast('الإشعارات غير مدعومة');return}if(Notification.permission==='default'){Notification.requestPermission().then(function(p){if(p!=='granted')return})}var s=getReminderSettings();s.enabled=true;saveReminderSettings(s);scheduleReminder();toast('✅ تم تفعيل التذكير')}
 
-// 3. Multiple Student Profiles
-function getProfiles(){try{return JSON.parse(ls('eng_profiles'))||[]}catch(e){return[]}}
-function saveProfiles(p){lss('eng_profiles',JSON.stringify(p))}
-function showProfileManager(){hideAllViews();var v=document.getElementById('profileView');if(!v){v=document.createElement('div');v.id='profileView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var profiles=getProfiles();var current=ls('eng_activeProfile')||'';var html='<h2>'+t('profiles')+'</h2>';if(!profiles.length){html+='<p style="text-align:center;color:var(--text-light);padding:20px">لا توجد ملفات بعد. أضف ملفاً جديداً.</p>'}else{html+='<div class="welcome-actions">';profiles.forEach(function(p){var active=p.name===current?' style="border:3px solid var(--accent);background:var(--accent);color:#fff"':'';html+='<div class="welcome-card" onclick="switchProfile(\''+p.name.replace(/'/g,"\\'")+'\')"'+active+'><span>👤</span><span>'+p.name+(p.name===current?' ✅':'')+'</span></div>'});html+='</div>'}html+='<div style="display:flex;gap:10px;justify-content:center;margin:15px 0"><input type="text" id="newProfileName" placeholder="اسم الطالب..." style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px"><button class="check-btn" onclick="addProfile()">➕</button></div>';html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';v.innerHTML=html;}
-function switchProfile(name){lss('eng_activeProfile',name);var pkey='eng_progress_'+name;if(!ls(pkey))lss(pkey,JSON.stringify({completed:[],streak:0,lastDate:'',levelTests:{}}));toast('👤 '+name);showProfileManager()}
-function addProfile(){var el=document.getElementById('newProfileName');if(!el||!el.value.trim())return;var name=el.value.trim();var profiles=getProfiles();if(profiles.find(function(p){return p.name===name})){toast('⚠️ الملف موجود مسبقاً');return}profiles.push({name:name});saveProfiles(profiles);switchProfile(name);showProfileManager()}
-function getProfileProgressKey(){var name=ls('eng_activeProfile');return name?'eng_progress_'+name:'eng_progress'}
+// 3. Multiple Student Profiles (unified with old format)
+function showProfileManager(){hideAllViews();var v=document.getElementById('profileView');if(!v){v=document.createElement('div');v.id='profileView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var profiles=getProfiles();var current=getCurrentProfile();var curName=current?current.name:'';var html='<h2>'+t('profiles')+'</h2>';if(!profiles.length){html+='<p style="text-align:center;color:var(--text-light);padding:20px">لا توجد ملفات بعد. أضف ملفاً جديداً.</p>'}else{html+='<div class="welcome-actions">';profiles.forEach(function(p,i){var active=p.name===curName?' style="border:3px solid var(--accent);background:var(--accent);color:#fff"':'';html+='<div class="welcome-card" onclick="switchProfile('+i+')"'+active+'><span>👤</span><span>'+p.name+(p.name===curName?' ✅':'')+'</span></div>'});html+='</div>'}html+='<div style="display:flex;gap:10px;justify-content:center;margin:15px 0"><input type="text" id="newProfileName" placeholder="اسم الطالب..." style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px"><button class="check-btn" onclick="addProfile()">➕</button></div>';html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';v.innerHTML=html;}
+function addProfile(){var el=document.getElementById('newProfileName');if(!el||!el.value.trim())return;var name=el.value.trim();var profiles=getProfiles();if(profiles.find(function(p){return p.name===name})){toast('⚠️ الملف موجود مسبقاً');return}var np={id:'profile_'+Date.now(),name:name,avatar:'👤',date:new Date().toLocaleDateString('ar-EG')};profiles.push(np);saveProfiles(profiles);saveCurrentProfile(np);lss('eng_activeProfile',name);var pkey='eng_progress_'+name;if(!ls(pkey))lss(pkey,JSON.stringify({completed:[],streak:0,lastDate:'',levelTests:{}}));toast('👤 '+name);showProfileManager()}
+function getProfileProgressKey(){var cur=getCurrentProfile();var name=cur?cur.name:'';return name?'eng_progress_'+name:'eng_progress'}
 // Override getProgress to support profiles
 (function(){var origGet=getProgress;getProgress=function(){var key=getProfileProgressKey();try{return JSON.parse(ls(key))||{completed:[],streak:0,lastDate:'',total:0,levelTests:{}}}catch(e){return{completed:[],streak:0,lastDate:'',total:0,levelTests:{}}}};var origSave=saveProgress;saveProgress=function(d){lss(getProfileProgressKey(),JSON.stringify(d))}})();
 
@@ -2887,7 +2889,7 @@ function showCertSelector(){
           ['❌ '+t('crossword'),'showCrossword()']
         ]},
         {title:'👤 الطلاب',items:[
-          ['👤 '+t('profiles'),'showProfileManager()'],
+          ['👤 '+t('profiles'),'showProfiles()'],
           ['🏆 '+t('leaderboard'),'showLeaderboard()'],
           ['📄 '+t('certPDF'),'exportCertPDF()'],
           ['📤 '+t('shareProgress'),'shareProgress()'],
