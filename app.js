@@ -2816,7 +2816,35 @@ function exportCertPDF(){var p=getProgress();var name=ls('eng_activeProfile')||'
 // 7. Leaderboard
 function showLeaderboard(){hideAllViews();var v=document.getElementById('leaderView');if(!v){v=document.createElement('div');v.id='leaderView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var profiles=getProfiles();var stats=[];profiles.forEach(function(p){var pkey='eng_progress_'+p.name;var data;try{data=JSON.parse(ls(pkey))}catch(e){data=null}stats.push({name:p.name,completed:data&&data.completed?data.completed.length:0,streak:data&&data.streak||0,total:data&&data.total||0})});stats.sort(function(a,b){return b.completed-a.completed||b.streak-a.streak});var current=ls('eng_activeProfile')||'';var html='<h2>'+t('leaderboard')+'</h2>';if(!stats.length){html+='<p style="text-align:center;padding:20px;color:var(--text-light)">لا يوجد طلاب بعد. أضف ملفات طلاب من قائمة الملفات.</p>'}else{html+='<div class="dashboardView">';stats.forEach(function(s,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'. ';var active=s.name===current?' style="border:3px solid var(--accent);background:rgba(39,174,96,.05)"':'';html+='<div class="welcome-card"'+active+'><span>'+medal+'</span><span><strong>'+s.name+'</strong>'+(s.name===current?' ✅':'')+'<br><span style="font-size:.85em;color:var(--text-light)">📚 '+s.completed+' درس | 🔥 '+s.streak+' يوم</span></span></div>'});html+='</div>'}html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';v.innerHTML=html;}
 
-// 8. Add all new feature buttons to the menu
+// 8. Direct Certificate Selector
+function showCertSelector(){
+  hideAllViews();
+  var v=document.getElementById('certSelectView');
+  if(!v){v=document.createElement('div');v.id='certSelectView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var isAr=currentLang==='ar';
+  var html='<h2>'+(isAr?'🎓 إصدار شهادة':'🎓 Issue Certificate')+'</h2><p style="text-align:center;color:var(--text-light);margin-bottom:15px">'+(isAr?'اختر المستوى الذي اجتزته لإصدار الشهادة':'Select a passed level to issue a certificate')+'</p><div class="welcome-actions">';
+  var found=false;
+  if(appData&&appData.curricula){
+    appData.curricula.forEach(function(c,ci){
+      c.levels&&c.levels.forEach(function(l,li){
+        var p=getLevelProgress(ci,li);
+        if(p&&p.passed){
+          found=true;
+          var cefr=l.cefr_level||l.level||'';
+          html+='<div class="welcome-card" onclick="showCertificate('+ci+','+li+')" style="flex-direction:row;justify-content:space-between;align-items:center">'+
+            '<span><span style="font-size:1.2em">🎓</span> <strong>'+(l.level_name||'')+'</strong> <span style="color:var(--accent);font-size:.85em">'+cefr+'</span></span>'+
+            '<span style="font-size:.85em;color:var(--text-light);background:var(--surface);padding:4px 12px;border-radius:20px">'+(p.score||0)+'%</span></div>';
+        }
+      });
+    });
+  }
+  if(!found)html+='<p style="text-align:center;padding:30px;color:var(--text-light)">'+(isAr?'لم تجتز أي مستوى بعد. ابدأ بالدروس أولاً!':'You haven\'t passed any level yet. Start studying first!')+'</p>';
+  html+='</div><button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';
+  v.innerHTML=html;
+}
+
+// 9. Add all new feature buttons to the menu
 (function(){
   var origNav=navSetup;
   navSetup=function(){
@@ -2852,7 +2880,8 @@ function showLeaderboard(){hideAllViews();var v=document.getElementById('leaderV
           ['👤 '+t('profiles'),'showProfileManager()'],
           ['🏆 '+t('leaderboard'),'showLeaderboard()'],
           ['📄 '+t('certPDF'),'exportCertPDF()'],
-          ['📤 '+t('shareProgress'),'shareProgress()']
+          ['📤 '+t('shareProgress'),'shareProgress()'],
+          ['🎓 '+t('titleCert'),'showCertSelector()']
         ]},
         {title:'⚙️ أدوات',items:[
           ['🤖 '+t('aiCorrect'),'aiCorrect()'],
@@ -2879,7 +2908,7 @@ function showLeaderboard(){hideAllViews();var v=document.getElementById('leaderV
   var origHide=hideAllViews;
   hideAllViews=function(){
     origHide();
-    ['profileView','grammarExView','aiView','leaderView','allFeaturesView'].forEach(function(id){
+    ['profileView','grammarExView','aiView','leaderView','allFeaturesView','certSelectView'].forEach(function(id){
       var e=document.getElementById(id);if(e)e.style.display='none';
     });
   };
