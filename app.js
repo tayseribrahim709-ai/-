@@ -473,7 +473,7 @@ function updateSetting(k,v){const s=getSettings();s[k]=v;saveSettings(s);showSet
 function toggleStudyDay(d){const s=getSettings();const idx=s.studyDays.indexOf(d);if(idx>-1)s.studyDays.splice(idx,1);else s.studyDays.push(d);saveSettings(s);showSettings();}
 
 // ─── SETTINGS VIEW ───
-function showSettings(){hideAllViews();let v=document.getElementById('settingsView');if(!v){v=document.createElement('div');v.id='settingsView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const s=getSettings();v.innerHTML='<h2>'+t('settingsTitle')+'</h2><div class="settings-group"><label>'+t('langToggle')+'</label><button onclick="toggleLang()">'+LANG[currentLang==='ar'?'en':'ar'].appTitle+'</button></div><div class="settings-group"><label>'+t('fontSize')+'</label><select onchange="updateSetting(\'fontSize\',this.value)"><option value="small" '+(s.fontSize==='small'?'selected':'')+'>S</option><option value="medium" '+(s.fontSize==='medium'?'selected':'')+'>M</option><option value="large" '+(s.fontSize==='large'?'selected':'')+'>L</option></select></div><div class="settings-group"><label>'+t('studyDays')+'</label><div style="display:flex;gap:4px;flex-wrap:wrap">'+[0,1,2,3,4,5,6].map(d=>'<button class="day-btn'+(s.studyDays.includes(d)?' active':'')+'" onclick="toggleStudyDay('+d+')">'+(LANG[currentLang].weekDays[d]||d)+'</button>').join('')+'</div></div><div class="settings-group"><label>'+t('reminder')+'</label><input type="time" value="'+s.reminderTime+'" onchange="updateSetting(\'reminderTime\',this.value)"><button onclick="var s=getSettings();updateSetting(\'reminderOn\',!s.reminderOn)">'+(s.reminderOn?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('accentColor')+'</label><input type="color" value="'+s.accentColor+'" onchange="applyColor(\'accentColor\',this.value)"></div><div class="settings-group"><label>'+t('headerColor')+'</label><input type="color" value="'+s.headerColor+'" onchange="applyColor(\'headerColor\',this.value)"></div><div class="settings-group"><label>'+t('liteDesc')+'</label><button onclick="var s=getSettings();updateSetting(\'liteMode\',!s.liteMode)">'+(s.liteMode?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('export')+'</label><button onclick="exportData()">'+t('export')+'</button></div><div class="settings-group"><label>'+t('reset')+'</label><button onclick="if(confirm(\''+t('resetConfirm')+'\')){localStorage.clear();location.reload()}">'+t('reset')+'</button></div><div class="settings-group"><label>'+t('back')+'</label><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}
+function showSettings(){try{console.log('showSettings called');hideAllViews();let v=document.getElementById('settingsView');if(!v){v=document.createElement('div');v.id='settingsView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const s=getSettings();v.innerHTML='<h2>'+t('settingsTitle')+'</h2><div class="settings-group"><label>'+t('langToggle')+'</label><button onclick="toggleLang()">'+LANG[currentLang==='ar'?'en':'ar'].appTitle+'</button></div><div class="settings-group"><label>'+t('fontSize')+'</label><select onchange="updateSetting(\'fontSize\',this.value)"><option value="small" '+(s.fontSize==='small'?'selected':'')+'>S</option><option value="medium" '+(s.fontSize==='medium'?'selected':'')+'>M</option><option value="large" '+(s.fontSize==='large'?'selected':'')+'>L</option></select></div><div class="settings-group"><label>'+t('studyDays')+'</label><div style="display:flex;gap:4px;flex-wrap:wrap">'+[0,1,2,3,4,5,6].map(d=>'<button class="day-btn'+(s.studyDays.includes(d)?' active':'')+'" onclick="toggleStudyDay('+d+')">'+(LANG[currentLang].weekDays[d]||d)+'</button>').join('')+'</div></div><div class="settings-group"><label>'+t('reminder')+'</label><input type="time" value="'+s.reminderTime+'" onchange="updateSetting(\'reminderTime\',this.value)"><button onclick="var s=getSettings();updateSetting(\'reminderOn\',!s.reminderOn)">'+(s.reminderOn?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('accentColor')+'</label><input type="color" value="'+s.accentColor+'" onchange="applyColor(\'accentColor\',this.value)"></div><div class="settings-group"><label>'+t('headerColor')+'</label><input type="color" value="'+s.headerColor+'" onchange="applyColor(\'headerColor\',this.value)"></div><div class="settings-group"><label>'+t('liteDesc')+'</label><button onclick="var s=getSettings();updateSetting(\'liteMode\',!s.liteMode)">'+(s.liteMode?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('export')+'</label><button onclick="exportData()">'+t('export')+'</button></div><div class="settings-group"><label>'+t('reset')+'</label><button onclick="if(confirm(\''+t('resetConfirm')+'\')){localStorage.clear();location.reload()}">'+t('reset')+'</button></div><div class="settings-group"><label>'+t('back')+'</label><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}catch(e){console.error('showSettings error:',e);toast('⚠️ Error: '+e.message);}}
 function applyColor(k,v){updateSetting(k,v);document.documentElement.style.setProperty('--'+k,v||'inherit');}
 function exportData(){const d={progress:getProgress(),favs:getFavorites(),settings:getSettings()};const b=document.createElement('textarea');b.value=JSON.stringify(d);document.body.appendChild(b);b.select();document.execCommand('copy');document.body.removeChild(b);toast(t('shared'));}
 
@@ -561,8 +561,7 @@ function renderAdmin(){var v=document.getElementById('adminView');if(!v)return;v
 function addAdminLesson(){var curr=document.getElementById('adminCurr');var level=document.getElementById('adminLevel');var mod=document.getElementById('adminModule');var title=document.getElementById('adminTitle');var video=document.getElementById('adminVideo');var obj=document.getElementById('adminObjectives');var expl=document.getElementById('adminExplanation');var explAr=document.getElementById('adminExplanationAr');var voc=document.getElementById('adminVocab');if(!title||!title.value.trim()){toast('❌ أدخل عنوان الدرس');return}var objectives=[];if(obj&&obj.value.trim()){objectives=obj.value.split('\n').map(function(s){return s.trim()}).filter(function(s){return s})}var vocabulary=[];if(voc&&voc.value.trim()){voc.value.split('\n').forEach(function(line){var parts=line.split('=').map(function(s){return s.trim()});if(parts.length===2&&parts[0]&&parts[1]){vocabulary.push({word:parts[0],translation:parts[1]})}})}var lesson={curriculumIdx:curr?parseInt(curr.value):0,level:level?level.value.trim():'A1',moduleTitle:mod?mod.value.trim():'',lesson_title:title.value.trim(),video_url:video?video.value.trim():'',objectives:objectives,explanation:expl?expl.value.trim():'',explanation_ar:explAr?explAr.value.trim():'',vocabulary:vocabulary,lesson_id:'admin_'+Date.now(),dateAdded:Date.now()};var lessons=getAdminLessons();lessons.push(lesson);saveAdminLessons(lessons);toast('✅ تم حفظ الدرس');renderAdmin()}
 function deleteAdminLesson(idx){if(!confirm('🗑 حذف هذا الدرس؟'))return;var lessons=getAdminLessons();lessons.splice(idx,1);saveAdminLessons(lessons);renderAdmin()}
 function viewAdminLesson(idx){var lessons=getAdminLessons();var ls=lessons[idx];if(!ls){toast('❌ لم يتم العثور على الدرس');return}hideAllViews();var v=document.getElementById('lessonView');if(!v){v=document.createElement('div');v.id='lessonView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var html='';html+='<div class="lesson-view"><div class="lesson-header">';html+='<button class="back-btn" onclick="hideAllViews();showAdmin()">'+t('back')+'</button>';html+='<h2>📦 '+(ls.lesson_title||'')+'</h2></div>';if(ls.objectives&&ls.objectives.length){html+='<div class="section"><h3>'+t('objectives')+'</h3><ul>';for(var oi=0;oi<ls.objectives.length;oi++){html+='<li>'+ls.objectives[oi]+'</li>'}html+='</ul></div>'}if(ls.explanation){html+='<div class="section"><h3>'+t('explanation')+'</h3>';if(ls.explanation_ar)html+='<div class="ar-content"><p>'+ls.explanation_ar+'</p></div>';html+='<div class="en-content"><p>'+ls.explanation+'</p></div></div>'}if(ls.video_url){html+='<div class="section"><h3>'+t('videoLesson')+'</h3><a href="'+ls.video_url+'" target="_blank" rel="noopener" style="display:inline-block;padding:10px 20px;background:var(--danger,#e74c3c);color:#fff;border-radius:8px;text-decoration:none">'+t('watchVideo')+'</a></div>'}if(ls.vocabulary&&ls.vocabulary.length){html+='<div class="section"><h3>'+t('vocabulary')+'</h3><table class="vocab-table"><tr><th>'+t('word')+'</th><th>'+t('translation')+'</th></tr>';for(var vi=0;vi<ls.vocabulary.length;vi++){html+='<tr><td>'+(ls.vocabulary[vi].word||'')+'</td><td>'+(ls.vocabulary[vi].translation||'')+'</td></tr>'}html+='</table></div>'}html+='</div>';if(ls.level||ls.moduleTitle){html+='<p style="color:#888;font-size:13px;text-align:center;padding:10px">📂 '+(ls.level||'')+' | '+(ls.moduleTitle||'')+'</p>'}v.innerHTML=html}
-// Append admin button to settings
-var origShowSettings=showSettings;showSettings=function(){origShowSettings();var v=document.getElementById('settingsView');if(v){var btn=document.createElement('button');btn.className='check-btn';btn.textContent='🔧 لوحة المدرب';btn.style.cssText='margin-top:20px;width:100%;padding:12px;background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px';btn.onclick=function(){showAdminLogin()};v.appendChild(btn)}}
+// Admin button now added inside the showSettings override below
 
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded',function(){initApp();initSync();if(ls('eng_dark')==='1'){document.body.classList.add('dark-mode');const b=document.getElementById('darkToggle');if(b)b.textContent='☀️';}var devBtn=document.getElementById('navDeveloper');if(devBtn){devBtn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();showDeveloper();});}});
@@ -574,9 +573,6 @@ function updateStreak(){var s=getStreak();var today=new Date();var dateStr=today
 
 // ─── CONFETTI ───
 function fireConfetti(){var c=document.getElementById('confettiContainer');if(!c){c=document.createElement('div');c.id='confettiContainer';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;overflow:hidden';document.body.appendChild(c)}var colors=['#e74c3c','#27ae60','#f1c40f','#3498db','#9b59b6','#e67e22'];for(var i=0;i<60;i++){(function(){var el=document.createElement('div');var color=colors[Math.floor(Math.random()*colors.length)];var left=Math.random()*100;var delay=Math.random()*2;var dur=2+Math.random()*2;var size=6+Math.random()*8;el.style.cssText='position:absolute;top:-20px;left:'+left+'%;width:'+size+'px;height:'+size+'px;background:'+color+';border-radius:'+(Math.random()>0.5?'50%':'2px')+';opacity:0;animation:confettiFall '+dur+'s ease-in '+delay+'s forwards';c.appendChild(el);setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},5000)})()}setTimeout(function(){if(c.parentNode)c.parentNode.removeChild(c)},6000);}
-
-// ─── CERTIFICATE ───
-function showCertificate(cid,li){var c=appData&&appData.curricula&&appData.curricula[cid];if(!c)return;var lvl=c.levels&&c.levels[li];if(!lvl)return;var p=getLevelProgress(cid,li);if(!p||!p.passed){toast(t('failMsg'));return;}var w=window.open('','_blank');var name=prompt(t('certText')+' '+(lvl.level_name||''),'');if(!name){w.close();return;}var date=new Date().toLocaleDateString(currentLang==='ar'?'ar-EG':'en-US');w.document.write('<!DOCTYPE html><html dir="'+LANG[currentLang].dir+'"><head><meta charset="UTF-8"><title>'+t('titleCert')+'</title><style>body{font-family:"Times New Roman",serif;text-align:center;padding:40px;margin:0;background:#f5f0e8}.certificate{max-width:700px;margin:0 auto;padding:50px;background:#fff;border:4px double #c9a96e;box-shadow:0 10px 30px rgba(0,0,0,0.1)}.cert-border{border:2px solid #c9a96e;padding:30px}h1{font-size:28px;color:#8b6914;margin-bottom:10px}.seal{font-size:60px;margin:20px 0}.date{color:#888;font-size:14px}.sign{font-size:18px;margin-top:30px}h2{font-size:22px;color:#333}p{font-size:16px;color:#555;line-height:1.8}@media print{body{background:#fff;padding:0}.certificate{box-shadow:none;border:3px double #c9a96e}}</style></head><body><div class="certificate"><div class="cert-border"><h1>'+t('titleCert')+'</h1><h2>'+(lvl.level_name||'')+'</h2><p>'+t('certText')+' <strong>'+t('levels')+'</strong></p><div class="seal">\ud83c\udf93</div><p>'+name+'</p><p>'+t('passMsg')+'</p><p class="date">'+date+'</p><div class="sign">_________________<br><small>'+t('aboutTitle')+'</small></div></div></div><br><button onclick="window.print()" style="padding:12px 30px;background:#8b6914;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:16px">'+t('printCert')+'</button></body></html>');w.document.close();}
 
 // ─── STUDY PLAN ───
 function showStudyPlan(){hideAllViews();var v=document.getElementById('planView');if(!v){v=document.createElement('div');v.id='planView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var html='<h2>'+t('studyPlan')+'</h2>';var s=getStreak();html+='<div class="streak-bar" style="text-align:center;padding:15px;margin:10px 0;background:var(--card-bg,#f9f9f9);border-radius:8px"><span style="font-size:32px">'+t('streakTitle')+'</span><div style="font-size:48px;font-weight:bold;color:var(--accent,#27ae60)">'+s.count+'</div><div>'+t('streakDays')+'</div></div>';var found=null;if(appData&&appData.curricula){var curricula=appData.curricula;for(var ci=0;ci<curricula.length&&!found;ci++){var c=curricula[ci];if(!c.levels)continue;for(var li=0;li<c.levels.length&&!found;li++){var p=getLevelProgress(ci,li);if(p&&p.passed)continue;var lvl=c.levels[li];if(!lvl||!lvl.modules)continue;for(var mi=0;mi<lvl.modules.length&&!found;mi++){var m=lvl.modules[mi];if(!m.lessons)continue;for(var lsi=0;lsi<m.lessons.length&&!found;lsi++){var ls=m.lessons[lsi];var lid=ls.lesson_id||(lvl.level_name+'_'+mi+'_'+ls.lesson_title);found={lid:lid,title:ls.lesson_title,level:lvl.level_name||lvl.cefr_level||'',moduleTitle:m.module_title,curriculumIdx:ci,levelIdx:li,moduleIdx:mi,lessonIdx:lsi}}}}}}if(found){html+='<div class="next-lesson" style="padding:20px;margin:10px 0;background:var(--card-bg,#f9f9f9);border-radius:8px"><h3>'+t('studyNext')+'</h3><p><strong>'+found.level+'</strong> | '+found.moduleTitle+' | '+found.title+'</p><button class="check-btn" onclick="hideAllViews();switchCurriculum('+found.curriculumIdx+');showLesson('+found.levelIdx+','+found.moduleIdx+',\''+found.lid+'\')">'+t('startHere')+'</button></div>'}else{html+='<p>'+t('flashDone')+'</p>'}html+='<button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';v.innerHTML=html;}
@@ -1846,60 +1842,100 @@ function compareSpeaking(idx){
 }
 
 // ─── 3. PDF CERTIFICATE FOR EACH LEVEL ───
-function showLevelCertificate(cid,li){
+function showCertificate(cid,li){
   var c=appData&&appData.curricula&&appData.curricula[cid];
   if(!c)return;
   var lvl=c.levels&&c.levels[li];
   if(!lvl)return;
   var p=getLevelProgress(cid,li);
   if(!p||!p.passed){toast(t('failMsg'));return;}
-  var name=prompt('اكتب اسمك على الشهادة:','');
+  var isAr=currentLang==='ar';
+  var name=prompt(isAr?'اكتب اسمك على الشهادة:':'Enter your name on the certificate:','');
   if(!name)return;
-  var date=new Date().toLocaleDateString('ar-EG');
-  var totalWords=0;
+  var date=new Date().toLocaleDateString(isAr?'ar-EG':'en-US');
+  var totalLessons=0,doneLessons=0,totalWords=0;
   lvl.modules&&lvl.modules.forEach(function(m){
     m.lessons&&m.lessons.forEach(function(ls){
+      totalLessons++;
+      var lid=ls.lesson_id||(lvl.level_name+'_'+m.module_title+'_'+ls.lesson_title);
+      if(p.completed&&p.completed.indexOf(lid)!==-1)doneLessons++;
       if(ls.vocabulary)totalWords+=ls.vocabulary.length;
     });
   });
+  var cefr=lvl.cefr_level||lvl.level||'';
+  var stars='⭐'.repeat(Math.min(Math.ceil((p.score||0)/20),5));
+  var verifCode=Date.now().toString(36).toUpperCase();
   var w=window.open('','_blank');
-  w.document.write('<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>شهادة إتمام</title><style>'+
-    '@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap");'+
-    'body{font-family:"Cairo",sans-serif;text-align:center;padding:40px;margin:0;background:#f0f0f0}'+
-    '.cert{max-width:700px;margin:0 auto;padding:50px;background:#fff;border:4px double #c9a96e;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.1)}'+
-    '.cert-border{border:3px solid #c9a96e;border-radius:15px;padding:30px}'+
-    '.cert-seal{font-size:80px;margin:15px 0}'+
-    '.cert-title{font-size:28px;color:#8b6914;font-weight:700;margin:10px 0}'+
-    '.cert-level{font-size:22px;color:#333;margin:5px 0}'+
-    '.cert-name{font-size:24px;font-weight:700;color:#2c3e50;margin:15px 0;padding:10px;border-bottom:2px solid #c9a96e;display:inline-block}'+
-    '.cert-desc{font-size:14px;color:#666;margin:10px 0;line-height:1.8}'+
-    '.cert-stats{display:flex;justify-content:center;gap:20px;margin:15px 0;flex-wrap:wrap}'+
-    '.cert-stat{padding:8px 15px;background:#f8f8f8;border-radius:8px;font-size:13px}'+
-    '.cert-date{font-size:13px;color:#999;margin:15px 0}'+
-    '.cert-sign{margin-top:25px;font-size:16px}'+
-    '.cert-sign-line{width:200px;border-bottom:2px solid #333;margin:0 auto 5px}'+
-    '@media print{body{background:#fff;padding:10px}.cert{box-shadow:none}}'+
-    '</style></head><body><div class="cert"><div class="cert-border">'+
-    '<div class="cert-seal">🎓</div>'+
-    '<div class="cert-title">شهادة إتمام الدورة</div>'+
-    '<div class="cert-level"> المستوى: '+(lvl.level_name||'')+'</div>'+
-    '<p style="color:#666">تُشهد هذه الشهادة بأن</p>'+
-    '<div class="cert-name">'+name+'</div>'+
-    '<p style="color:#666">قد أتم بنجاح دورة اللغة الإنجليزية</p>'+
-    '<div class="cert-desc">'+(lvl.description||'')+'</div>'+
-    '<div class="cert-stats">'+
-    '<div class="cert-stat">📚 '+totalWords+' كلمة</div>'+
-    '<div class="cert-stat">📝 '+p.score+'% نتيجة</div>'+
-    '<div class="cert-stat">⭐ '+'نجم'.repeat(Math.ceil(p.score/20))+'</div>'+
+  w.document.write('<!DOCTYPE html><html dir="'+(isAr?'rtl':'ltr')+'"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+(isAr?'شهادة إتمام':'Certificate of Completion')+'</title><style>'+
+    '@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap");'+
+    '*{margin:0;padding:0;box-sizing:border-box}'+
+    'body{font-family:"Cairo",sans-serif;text-align:center;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);direction:'+(isAr?'rtl':'ltr')+'}'+
+    '.cert-wrap{max-width:820px;width:100%;padding:15px;background:linear-gradient(135deg,#f5e6c8,#d4a853);border-radius:30px;box-shadow:0 20px 60px rgba(0,0,0,.25),inset 0 0 30px rgba(212,168,83,.3)}'+
+    '.cert{background:#fff;border-radius:24px;padding:50px 45px;position:relative;overflow:hidden}'+
+    '.cert::before{content:"";position:absolute;top:-60px;'+(isAr?'right':'left')+':-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(212,168,83,.08) 0%,transparent 70%);border-radius:50%}'+
+    '.cert::after{content:"";position:absolute;bottom:-80px;'+(isAr?'left':'right')+':-80px;width:250px;height:250px;background:radial-gradient(circle,rgba(102,126,234,.06) 0%,transparent 70%);border-radius:50%}'+
+    '.cert-top-border{height:6px;background:linear-gradient(90deg,#d4a853,#f5e6c8,#d4a853);border-radius:3px;margin-bottom:35px}'+
+    '.cert-badge{font-size:64px;margin-bottom:8px;display:block}'+
+    '.cert-title{font-size:30px;font-weight:900;color:#1a1a2e;margin:5px 0;letter-spacing:-.5px}'+
+    '.cert-subtitle{font-size:15px;color:#999;margin-bottom:25px;font-weight:300}'+
+    '.cert-divider{width:80px;height:3px;background:linear-gradient(90deg,#d4a853,#c9a96e);border-radius:3px;margin:0 auto 25px}'+
+    '.cert-label{font-size:14px;color:#aaa;margin-bottom:4px}'+
+    '.cert-student{font-size:32px;font-weight:900;color:#2c3e50;margin:5px 0 15px;padding:10px 30px;display:inline-block;border-bottom:3px solid #d4a853}'+
+    '.cert-body{font-size:16px;color:#666;line-height:1.9;max-width:550px;margin:0 auto}'+
+    '.cert-level-badge{display:inline-block;padding:6px 24px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:100px;font-size:16px;font-weight:700;margin:12px 0;letter-spacing:.5px}'+
+    '.cert-stats{display:flex;justify-content:center;gap:16px;margin:20px 0;flex-wrap:wrap}'+
+    '.cert-stat{padding:12px 22px;background:#f8f9fa;border-radius:14px;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:100px;border:1px solid #eee}'+
+    '.cert-stat .stat-num{font-size:22px;font-weight:900;color:#2c3e50}'+
+    '.cert-stat .stat-label{font-size:12px;color:#999}'+
+    '.cert-stars{font-size:28px;margin:10px 0;letter-spacing:4px}'+
+    '.cert-footer{display:flex;justify-content:space-between;align-items:end;margin-top:30px;padding-top:20px;border-top:1px solid #eee;flex-wrap:wrap;gap:15px}'+
+    '.cert-sign-col{text-align:center;min-width:160px}'+
+    '.cert-sign-line{width:160px;border-bottom:2px solid #333;margin:0 auto 6px}'+
+    '.cert-sign-name{font-size:15px;font-weight:700;color:#333}'+
+    '.cert-sign-title{font-size:12px;color:#999}'+
+    '.cert-verif{font-size:11px;color:#bbb;text-align:'+(isAr?'left':'right')+'}'+
+    '.cert-verif span{font-family:monospace;background:#f5f5f5;padding:2px 8px;border-radius:4px;direction:ltr;display:inline-block}'+
+    '.cert-actions{margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}'+
+    '.cert-actions button{padding:14px 32px;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:"Cairo",sans-serif;transition:all .3s ease;display:flex;align-items:center;gap:8px}'+
+    '.cert-actions .print-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;box-shadow:0 4px 15px rgba(102,126,234,.4)}'+
+    '.cert-actions .print-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(102,126,234,.5)}'+
+    '.cert-actions .close-btn{background:#f5f5f5;color:#666}'+
+    '.cert-actions .close-btn:hover{background:#e8e8e8}'+
+    '@media(max-width:600px){body{padding:10px}.cert-wrap{padding:8px}.cert{padding:25px 18px}.cert-title{font-size:22px}.cert-student{font-size:24px}.cert-badge{font-size:48px}.cert-stats{gap:10px}.cert-stat{min-width:70px;padding:8px 12px}.cert-stat .stat-num{font-size:18px}.cert-footer{flex-direction:column;align-items:center}}'+
+    '@media print{body{background:#fff;padding:10px}.cert-wrap{background:none;box-shadow:none;padding:0}.cert{box-shadow:none;border:2px solid #ddd}.cert-actions{display:none}}'+
+    '</style></head><body><div class="cert-wrap"><div class="cert">'+
+    '<div class="cert-top-border"></div>'+
+    '<span class="cert-badge">🎓</span>'+
+    '<div class="cert-title">'+(isAr?'شهادة إتمام':'Certificate of Completion')+'</div>'+
+    '<div class="cert-subtitle">'+(isAr?'يُصدرها تطبيق الأستاذ ياسر إبراهيم':'Issued by Mr. Yasser Ibrahim App')+'</div>'+
+    '<div class="cert-divider"></div>'+
+    '<div class="cert-label">'+(isAr?'تُشهد هذه الشهادة بأن':'This certifies that')+'</div>'+
+    '<div class="cert-student">'+name+'</div>'+
+    '<div class="cert-body">'+
+    (isAr?'قد أتم بنجاح دراسة':'Has successfully completed the study of')+'<br>'+
+    '<strong>'+(c.name||'')+'</strong><br>'+
+    (isAr?'بالمستوى':'at level')+
     '</div>'+
-    '<div class="cert-date">'+date+'</div>'+
-    '<div class="cert-sign">'+
+    '<div class="cert-level-badge">'+(lvl.level_name||cefr||'')+' <span style="opacity:.7;font-weight:400">| '+cefr+'</span></div>'+
+    '<div class="cert-stars">'+stars+'</div>'+
+    '<div class="cert-stats">'+
+    '<div class="cert-stat"><span class="stat-num">'+doneLessons+'/'+totalLessons+'</span><span class="stat-label">'+(isAr?'الدروس المكتملة':'Lessons')+'</span></div>'+
+    '<div class="cert-stat"><span class="stat-num">'+totalWords+'</span><span class="stat-label">'+(isAr?'المفردات':'Words')+'</span></div>'+
+    '<div class="cert-stat"><span class="stat-num">'+(p.score||0)+'%</span><span class="stat-label">'+(isAr?'النتيجة':'Score')+'</span></div>'+
+    '<div class="cert-stat"><span class="stat-num">'+date+'</span><span class="stat-label">'+(isAr?'التاريخ':'Date')+'</span></div>'+
+    '</div>'+
+    '<div class="cert-footer">'+
+    '<div class="cert-sign-col">'+
     '<div class="cert-sign-line"></div>'+
-    '<small>الأستاذ ياسر إبراهيم</small><br>'+
-    '<small style="color:#999">مدرس اللغة الإنجليزية</small>'+
+    '<div class="cert-sign-name">'+(isAr?'الأستاذ ياسر إبراهيم':'Mr. Yasser Ibrahim')+'</div>'+
+    '<div class="cert-sign-title">'+(isAr?'مدرس اللغة الإنجليزية':'English Teacher')+'</div>'+
+    '</div>'+
+    '<div class="cert-verif">'+(isAr?'رمز التحقق:':'Verification:')+' <span>'+verifCode+'</span></div>'+
     '</div></div></div>'+
-    '<br><button onclick="window.print()" style="padding:12px 30px;background:#8b6914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-family:Cairo">🖨️ طباعة الشهادة</button>'+
-    '</body></html>');
+    '<div class="cert-actions">'+
+    '<button class="print-btn" onclick="window.print()">🖨️ '+(isAr?'طباعة الشهادة':'Print Certificate')+'</button>'+
+    '<button class="close-btn" onclick="window.close()">✕ '+(isAr?'إغلاق':'Close')+'</button>'+
+    '</div></body></html>');
   w.document.close();
 }
 
@@ -1945,7 +1981,7 @@ function showStudentDashboard(){
         html+='<div class="student-progress-details">';
         html+='<span>'+done+'/'+total+' درس</span>';
         html+=' <button class="check-btn" style="font-size:.8em;padding:4px 10px" onclick="showLevelTest('+li+')">🧪 '+t('levelTest')+'</button>';
-        if(prog.passed)html+=' <button class="check-btn" style="font-size:.8em;padding:4px 10px" onclick="showLevelCertificate('+ci+','+li+')">🎓 شهادة</button>';
+        if(prog.passed)html+=' <button class="check-btn" style="font-size:.8em;padding:4px 10px" onclick="showCertificate('+ci+','+li+')">🎓 شهادة</button>';
         html+='</div></div>';
       });
     });
@@ -2718,7 +2754,64 @@ if(corrected!==text){html+='<h4 style="margin:10px 0">📝 الاقتراح:</h4
 var score=100-(errors.length*15);score=Math.max(score,0);html+='<div style="margin-top:15px;text-align:center;font-size:1.3em;color:'+(score>=80?'var(--success)':score>=50?'var(--warning)':'var(--danger)')+'">التقييم: '+score+'%</div>';res.innerHTML=html;}
 
 // 6. Certificate PDF Export
-function exportCertPDF(){var p=getProgress();var name=ls('eng_activeProfile')||'طالب';var html='<html dir="rtl"><head><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;text-align:center;padding:40px}h1{color:#27ae60;font-size:2em}.cert{border:5px solid #27ae60;border-radius:20px;padding:40px;max-width:600px;margin:0 auto;background:#f9fff9}.name{font-size:1.8em;color:#2c3e50;margin:20px 0}.detail{font-size:1.1em;color:#555;margin:10px 0}.seal{font-size:60px;margin:20px 0}</style></head><body><div class="cert"><div class="seal">🎓</div><h1>شهادة إتمام</h1><p style="font-size:1.1em">تشهد منصة</p><p style="font-size:1.3em;font-weight:700;color:#27ae60">English Learning</p><p>بأن</p><div class="name">'+name+'</div><p>قد أتم بنجاح</p><div class="detail">📚 إجمالي الدروس: '+p.total+'</div><div class="detail">✅ الدروس المكتملة: '+(p.completed||[]).length+'</div><div class="detail">🔥 سلسلة التعلم: '+(p.streak||0)+' أيام</div><div class="detail">📅 '+new Date().toLocaleDateString('ar-EG')+'</div><br><p style="color:#999">www.english-platform.com</p></div><script>window.print()</script></body></html>';var w=window.open('','_blank');if(w){w.document.write(html);w.document.close()}}
+function exportCertPDF(){var p=getProgress();var name=ls('eng_activeProfile')||'طالب';var isAr=currentLang==='ar';var date=new Date().toLocaleDateString(isAr?'ar-EG':'en-US');var completed=(p.completed||[]).length;var verifCode=Date.now().toString(36).toUpperCase();var w=window.open('','_blank');if(!w)return;w.document.write('<!DOCTYPE html><html dir="'+(isAr?'rtl':'ltr')+'"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+(isAr?'شهادة تقدم':'Progress Certificate')+'</title><style>'+
+  '@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap");'+
+  '*{margin:0;padding:0;box-sizing:border-box}'+
+  'body{font-family:"Cairo",sans-serif;text-align:center;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}'+
+  '.cert-wrap{max-width:820px;width:100%;padding:15px;background:linear-gradient(135deg,#f5e6c8,#d4a853);border-radius:30px;box-shadow:0 20px 60px rgba(0,0,0,.25),inset 0 0 30px rgba(212,168,83,.3)}'+
+  '.cert{background:#fff;border-radius:24px;padding:50px 45px;position:relative;overflow:hidden}'+
+  '.cert::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(212,168,83,.08) 0%,transparent 70%);border-radius:50%}'+
+  '.cert-top-border{height:6px;background:linear-gradient(90deg,#d4a853,#f5e6c8,#d4a853);border-radius:3px;margin-bottom:35px}'+
+  '.cert-badge{font-size:64px;margin-bottom:8px;display:block}'+
+  '.cert-title{font-size:30px;font-weight:900;color:#1a1a2e;margin:5px 0;letter-spacing:-.5px}'+
+  '.cert-subtitle{font-size:15px;color:#999;margin-bottom:25px;font-weight:300}'+
+  '.cert-divider{width:80px;height:3px;background:linear-gradient(90deg,#d4a853,#c9a96e);border-radius:3px;margin:0 auto 25px}'+
+  '.cert-label{font-size:14px;color:#aaa;margin-bottom:4px}'+
+  '.cert-student{font-size:32px;font-weight:900;color:#2c3e50;margin:5px 0 15px;padding:10px 30px;display:inline-block;border-bottom:3px solid #d4a853}'+
+  '.cert-body{font-size:16px;color:#666;line-height:1.9;max-width:550px;margin:0 auto}'+
+  '.cert-stats{display:flex;justify-content:center;gap:16px;margin:20px 0;flex-wrap:wrap}'+
+  '.cert-stat{padding:12px 22px;background:#f8f9fa;border-radius:14px;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:100px;border:1px solid #eee}'+
+  '.cert-stat .stat-num{font-size:22px;font-weight:900;color:#2c3e50}'+
+  '.cert-stat .stat-label{font-size:12px;color:#999}'+
+  '.cert-footer{display:flex;justify-content:space-between;align-items:end;margin-top:30px;padding-top:20px;border-top:1px solid #eee;flex-wrap:wrap;gap:15px}'+
+  '.cert-sign-col{text-align:center;min-width:160px}'+
+  '.cert-sign-line{width:160px;border-bottom:2px solid #333;margin:0 auto 6px}'+
+  '.cert-sign-name{font-size:15px;font-weight:700;color:#333}'+
+  '.cert-sign-title{font-size:12px;color:#999}'+
+  '.cert-verif{font-size:11px;color:#bbb;text-align:left}'+
+  '.cert-verif span{font-family:monospace;background:#f5f5f5;padding:2px 8px;border-radius:4px;direction:ltr;display:inline-block}'+
+  '.cert-actions{margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}'+
+  '.cert-actions button{padding:14px 32px;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:"Cairo",sans-serif;transition:all .3s ease}'+
+  '.cert-actions .print-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;box-shadow:0 4px 15px rgba(102,126,234,.4)}'+
+  '.cert-actions .print-btn:hover{transform:translateY(-2px)}'+
+  '@media(max-width:600px){.cert{padding:25px 18px}.cert-title{font-size:22px}.cert-student{font-size:24px}.cert-badge{font-size:48px}.cert-stat{min-width:70px;padding:8px 12px}}'+
+  '@media print{body{background:#fff;padding:10px}.cert-wrap{background:none;box-shadow:none;padding:0}.cert{box-shadow:none;border:2px solid #ddd}.cert-actions{display:none}}'+
+  '</style></head><body><div class="cert-wrap"><div class="cert">'+
+  '<div class="cert-top-border"></div>'+
+  '<span class="cert-badge">🏆</span>'+
+  '<div class="cert-title">'+(isAr?'شهادة تقدم':'Progress Certificate')+'</div>'+
+  '<div class="cert-subtitle">'+(isAr?'يُصدرها تطبيق الأستاذ ياسر إبراهيم':'Issued by Mr. Yasser Ibrahim App')+'</div>'+
+  '<div class="cert-divider"></div>'+
+  '<div class="cert-label">'+(isAr?'تُشهد هذه الشهادة بأن':'This certifies that')+'</div>'+
+  '<div class="cert-student">'+name+'</div>'+
+  '<div class="cert-body">'+(isAr?'قد أبدى تقدماً متميزاً في دراسة':'Has shown outstanding progress in studying')+'<br><strong>English</strong></div>'+
+  '<div class="cert-stats">'+
+  '<div class="cert-stat"><span class="stat-num">'+completed+'</span><span class="stat-label">'+(isAr?'الدروس المكتملة':'Lessons Done')+'</span></div>'+
+  '<div class="cert-stat"><span class="stat-num">'+(p.total||0)+'</span><span class="stat-label">'+(isAr?'إجمالي الدروس':'Total Lessons')+'</span></div>'+
+  '<div class="cert-stat"><span class="stat-num">'+(p.streak||0)+'</span><span class="stat-label">'+(isAr?'سلسلة التعلم':'Streak')+'</span></div>'+
+  '<div class="cert-stat"><span class="stat-num">'+date+'</span><span class="stat-label">'+(isAr?'التاريخ':'Date')+'</span></div>'+
+  '</div>'+
+  '<div class="cert-footer">'+
+  '<div class="cert-sign-col">'+
+  '<div class="cert-sign-line"></div>'+
+  '<div class="cert-sign-name">'+(isAr?'الأستاذ ياسر إبراهيم':'Mr. Yasser Ibrahim')+'</div>'+
+  '<div class="cert-sign-title">'+(isAr?'مدرس اللغة الإنجليزية':'English Teacher')+'</div>'+
+  '</div>'+
+  '<div class="cert-verif">'+(isAr?'رمز التحقق:':'Verification:')+' <span>'+verifCode+'</span></div>'+
+  '</div></div></div>'+
+  '<div class="cert-actions">'+
+  '<button class="print-btn" onclick="window.print()">🖨️ '+(isAr?'طباعة الشهادة':'Print Certificate')+'</button>'+
+  '</div></body></html>');w.document.close()}
 
 // 7. Leaderboard
 function showLeaderboard(){hideAllViews();var v=document.getElementById('leaderView');if(!v){v=document.createElement('div');v.id='leaderView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var profiles=getProfiles();var stats=[];profiles.forEach(function(p){var pkey='eng_progress_'+p.name;var data;try{data=JSON.parse(ls(pkey))}catch(e){data=null}stats.push({name:p.name,completed:data&&data.completed?data.completed.length:0,streak:data&&data.streak||0,total:data&&data.total||0})});stats.sort(function(a,b){return b.completed-a.completed||b.streak-a.streak});var current=ls('eng_activeProfile')||'';var html='<h2>'+t('leaderboard')+'</h2>';if(!stats.length){html+='<p style="text-align:center;padding:20px;color:var(--text-light)">لا يوجد طلاب بعد. أضف ملفات طلاب من قائمة الملفات.</p>'}else{html+='<div class="dashboardView">';stats.forEach(function(s,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'. ';var active=s.name===current?' style="border:3px solid var(--accent);background:rgba(39,174,96,.05)"':'';html+='<div class="welcome-card"'+active+'><span>'+medal+'</span><span><strong>'+s.name+'</strong>'+(s.name===current?' ✅':'')+'<br><span style="font-size:.85em;color:var(--text-light)">📚 '+s.completed+' درس | 🔥 '+s.streak+' يوم</span></span></div>'});html+='</div>'}html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';v.innerHTML=html;}
