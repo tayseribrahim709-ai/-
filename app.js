@@ -445,12 +445,12 @@ function showGrammarRef(){hideAllViews();let v=document.getElementById('grammarR
 function filterGrammar(q){var list=document.getElementById('grammarList');if(!list)return;var items=list.querySelectorAll('.grammar-item');items.forEach(function(item){var text=(item.textContent||'').toLowerCase();item.style.display=!q||text.indexOf(q.toLowerCase())!==-1?'flex':'none';});}
 
 // ─── PLACEMENT TEST ───
-function showPlacementTest(){hideAllViews();let v=document.getElementById('placementView');if(!v){v=document.createElement('div');v.id='placementView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);if(!placementTest){v.innerHTML='<h2>'+t('placeTitle')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return;}const qs=placementTest.questions||placementTest;v.innerHTML='<h2>'+t('placeTitle')+'</h2><p>'+qs.length+' '+t('placeInfo')+'</p><div id="ptQuestions">'+qs.map((q,i)=>'<div class="quiz-item"><p>'+(i+1)+'. '+(q.question||q.q||q)+'</p>'+(q.options||q.choices||[]).map((o,oi)=>'<label class="quiz-option" onclick="selectQuizOption(this,'+i+','+oi+')"><span>'+o+'</span></label>').join('')+'</div>').join('')+'</div><button class="check-btn" id="submitPTBtn">'+t('placeSubmit')+'</button><div id="ptResult"></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';document.getElementById('submitPTBtn').onclick=function(){submitPT(qs.length)};}
+function showPlacementTest(){hideAllViews();let v=document.getElementById('placementView');if(!v){v=document.createElement('div');v.id='placementView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);if(!placementTest){v.innerHTML='<h2>'+t('placeTitle')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return;}const qs=placementTest.questions||placementTest;v.innerHTML='<h2>'+t('placeTitle')+'</h2><p>'+qs.length+' '+t('placeInfo')+'</p><div id="ptTimer" style="text-align:center;font-size:1.2em;font-weight:700;color:var(--accent);margin:5px 0"></div><div id="ptQuestions">'+qs.map((q,i)=>'<div class="quiz-item"><p>'+(i+1)+'. '+(q.question||q.q||q)+'</p>'+(q.options||q.choices||[]).map((o,oi)=>'<label class="quiz-option" onclick="selectQuizOption(this,'+i+','+oi+')"><span>'+o+'</span></label>').join('')+'</div>').join('')+'</div><button class="check-btn" id="submitPTBtn">'+t('placeSubmit')+'</button><div id="ptResult"></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';document.getElementById('submitPTBtn').onclick=function(){submitPT(qs.length)};startPTTimer(qs.length*60,'ptTimer',function(){submitPT(qs.length)});}
 
 function submitPT(num){const n=parseInt(num);let correct=0;const qs=placementTest.questions||placementTest;for(let i=0;i<n&&i<qs.length;i++){const ans=qs[i].answer||qs[i].correct||qs[i].a||'';const selected=document.querySelectorAll('#ptQuestions .quiz-item')[i];const sel=selected?selected.querySelector('.quiz-option.selected'):null;const text=sel?sel.textContent.trim():'';if(text.toLowerCase()===ans.toLowerCase())correct++;}const el=document.getElementById('ptResult');const scoring=placementTest.scoring||{};const levels=Object.keys(scoring).sort((a,b)=>{const order={A1:1,A2:2,B1:3,B2:4,C1:5,C2:6};return (order[a]||0)-(order[b]||0);});let level='A1';for(let i=0;i<levels.length;i++){const range=scoring[levels[i]]||'';const parts=range.split('-');const min=parseInt(parts[0])||0;const max=parts[1]?parseInt(parts[1]):n;if(correct>=min&&correct<=max){level=levels[i];break;}}if(el)el.innerHTML='<p>'+t('placeResult')+' '+correct+'/'+n+'</p><p>'+t('placeSuggest')+' '+level+'</p>';}
 
 // ─── SYNC ───
-function showSync(){hideAllViews();let v=document.getElementById('syncView');if(!v){v=document.createElement('div');v.id='syncView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);if(syncUser){v.innerHTML='<h2>'+t('syncTitle')+'</h2><p>'+t('syncLoggedIn')+': <strong>'+syncUser.email+'</strong></p><div class="sync-btns"><button onclick="syncUpload()">'+t('syncUpload')+'</button><button onclick="syncDownload()">'+t('syncDownload')+'</button></div><div class="sync-btns"><button onclick="syncLogout()">'+t('syncLogout')+'</button></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';}else{v.innerHTML='<h2>'+t('syncTitle')+'</h2><div class="sync-form"><input type="email" id="syncEmail" placeholder="'+t('syncEmail')+'" style="width:100%;padding:10px;margin:5px 0"><input type="password" id="syncPass" placeholder="'+t('syncPass')+'" style="width:100%;padding:10px;margin:5px 0"><div class="sync-btns"><button onclick="syncLogin()">'+t('syncLogin')+'</button><button onclick="syncSignup()">'+t('syncSignup')+'</button></div></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';}}
+function showSync(){hideAllViews();let v=document.getElementById('syncView');if(!v){v=document.createElement('div');v.id='syncView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);if(syncUser){v.innerHTML='<h2>'+t('syncTitle')+'</h2><p>'+t('syncLoggedIn')+': <strong>'+syncUser.email+'</strong></p><div class="sync-btns"><button onclick="syncUpload()">'+t('syncUpload')+'</button><button onclick="syncDownload()">'+t('syncDownload')+'</button></div><div class="sync-btns"><button onclick="syncLogout()">'+t('syncLogout')+'</button><button style="background:#e74c3c" onclick="syncDelete()">🗑 حذف الحساب</button></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';}else{v.innerHTML='<h2>'+t('syncTitle')+'</h2><div class="sync-form"><input type="email" id="syncEmail" placeholder="'+t('syncEmail')+'" style="width:100%;padding:10px;margin:5px 0"><input type="password" id="syncPass" placeholder="'+t('syncPass')+'" style="width:100%;padding:10px;margin:5px 0"><div class="sync-btns"><button onclick="syncLogin()">'+t('syncLogin')+'</button><button onclick="syncSignup()">'+t('syncSignup')+'</button></div></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';}}
 
 function syncLogin(){const email=document.getElementById('syncEmail')?.value;const pass=document.getElementById('syncPass')?.value;if(!email||!pass){toast(t('answerFirst'));return;}fetch('/api/sync/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})}).then(r=>r.json()).then(d=>{if(d.ok){syncUser=d.user;lss('syncUser',JSON.stringify(d.user));showSync();toast(t('syncLoggedIn'));}else toast(d.error)}).catch(()=>toast(t('wrong')));}
 
@@ -461,6 +461,7 @@ function syncUpload(){if(!syncUser)return;const p=getProgress();fetch('/api/sync
 function syncDownload(){if(!syncUser)return;fetch('/api/sync/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:syncUser})}).then(r=>r.json()).then(d=>{if(d.ok&&d.data){saveProgress(d.data);toast(t('syncDownload'));}else toast(d.error)}).catch(()=>toast(t('wrong')));}
 
 function syncLogout(){syncUser=null;lss('syncUser','');showSync();}
+function syncDelete(){if(!syncUser||!confirm('⚠️ حذف الحساب نهائياً؟ ستفقد جميع بياناتك المخزنة.'))return;fetch('/api/sync/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:syncUser})}).then(function(r){return r.json()}).then(function(d){if(d.ok){syncLogout();toast('✅ تم حذف الحساب')}else toast(d.error)}).catch(function(){toast(t('wrong'))});}
 
 function initSync(){const saved=ls('syncUser');if(saved){try{syncUser=JSON.parse(saved)}catch(e){syncUser=null}}}
 
@@ -476,7 +477,8 @@ function toggleStudyDay(d){const s=getSettings();const idx=s.studyDays.indexOf(d
 // ─── SETTINGS VIEW ───
 function showSettings(){try{console.log('showSettings called');hideAllViews();let v=document.getElementById('settingsView');if(!v){v=document.createElement('div');v.id='settingsView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const s=getSettings();v.innerHTML='<h2>'+t('settingsTitle')+'</h2><div class="settings-group"><label>'+t('langToggle')+'</label><button onclick="toggleLang()">'+LANG[currentLang==='ar'?'en':'ar'].appTitle+'</button></div><div class="settings-group"><label>'+t('fontSize')+'</label><select onchange="updateSetting(\'fontSize\',this.value)"><option value="small" '+(s.fontSize==='small'?'selected':'')+'>S</option><option value="medium" '+(s.fontSize==='medium'?'selected':'')+'>M</option><option value="large" '+(s.fontSize==='large'?'selected':'')+'>L</option></select></div><div class="settings-group"><label>'+t('studyDays')+'</label><div style="display:flex;gap:4px;flex-wrap:wrap">'+[0,1,2,3,4,5,6].map(d=>'<button class="day-btn'+(s.studyDays.includes(d)?' active':'')+'" onclick="toggleStudyDay('+d+')">'+(LANG[currentLang].weekDays[d]||d)+'</button>').join('')+'</div></div><div class="settings-group"><label>'+t('reminder')+'</label><input type="time" value="'+s.reminderTime+'" onchange="updateSetting(\'reminderTime\',this.value)"><button onclick="var s=getSettings();updateSetting(\'reminderOn\',!s.reminderOn)">'+(s.reminderOn?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('accentColor')+'</label><input type="color" value="'+s.accentColor+'" onchange="applyColor(\'accentColor\',this.value)"></div><div class="settings-group"><label>'+t('headerColor')+'</label><input type="color" value="'+s.headerColor+'" onchange="applyColor(\'headerColor\',this.value)"></div><div class="settings-group"><label>'+t('liteDesc')+'</label><button onclick="var s=getSettings();updateSetting(\'liteMode\',!s.liteMode)">'+(s.liteMode?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('export')+'</label><button onclick="exportData()">'+t('export')+'</button></div><div class="settings-group"><label>'+t('reset')+'</label><button onclick="if(confirm(\''+t('resetConfirm')+'\')){localStorage.clear();location.reload()}">'+t('reset')+'</button></div><div class="settings-group"><label>'+t('back')+'</label><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}catch(e){console.error('showSettings error:',e);toast('⚠️ Error: '+e.message);}}
 function applyColor(k,v){updateSetting(k,v);document.documentElement.style.setProperty('--'+k,v||'inherit');}
-function exportData(){const d={progress:getProgress(),favs:getFavorites(),settings:getSettings()};const b=document.createElement('textarea');b.value=JSON.stringify(d);document.body.appendChild(b);b.select();document.execCommand('copy');document.body.removeChild(b);toast(t('shared'));}
+function exportData(){const d={progress:getProgress(),favs:getFavorites(),settings:getSettings(),completed:getCompletedLessons(),streak:getStreak(),date:new Date().toISOString()};const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='english_progress_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);toast('✅ تم تصدير البيانات')}
+function importData(){var inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=function(e){var file=e.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(d.progress){saveProgress(d.progress);toast('✅ تم استيراد التقدم')}if(d.favs){setFavorites(d.favs)}if(d.settings){saveSettings(d.settings)}if(d.completed&&Array.isArray(d.completed)){saveCompletedLessons(d.completed)}if(d.streak){saveStreak(d.streak)}toast('✅ تم استيراد البيانات بنجاح');showSettings()}catch(ex){toast('❌ فشل الاستيراد: الملف غير صالح')}};reader.readAsText(file)};inp.click()}
 
 // ─── ABOUT VIEW ───
 function showAbout(){hideAllViews();let v=document.getElementById('aboutView');if(!v){v=document.createElement('div');v.id='aboutView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const cl=LANG[currentLang];const arts=currentLang==='ar'?[{t:'\ud83c\udfb5 \u0634\u0627\u0639\u0631',d:'\u064a\u0643\u062a\u0628 \u0627\u0644\u0634\u0639\u0631 \u0648\u0627\u0644\u0646\u0635\u0648\u0635 \u0627\u0644\u0623\u062f\u0628\u064a\u0629 \u0628\u0627\u0644\u0644\u063a\u062a\u064a\u0646 \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0648\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629'},{t:'\ud83c\udfb6 \u0645\u0644\u062d\u0646',d:'\u064a\u064f\u0644\u062d\u0651\u0646 \u0627\u0644\u0623\u0644\u062d\u0627\u0646 \u0648\u064a\u0628\u062a\u0643\u0631 \u0627\u0644\u0623\u0639\u0645\u0627\u0644 \u0627\u0644\u0645\u0648\u0633\u064a\u0642\u064a\u0629 \u0628\u0623\u0633\u0627\u0644\u064a\u0628 \u0645\u062a\u0646\u0648\u0639\u0629'},{t:'\ud83c\udfb9 \u0645\u0648\u0632\u0639 \u0645\u0648\u0633\u064a\u0642\u064a',d:'\u064a\u064f\u0648\u0632\u0651\u0639 \u0627\u0644\u0623\u0639\u0645\u0627\u0644 \u0627\u0644\u0645\u0648\u0633\u064a\u0642\u064a\u0629 \u0648\u064a\u064f\u0646\u0633\u0651\u0642 \u0627\u0644\u0622\u0644\u0627\u062a \u0648\u0627\u0644\u0623\u0635\u0648\u0627\u062a'},{t:'\ud83c\udfa8 \u0641\u0646\u0627\u0646',d:'\u0645\u0628\u062f\u0639 \u0645\u062a\u0639\u062f\u062f \u0627\u0644\u0645\u0648\u0627\u0647\u0628 \u0641\u064a \u0645\u062c\u0627\u0644\u0627\u062a \u0627\u0644\u0644\u063a\u0629 \u0648\u0627\u0644\u0641\u0646 \u0648\u0627\u0644\u062b\u0642\u0627\u0641\u0629'}]:[{t:'\ud83c\udfb5 Poet',d:'Writes poetry and literary texts in both Arabic and English'},{t:'\ud83c\udfb6 Composer',d:'Creates melodies and composes musical works in diverse styles'},{t:'\ud83c\udfb9 Music Arranger',d:'Arranges musical works, orchestrates instruments and voices'},{t:'\ud83c\udfa8 Artist',d:'Multi-talented creative in language, art, and culture'}];v.innerHTML='<div class="about-content" style="padding:20px;max-width:800px;margin:0 auto"><h2>'+t('aboutTitle')+'</h2><div class="about-arts" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0">'+arts.map(function(a){return'<div class="art-card" style="text-align:center;background:var(--surface);padding:18px 10px;border-radius:12px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.06)"><div style="font-size:36px;margin-bottom:8px">'+a.t.slice(0,2)+'</div><h4 style="margin:4px 0;font-size:1em;color:var(--accent,#e74c3c)">'+a.t+'</h4><p style="font-size:.8em;color:var(--text-light);margin:4px 0 0">'+a.d+'</p></div>'}).join('')+'</div><div class="about-section" style="margin:15px 0"><h3>'+t('summary')+'</h3><p>'+t('summaryText')+'</p></div><div class="about-section" style="margin:15px 0"><h3>'+t('qualifications')+'</h3><ul>'+(cl.qualList||[]).map(q=>'<li>'+q+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('experience')+'</h3><ul>'+(cl.expList||[]).map(e=>'<li>'+e+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('skills')+'</h3><ul>'+(cl.skillList||[]).map(s=>'<li>'+s+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('interests')+'</h3><ul>'+(cl.intList||[]).map(i=>'<li>'+i+'</li>').join('')+'</ul></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}
@@ -533,7 +535,7 @@ function renderFlash(){const v=document.getElementById('flashcardsView');if(!v)r
 function renderFlashComplete(){const v=document.getElementById('flashcardsView');if(!v)return;v.innerHTML='<h2>'+t('flashcards')+'</h2><p>'+t('flashDone')+'</p><p>'+t('known')+': '+flashKnown+' | '+t('unknown')+': '+flashUnknown+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';}
 
 // ─── LEVEL TESTS ───
-function showLevelTest(li){hideAllViews();let v=document.getElementById('levelTestView');if(!v){v=document.createElement('div');v.id='levelTestView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);if(!levelTests||!levelTests.tests||!levelTests.tests.length){v.innerHTML='<h2>'+t('levelTest')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return;} var testLvlIdx=typeof li==='number'?li:0;var cefr='';if(appData&&appData.curricula&&appData.curricula[activeCurriculum]&&appData.curricula[activeCurriculum].levels&&appData.curricula[activeCurriculum].levels[testLvlIdx]){var lvl=appData.curricula[activeCurriculum].levels[testLvlIdx];cefr=lvl.cefr_level||lvl.level_name||'';}let testData=null;if(cefr){testData=levelTests.tests.find(function(t){return t.from_level===cefr||t.to_level===cefr});}if(!testData)testData=levelTests.tests[0];if(!testData){v.innerHTML='<h2>'+t('levelTest')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return;}const qs=testData.questions||[];if(!qs.length){v.innerHTML='<h2>'+t('levelTest')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return;}const pp=testData.pass_percentage||levelTests.pass_percentage||60;v.setAttribute('data-test-qs',JSON.stringify(qs));v.setAttribute('data-pass',pp);v.setAttribute('data-tid',testData.id||'');v.setAttribute('data-lvl-idx',testLvlIdx);v.innerHTML='<h2>'+t('levelTest')+' - '+(testData.title||cefr)+'</h2><p>'+qs.length+' '+t('testQuestions')+' | '+t('testInfo')+' '+pp+'%</p><div id="ltQuestions">'+qs.map((q,i)=>'<div class="quiz-item"><p>'+(i+1)+'. '+(q.question||q.q||q)+'</p>'+(q.options||q.choices||[]).map((o,oi)=>'<label class="quiz-option" onclick="selectQuizOption(this,'+i+','+oi+')"><span>'+o+'</span></label>').join('')+'</div>').join('')+'</div><button class="check-btn" onclick="submitLevelTest()">'+t('checkBtn')+'</button><div id="ltResult"></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';}
+function showLevelTest(li){hideAllViews();let v=document.getElementById('levelTestView');if(!v){v=document.createElement('div');v.id='levelTestView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);if(!levelTests||!levelTests.tests||!levelTests.tests.length){v.innerHTML='<h2>'+t('levelTest')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return;} var testLvlIdx=typeof li==='number'?li:0;var cefr='';if(appData&&appData.curricula&&appData.curricula[activeCurriculum]&&appData.curricula[activeCurriculum].levels&&appData.curricula[activeCurriculum].levels[testLvlIdx]){var lvl=appData.curricula[activeCurriculum].levels[testLvlIdx];cefr=lvl.cefr_level||lvl.level_name||'';}let testData=null;if(cefr){testData=levelTests.tests.find(function(t){return t.from_level===cefr||t.to_level===cefr});}if(!testData)testData=levelTests.tests[0];if(!testData){v.innerHTML='<h2>'+t('levelTest')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return;}const qs=testData.questions||[];if(!qs.length){v.innerHTML='<h2>'+t('levelTest')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return;}const pp=testData.pass_percentage||levelTests.pass_percentage||60;v.setAttribute('data-test-qs',JSON.stringify(qs));v.setAttribute('data-pass',pp);v.setAttribute('data-tid',testData.id||'');v.setAttribute('data-lvl-idx',testLvlIdx);v.innerHTML='<h2>'+t('levelTest')+' - '+(testData.title||cefr)+'</h2><p>'+qs.length+' '+t('testQuestions')+' | '+t('testInfo')+' '+pp+'%</p><div id="ltTimer" style="text-align:center;font-size:1.2em;font-weight:700;color:var(--accent);margin:5px 0"></div><div id="ltQuestions">'+qs.map((q,i)=>'<div class="quiz-item"><p>'+(i+1)+'. '+(q.question||q.q||q)+'</p>'+(q.options||q.choices||[]).map((o,oi)=>'<label class="quiz-option" onclick="selectQuizOption(this,'+i+','+oi+')"><span>'+o+'</span></label>').join('')+'</div>').join('')+'</div><button class="check-btn" onclick="submitLevelTest()">'+t('checkBtn')+'</button><div id="ltResult"></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';startPTTimer(qs.length*45,'ltTimer',function(){submitLevelTest()});}
 function submitLevelTest(){const v=document.getElementById('levelTestView');if(!v)return;const qs=JSON.parse(v.getAttribute('data-test-qs')||'[]');const pp=parseInt(v.getAttribute('data-pass')||'60');if(!qs.length)return;var lvlIdx=parseInt(v.getAttribute('data-lvl-idx')||'0');let correct=0;const items=v.querySelectorAll('#ltQuestions .quiz-item');items.forEach((item,i)=>{const sel=item.querySelector('.quiz-option.selected');const text=sel?sel.textContent.trim():'';const ans=(qs[i].answer||qs[i].correct||qs[i].a||'').trim();if(text.toLowerCase()===ans.toLowerCase())correct++;});const total=qs.length,percent=Math.round(correct/total*100);const el=document.getElementById('ltResult');if(!el)return;el.innerHTML='<p>'+correct+'/'+total+' ('+percent+'%)</p>';if(percent>=pp){el.innerHTML+='<p>'+t('passMsg')+'</p>';setLevelTestResult(activeCurriculum,lvlIdx,true,percent,[],true);fireConfetti();updateStreak();}else{el.innerHTML+='<p>'+t('failMsg')+'</p>';setLevelTestResult(activeCurriculum,lvlIdx,false,percent,[],false);}}
 
 // ─── NOTES ───
@@ -564,8 +566,46 @@ function deleteAdminLesson(idx){if(!confirm('🗑 حذف هذا الدرس؟'))r
 function viewAdminLesson(idx){var lessons=getAdminLessons();var ls=lessons[idx];if(!ls){toast('❌ لم يتم العثور على الدرس');return}hideAllViews();var v=document.getElementById('lessonView');if(!v){v=document.createElement('div');v.id='lessonView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var html='';html+='<div class="lesson-view"><div class="lesson-header">';html+='<button class="back-btn" onclick="hideAllViews();showAdmin()">'+t('back')+'</button>';html+='<h2>📦 '+(ls.lesson_title||'')+'</h2></div>';if(ls.objectives&&ls.objectives.length){html+='<div class="section"><h3>'+t('objectives')+'</h3><ul>';for(var oi=0;oi<ls.objectives.length;oi++){html+='<li>'+ls.objectives[oi]+'</li>'}html+='</ul></div>'}if(ls.explanation){html+='<div class="section"><h3>'+t('explanation')+'</h3>';if(ls.explanation_ar)html+='<div class="ar-content"><p>'+ls.explanation_ar+'</p></div>';html+='<div class="en-content"><p>'+ls.explanation+'</p></div></div>'}if(ls.video_url){html+='<div class="section"><h3>'+t('videoLesson')+'</h3><a href="'+ls.video_url+'" target="_blank" rel="noopener" style="display:inline-block;padding:10px 20px;background:var(--danger,#e74c3c);color:#fff;border-radius:8px;text-decoration:none">'+t('watchVideo')+'</a></div>'}if(ls.vocabulary&&ls.vocabulary.length){html+='<div class="section"><h3>'+t('vocabulary')+'</h3><table class="vocab-table"><tr><th>'+t('word')+'</th><th>'+t('translation')+'</th></tr>';for(var vi=0;vi<ls.vocabulary.length;vi++){html+='<tr><td>'+(ls.vocabulary[vi].word||'')+'</td><td>'+(ls.vocabulary[vi].translation||'')+'</td></tr>'}html+='</table></div>'}html+='</div>';if(ls.level||ls.moduleTitle){html+='<p style="color:#888;font-size:13px;text-align:center;padding:10px">📂 '+(ls.level||'')+' | '+(ls.moduleTitle||'')+'</p>'}v.innerHTML=html}
 // Admin button now added inside the showSettings override below
 
+// ─── ONBOARDING ───
+function showOnboarding(){
+  hideAllViews();
+  var v=document.getElementById('onboardingView');
+  if(!v){v=document.createElement('div');v.id='onboardingView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var isAr=currentLang==='ar';
+  var steps=isAr?[
+    {icon:'📚',title:'اختر منهجك',desc:'اختر من كامبردج السودان (3 مستويات) أو كامبردج العالمية (6 مستويات). ابدأ بالمستوى المناسب لك.'},
+    {icon:'📖',title:'ادرس الدروس',desc:'كل درس يحتوي على شرح ثنائي (عربي/إنجليزي)، فيديو، مفردات، تمارين، واختبار.'},
+    {icon:'🧪',title:'اختبر مستواك',desc:'بعد كل مستوى، اختبر معلوماتك. النجاح يفتح لك المستوى التالي ويؤهلك للحصول على شهادة.'},
+    {icon:'🎯',title:'استخدم الميزات',desc:'🚀 تحتوي على 15+ ميزة: ألعاب، تمارين نطق، تصحيح كتابة، شهادات، والمزيد!'},
+    {icon:'👤',title:'حسابات متعددة',desc:'أنشئ ملفات شخصية لكل طالب لمتابعة التقدم بشكل منفرد.'},
+    {icon:'☁️',title:'مزامنة بياناتك',desc:'سجل حساباً لحفظ تقدمك في السحابة واسترجاعه من أي جهاز.'},
+    {icon:'🌙',title:'وضع مظلم',desc:'لفّت نظرك؟ استخدم الوضع المظلم من الإعدادات للراحة البصرية.'}
+  ]:[
+    {icon:'📚',title:'Choose Your Curriculum',desc:'Choose from Cambridge Sudan (3 levels) or Cambridge World (6 levels). Start at the right level for you.'},
+    {icon:'📖',title:'Study Lessons',desc:'Each lesson has bilingual explanations (Ar/En), video, vocabulary, exercises, and a quiz.'},
+    {icon:'🧪',title:'Test Your Level',desc:'After each level, take a test. Passing unlocks the next level and qualifies you for a certificate.'},
+    {icon:'🎯',title:'Use Features',desc:'🚀 has 15+ features: games, pronunciation, writing correction, certificates, and more!'},
+    {icon:'👤',title:'Multiple Profiles',desc:'Create student profiles to track progress individually.'},
+    {icon:'☁️',title:'Cloud Sync',desc:'Register an account to save your progress to the cloud and access it from any device.'},
+    {icon:'🌙',title:'Dark Mode',desc:'Use dark mode from settings for comfortable night-time studying.'}
+  ];
+  var html='<h2>👋 '+(isAr?'مرحباً بك في تطبيق الأستاذ ياسر إبراهيم!':'Welcome to Mr. Yasser Ibrahim App!')+'</h2>';
+  html+='<div style="max-width:600px;margin:0 auto;padding:10px">';
+  steps.forEach(function(s,i){
+    html+='<div class="welcome-card" style="flex-direction:row;text-align:'+(isAr?'right':'left')+';gap:12px;padding:12px 15px;margin:8px 0;opacity:'+(1-i*0.08)+'">';
+    html+='<span style="font-size:2em">'+s.icon+'</span>';
+    html+='<div><strong style="font-size:1.1em">'+s.title+'</strong><p style="color:var(--text-light);font-size:.85em;margin:3px 0 0">'+s.desc+'</p></div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  html+='<button class="check-btn" onclick="dismissOnboarding()" style="display:block;margin:15px auto;font-size:1.1em;padding:12px 40px">'+(isAr?'🚀 ابدأ التعلم!':'🚀 Start Learning!')+'</button>';
+  v.innerHTML=html;
+}
+function dismissOnboarding(){lss('eng_onboarded','1');hideAllViews();showWelcome();}
+
 // ─── INIT ───
-document.addEventListener('DOMContentLoaded',function(){initApp();initSync();if(ls('eng_dark')==='1'){document.body.classList.add('dark-mode');const b=document.getElementById('darkToggle');if(b)b.textContent='☀️';}var devBtn=document.getElementById('navDeveloper');if(devBtn){devBtn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();showDeveloper();});}});
+document.addEventListener('DOMContentLoaded',function(){initApp();initSync();if(ls('eng_dark')==='1'){document.body.classList.add('dark-mode');const b=document.getElementById('darkToggle');if(b)b.textContent='☀️';}var devBtn=document.getElementById('navDeveloper');if(devBtn){devBtn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();showDeveloper();});}setTimeout(function(){if(ls('eng_onboarded')!=='1')showOnboarding()},2000);});
 if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).then(function(){navigator.serviceWorker.register('sw.js?'+Date.now()).catch(function(e){console.warn('SW registration failed:',e)})});}
 // ─── STREAK ───
 function getStreak(){try{var d=JSON.parse(ls('eng_streak'));return d&&typeof d==='object'?d:{count:0,lastDate:''}}catch(e){return{count:0,lastDate:''}}}
@@ -588,7 +628,7 @@ function checkVQ(qi,oi){var item=vqData[qi];if(!item)return;var opts=document.ge
 
 // ─── PLACEMENT TEST TIMER ───
 var ptTimerInterval=null;
-function startPTTimer(seconds,displayId){var display=document.getElementById(displayId);if(!display)return;clearInterval(ptTimerInterval);ptTimerInterval=setInterval(function(){if(seconds<=0){clearInterval(ptTimerInterval);if(typeof submitPT==='function')submitPT(document.querySelectorAll('#ptQuestions .quiz-item').length);return}var m=Math.floor(seconds/60);var s=seconds%60;display.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;seconds--},1000);}
+function startPTTimer(seconds,displayId,callback){var display=document.getElementById(displayId);if(!display)return;clearInterval(ptTimerInterval);ptTimerInterval=setInterval(function(){if(seconds<=0){clearInterval(ptTimerInterval);display.textContent='⏰ انتهى الوقت!';display.style.color='#e74c3c';if(typeof callback==='function')callback();return}var m=Math.floor(seconds/60);var s=seconds%60;display.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;if(seconds<=30)display.style.color='#e74c3c';else display.style.color='var(--accent)';seconds--},1000);}
 
 // Update showPlacementTest to include timer
 var origShowPT=showPlacementTest;
@@ -611,6 +651,20 @@ function speakWord(word,lang){
   var enVoice=voices.find(function(v){return v.lang.startsWith('en')});
   if(enVoice)u.voice=enVoice;
   window.speechSynthesis.speak(u);
+}
+function downloadTTS(text,lang,filename){
+  if(!('speechSynthesis' in window)){toast('❌ لا يدعم النطق');return;}
+  if(!text){toast('❌ لا يوجد نص');return;}
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang=lang||'en-US';
+  u.rate=0.8;
+  var blob=new Blob([text],{type:'text/plain'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=filename||'speech_'+Date.now()+'.txt';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  toast('✅ تم التحميل كملف نصي. استخدم قارئ PDF أو Text-to-Speech للتشغيل.');
 }
 function speakText(text,lang){speakWord(text,lang);}
 function speakLesson(title,explanation){
@@ -951,6 +1005,11 @@ renderLesson=function(ls,lid){
       speakBtn.textContent='🔊 نطق الدرس';
       speakBtn.onclick=function(){speakLesson(ls.lesson_title,ls.explanation)};
       header.appendChild(speakBtn);
+      var dBtn=document.createElement('button');
+      dBtn.className='tool-btn';
+      dBtn.textContent='📥 تحميل';
+      dBtn.onclick=function(){downloadTTS(ls.explanation||ls.lesson_title,'en',(ls.lesson_title||'lesson')+'.txt')};
+      header.appendChild(dBtn);
     }
   },200);
 };
@@ -1001,6 +1060,14 @@ showSettings=function(){
   html+='<p style="color:var(--text-light);font-size:.9em;margin-bottom:8px">يُمكّنك من إضافة دروس جديدة</p>';
   html+='<button class="day-btn '+(getTeacherMode()?'active':'')+'" onclick="toggleTeacherMode()">'+(getTeacherMode()?'✅ مفعّل':'🔒 معطّل')+'</button>';
   html+='</div>';
+  html+='<div class="settings-group">';
+  html+='<h3>💾 إدارة البيانات</h3>';
+  html+='<p style="color:var(--text-light);font-size:.9em;margin-bottom:8px">تصدير أو استيراد بياناتك</p>';
+  html+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  html+='<button class="check-btn" onclick="exportData()">📤 تصدير</button>';
+  html+='<button class="check-btn" onclick="importData()">📥 استيراد</button>';
+  html+='<button class="check-btn" onclick="lss(\'eng_onboarded\',\'\');showOnboarding();">👋 الدليل</button>';
+  html+='</div></div>';
   v.innerHTML=html;
 };
 function updateReminderTime(val){
@@ -2749,21 +2816,40 @@ var exercises=[];if(appData&&appData.curricula){appData.curricula.forEach(functi
 
 // 5. AI Writing Correction
 function aiCorrect(){hideAllViews();var v=document.getElementById('aiView');if(!v){v=document.createElement('div');v.id='aiView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';v.innerHTML='<h2>'+t('aiCorrect')+'</h2><p style="text-align:center;color:var(--text-light)">اكتب جملة أو فقرة بالانجليزية وسأصححها لك</p><textarea id="aiInput" rows="6" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;margin:10px 0;font-size:1em;background:var(--input-bg);color:var(--text)" placeholder="اكتب جملة بالإنجليزية..."></textarea><button class="check-btn" onclick="checkAIWriting()">🤖 تصحيح</button><div id="aiResult" style="margin:15px 0;padding:15px;border-radius:12px;background:var(--surface);display:none"></div><button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';}
-function checkAIWriting(){var text=document.getElementById('aiInput').value.trim();var res=document.getElementById('aiResult');if(!text){toast('اكتب شيئاً أولاً');return}res.style.display='block';var errors=[];var lines=[];
-// Capitalization check
-if(text[0]!==text[0].toUpperCase())errors.push('🔤 الجملة تبدأ بحرف كبير');
-var endChar=text[text.length-1];if(!/[.!?]/.test(endChar))errors.push('🔚 الجملة تنتهي بنقطة أو علامة استفهام');
-// Space after punctuation
+function checkAIWriting(){var text=document.getElementById('aiInput').value.trim();var res=document.getElementById('aiResult');if(!text){toast('اكتب شيئاً أولاً');return}res.style.display='block';var errors=[];var suggestions=[];
+// 1. Capitalization
+var sents=text.split(/(?<=[.!?])\s+/);sents.forEach(function(s,i){if(s.length>0&&s[0]!==s[0].toUpperCase())errors.push('🔤 الجملة '+(i+1)+' تبدأ بحرف كبير')});
+// 2. Ending punctuation
+if(!/[.!?]$/.test(text.trim()))errors.push('🔚 النص ينتهي بنقطة أو علامة استفهام');
+// 3. Space after punctuation
 text.replace(/[.!?]\s*[a-z]/g,function(m){if(m.length>2)errors.push('✏️ بعد النقطة افصل بمسافة ثم حرف كبير')});
-// Common spelling mistakes
-var dict={'i ':'I ','cant':"can't",'dont':"don't",'doesnt':"doesn't",'isnt':"isn't",'arent':"aren't",'wont':"won't",'wouldnt':"wouldn't",'couldnt':"couldn't",'shouldnt':"shouldn't",'ive':'I have','youre':'you are','hes':'he is','shes':'she is','its':"it's",'theres':'there is','theyre':'they are','alot':'a lot','everyday':'every day','recieve':'receive','acheive':'achieve','beleive':'believe','definately':'definitely','seperate':'separate','occured':'occurred','occuring':'occurring','thier':'their','wierd':'weird'};
-var corrected=text;Object.keys(dict).forEach(function(k){var re=new RegExp('\\b'+k+'\\b','gi');var match=text.match(re);if(match){errors.push('✏️ "'+match[0]+'" قد تكون "'+dict[k]+'"');corrected=corrected.replace(re,dict[k])}});
-// Word count
-var words=text.split(/\s+/).filter(Boolean).length;var sentences=text.split(/[.!?]+/).filter(Boolean).length;
-var html='<h3 style="margin-bottom:10px">📊 تحليل النص</h3>';html+='<div style="display:flex;gap:15px;flex-wrap:wrap;margin:10px 0"><span>📝 '+words+' كلمة</span><span>📄 '+sentences+' جملة</span></div>';
-if(errors.length){html+='<h4 style="color:var(--warning);margin:10px 0">⚠️ ملاحظات:</h4><ul style="list-style:none;padding:0">';errors.forEach(function(e){html+='<li style="padding:3px 0">'+e+'</li>'});html+='</ul>'}else{html+='<p style="color:var(--success);font-size:1.2em">✅ '+t('correct')+'</p>'}
-if(corrected!==text){html+='<h4 style="margin:10px 0">📝 الاقتراح:</h4><div style="background:var(--test-option-bg);padding:12px;border-radius:8px;text-align:right;direction:ltr">'+corrected+'</div>'}
-var score=100-(errors.length*15);score=Math.max(score,0);html+='<div style="margin-top:15px;text-align:center;font-size:1.3em;color:'+(score>=80?'var(--success)':score>=50?'var(--warning)':'var(--danger)')+'">التقييم: '+score+'%</div>';res.innerHTML=html;}
+// 4. Double spaces
+if(/\s{2,}/.test(text))errors.push('⚠️ يوجد مسافات مزدوجة، استخدم مسافة واحدة فقط');
+// 5. Common spelling mistakes
+var dict={'i ':'I ','cant':"can't",'dont':"don't",'doesnt':"doesn't",'isnt':"isn't",'arent':"aren't",'wont':"won't",'wouldnt':"wouldn't",'couldnt':"couldn't",'shouldnt':"shouldn't",'ive':'I have','youre':'you are','hes':'he is','shes':'she is','its':"it's",'theres':'there is','theyre':'they are','alot':'a lot','everyday':'every day','recieve':'receive','acheive':'achieve','beleive':'believe','definately':'definitely','seperate':'separate','occured':'occurred','occuring':'occurring','thier':'their','wierd':'weird','therefor':'therefore','untill':'until','tommorow':'tomorrow','comittee':'committee','embarass':'embarrass','occassion':'occasion','priviledge':'privilege','neccessary':'necessary','goverment':'government','accomodate':'accommodate','calender':'calendar','concious':'conscious','dissapoint':'disappoint','existance':'existence','foriegn':'foreign','harrass':'harass','independant':'independent','liason':'liaison','maintainance':'maintenance','occurence':'occurrence','paralel':'parallel','perseverence':'perseverance','posession':'possession','publicly':'publicly','reccomend':'recommend','repetition':'repetition'};
+// 6. Articles (a/an)
+text.replace(/\b([Aa])\s+[aeiou]/g,function(m){if(/^[Aa]\s+[aeiou]/.test(m))errors.push('📝 قبل صوت متحرك استخدم "an" بدل "a": '+m)});
+// 7. Subject-verb agreement (he/she/it + verb+s)
+text.replace(/\b(he|she|it)\s+(\w+)\b/gi,function(m,pronoun,verb){if(verb&&!verb.endsWith('s')&&!verb.endsWith('ed')&&verb.length>2&&verb!=='has'&&verb!=='does'&&verb!=='is')errors.push('📝 بعد '+pronoun+' أضف s للفعل: '+m+' → '+pronoun+' '+verb+'s')});
+// 8. Word count and readability
+var words=text.split(/\s+/).filter(Boolean).length;var sCount=sents.length;var longWords=text.split(/\s+/).filter(function(w){return w.length>8}).length;
+var html='<h3 style="margin-bottom:10px">📊 تحليل متقدم</h3>';
+html+='<div style="display:flex;gap:15px;flex-wrap:wrap;margin:10px 0">';
+html+='<span>📝 '+words+' كلمة</span><span>📄 '+sCount+' جملة</span>';
+html+='<span>🔤 '+longWords+' كلمة طويلة</span>';
+html+='<span>📏 '+(words>0?Math.round(words/sCount):0)+' كلمة/جملة</span>';
+html+='</div>';
+// Score calculation
+var score=100;score-=errors.length*10;if(words<3)score-=20;if(sCount<1)score-=15;if(text.length<20)score-=10;score=Math.max(0,Math.min(100,score));
+// Level estimate
+var level=score>=90?'C2':score>=80?'C1':score>=70?'B2':score>=60?'B1':score>=50?'A2':'A1';
+if(errors.length){html+='<h4 style="color:var(--warning);margin:10px 0">⚠️ ملاحظات ('+errors.length+'):</h4><ul style="list-style:none;padding:0">';errors.forEach(function(e){html+='<li style="padding:3px 0;border-bottom:1px solid #f0f0f0">'+e+'</li>'});html+='</ul>'}else{html+='<p style="color:var(--success);font-size:1.2em">✅ '+t('correct')+'</p>'}
+var corrected=text;Object.keys(dict).forEach(function(k){var re=new RegExp('\\b'+k+'\\b','gi');corrected=corrected.replace(re,dict[k])});
+if(corrected!==text){html+='<h4 style="margin:10px 0">📝 الاقتراح:</h4><div style="background:var(--test-option-bg);padding:12px;border-radius:8px;text-align:'+(currentLang==='ar'?'right':'left')+';direction:ltr">'+corrected+'</div>'}
+html+='<div style="margin-top:15px;padding:15px;border-radius:12px;background:linear-gradient(135deg,'+(score>=70?'#27ae60':score>=50?'#f39c12':'#e74c3c')+',rgba(39,174,96,.1));text-align:center">'+
+  '<span style="font-size:2em;font-weight:900;color:#fff">'+score+'%</span><br>'+
+  '<span style="font-size:1em;color:rgba(255,255,255,.8)">المستوى التقديري: '+level+'</span></div>';
+res.innerHTML=html;}
 
 // 6. Certificate PDF Export
 function exportCertPDF(){var p=getProgress();var name=ls('eng_activeProfile')||'طالب';var isAr=currentLang==='ar';var date=new Date().toLocaleDateString(isAr?'ar-EG':'en-US');var completed=(p.completed||[]).length;var verifCode=Date.now().toString(36).toUpperCase();var w=window.open('','_blank');if(!w)return;w.document.write('<!DOCTYPE html><html dir="'+(isAr?'rtl':'ltr')+'"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+(isAr?'شهادة تقدم':'Progress Certificate')+'</title><style>'+
@@ -2920,7 +3006,7 @@ function showCertSelector(){
   var origHide=hideAllViews;
   hideAllViews=function(){
     origHide();
-    ['profileView','grammarExView','aiView','leaderView','allFeaturesView','certSelectView'].forEach(function(id){
+    ['profileView','grammarExView','aiView','leaderView','allFeaturesView','certSelectView','onboardingView'].forEach(function(id){
       var e=document.getElementById(id);if(e)e.style.display='none';
     });
   };
