@@ -2242,4 +2242,320 @@ navSetup=function(){
   document.head.appendChild(css);
 })();
 
+// ═══ FEATURE 1: DAILY WORD ═══
+function showDailyWord(){
+  var w=document.getElementById('dailyWordView');
+  if(!w){w=document.createElement('div');w.id='dailyWordView';w.className='lesson-view';document.getElementById('content').appendChild(w)}
+  w.style.display='block';
+  var today=new Date().toDateString();
+  var cache=ls('daily_word_cache');
+  var data=null;
+  if(cache){try{var p=JSON.parse(cache);if(p.date===today)data=p.word;}catch(e){}}
+  if(!data){
+    var allWords=[];
+    if(appData&&appData.curricula)appData.curricula.forEach(function(c){if(c.levels)c.levels.forEach(function(l){if(l.modules)l.modules.forEach(function(m){if(m.lessons)m.lessons.forEach(function(ls){if(ls.vocabulary)ls.vocabulary.forEach(function(v){var word=v.word||v;var trans=v.translation||v.meaning||'';if(word)allWords.push({word:word,trans:trans,level:l.level_name||''})})})})})});
+    if(allWords.length){data=allWords[Math.floor(Math.random()*allWords.length)];lss('daily_word_cache',JSON.stringify({date:today,word:data}));}
+  }
+  if(!data){w.innerHTML='<p>'+t('noVocab')+'</p>';return;}
+  var html='<div class="daily-word-card">';
+  html+='<div class="daily-word-date">📅 '+new Date().toLocaleDateString(currentLang==='ar'?'ar-EG':'en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'</div>';
+  html+='<div class="daily-word-emoji">💡</div>';
+  html+='<div class="daily-word-title">'+t('dailyWord')+'</div>';
+  html+='<div class="daily-word-en">'+data.word+'</div>';
+  if(data.trans)html+='<div class="daily-word-ar">'+data.trans+'</div>';
+  html+='<div class="daily-word-level badge badge-'+((data.level||'A1').toLowerCase())+'">'+data.level+'</div>';
+  html+='<div class="daily-word-actions"><button class="check-btn" onclick="speakWord(\''+data.word.replace(/'/g,"\\'")+'\')">🔊 '+t('speakNow')+'</button>';
+  html+='<button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';
+  html+='</div>';
+  w.innerHTML=html;
+}
+
+// ═══ FEATURE 2: SENTENCE SCRAMBLE ═══
+var scrambleState={currentSentence:null,shuffled:[]};
+function showScrambleGame(){
+  hideAllViews();
+  var v=document.getElementById('scrambleView');
+  if(!v){v=document.createElement('div');v.id='scrambleView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  // Collect sentences from lessons
+  var sentences=[];
+  if(appData&&appData.curricula)appData.curricula.forEach(function(c){if(c.levels)c.levels.forEach(function(l){if(l.modules)l.modules.forEach(function(m){if(m.lessons)m.lessons.forEach(function(ls){if(ls.examples)ls.examples.forEach(function(ex){var s=typeof ex==='string'?ex:ex.sentence||ex.example||ex;if(s&&s.split(' ').length>=3&&s.split(' ').length<=10&&sentences.indexOf(s)===-1)sentences.push(s)})})})})});
+  if(!sentences.length){v.innerHTML='<p>'+t('noVocab')+'</p><button class="back-btn" onclick="showWelcome()">'+t('back')+'</button>';return;}
+  var sentence=sentences[Math.floor(Math.random()*sentences.length)];
+  var words=sentence.split(' ').filter(function(w){return w});
+  var shuffled=scrambleState.shuffled.slice();
+  if(!shuffled.length||scrambleState.currentSentence!==sentence){
+    shuffled=words.slice();
+    for(var i=shuffled.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=shuffled[i];shuffled[i]=shuffled[j];shuffled[j]=tmp;}
+    // Ensure shuffled != original
+    if(shuffled.join(' ')===sentence&&shuffled.length>1){var tmp=shuffled[0];shuffled[0]=shuffled[shuffled.length-1];shuffled[shuffled.length-1]=tmp;}
+    scrambleState.currentSentence=sentence;
+    scrambleState.shuffled=shuffled;
+  }
+  var html='<h2>🧩 '+t('scrambleTitle')+'</h2><p style="text-align:center;color:var(--text-light)">'+t('scrambleDesc')+'</p>';
+  html+='<div class="scramble-words" id="scrambleWords">';
+  shuffled.forEach(function(w,i){html+='<span class="scramble-word" onclick="scrambleClick(this,'+i+')" data-idx="'+i+'">'+w+'</span>';});
+  html+='</div>';
+  html+='<div class="scramble-answer" id="scrambleAnswer"></div>';
+  html+='<div class="scramble-actions">';
+  html+='<button class="check-btn" onclick="checkScramble()">'+t('checkBtn')+'</button>';
+  html+='<button class="back-btn" onclick="showScrambleGame()" style="margin-right:8px">🔀 '+t('tryAgain')+'</button>';
+  html+='<button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';
+  html+='<div id="scrambleResult" style="text-align:center;margin-top:10px"></div>';
+  v.innerHTML=html;
+  scrambleState.selected=[];
+}
+function scrambleClick(el,idx){
+  if(el.classList.contains('used'))return;
+  el.classList.add('used');
+  var ans=document.getElementById('scrambleAnswer');
+  var span=document.createElement('span');span.className='scramble-ans-word';span.textContent=el.textContent;span.dataset.idx=idx;
+  span.onclick=function(){this.remove();scrambleState.selected.splice(scrambleState.selected.indexOf(idx),1);document.querySelectorAll('.scramble-word[data-idx="'+idx+'"]').forEach(function(e){e.classList.remove('used')});};
+  ans.appendChild(span);
+  scrambleState.selected.push(idx);
+}
+function checkScramble(){
+  var userWords=[];
+  document.querySelectorAll('#scrambleAnswer .scramble-ans-word').forEach(function(el){userWords.push(el.textContent)});
+  var userSentence=userWords.join(' ');
+  var res=document.getElementById('scrambleResult');
+  if(userSentence===scrambleState.currentSentence){
+    res.innerHTML='<div class="match-feedback correct" style="display:block">✅ '+t('correct')+'</div>';
+    fireConfetti();
+  }else{
+    res.innerHTML='<div class="match-feedback wrong" style="display:block">❌ '+t('wrong')+'<br><small style="display:block;margin-top:5px">'+t('correctAns')+' '+scrambleState.currentSentence+'</small></div>';
+  }
+}
+
+// ═══ FEATURE 3: SPELLING BEE ═══
+var spellingState={};
+function showSpellingBee(){
+  hideAllViews();
+  var v=document.getElementById('spellingView');
+  if(!v){v=document.createElement('div');v.id='spellingView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  // Collect words
+  var words=[];
+  if(appData&&appData.curricula)appData.curricula.forEach(function(c){if(c.levels)c.levels.forEach(function(l){if(l.modules)l.modules.forEach(function(m){if(m.lessons)m.lessons.forEach(function(ls){if(ls.vocabulary)ls.vocabulary.forEach(function(vw){var w=vw.word||vw;var t=vw.translation||vw.meaning||'';if(w)words.push({word:w,trans:t})})})})})});
+  if(!words.length){v.innerHTML='<p>'+t('noVocab')+'</p><button class="back-btn" onclick="showWelcome()">'+t('back')+'</button>';return;}
+  var wordObj=words[Math.floor(Math.random()*words.length)];
+  var word=wordObj.word.replace(/[^a-zA-Z\s-]/g,'');
+  if(!word){showSpellingBee();return;}
+  spellingState.currentWord=word;
+  spellingState.currentTrans=wordObj.trans;
+  spellingState.attempts=0;
+  spellingState.maxAttempts=3;
+  var html='<h2>🐝 '+t('spellingTitle')+'</h2>';
+  html+='<p style="text-align:center;color:var(--text-light)">'+t('spellingDesc')+'</p>';
+  html+='<div class="spelling-card">';
+  html+='<div class="spelling-word">🔊 '+t('spellingListen')+'</div>';
+  if(wordObj.trans)html+='<div class="spelling-hint" style="margin:10px 0;color:var(--text-light)">💡 '+wordObj.trans+'</div>';
+  html+='<input type="text" id="spellingInput" class="spelling-input" placeholder="✍️ '+t('writeHere')+'" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">';
+  html+='<div class="spelling-actions" style="margin-top:10px">';
+  html+='<button class="check-btn" onclick="checkSpelling()">'+t('checkBtn')+'</button>';
+  html+='<button class="check-btn" onclick="speakWord(\''+word.replace(/'/g,"\\'")+'\')" style="background:#9b59b6">🔊 '+t('speakNow')+'</button>';
+  html+='<button class="back-btn" onclick="showSpellingBee()" style="margin-right:8px">🔀 '+t('tryAgain')+'</button></div>';
+  html+='<div id="spellingResult" style="text-align:center;margin-top:10px;font-size:1.2em"></div>';
+  html+='</div>';
+  v.innerHTML=html;
+  // Auto-speak the word
+  setTimeout(function(){speakWord(spellingState.currentWord)},500);
+}
+function checkSpelling(){
+  var input=document.getElementById('spellingInput');
+  var res=document.getElementById('spellingResult');
+  if(!input||!res)return;
+  var userWord=input.value.trim().toLowerCase();
+  var correct=spellingState.currentWord.toLowerCase();
+  if(userWord===correct){
+    res.innerHTML='<span class="match-feedback correct" style="display:block">✅ '+t('correct')+' 🎉</span>';
+    fireConfetti();
+  }else{
+    spellingState.attempts++;
+    if(spellingState.attempts>=spellingState.maxAttempts){
+      res.innerHTML='<span class="match-feedback wrong" style="display:block">❌ '+t('wrong')+'<br>'+t('correctAns')+' <strong>'+spellingState.currentWord+'</strong></span>';
+    }else{
+      var remaining=spellingState.maxAttempts-spellingState.attempts;
+      res.innerHTML='<span class="match-feedback wrong" style="display:block">❌ '+t('tryAgain')+' ('+remaining+' '+t('attemptsLeft')+')</span>';
+      setTimeout(function(){speakWord(spellingState.currentWord)},300);
+    }
+  }
+}
+
+// ═══ FEATURE 4: PROGRESS CHARTS ═══
+function showProgressCharts(){
+  hideAllViews();
+  var v=document.getElementById('chartsView');
+  if(!v){v=document.createElement('div');v.id='chartsView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  // Collect completion history
+  var completed=getCompletedLessons();
+  // Build weekly stats
+  var dayNames=currentLang==='ar'?LANG.ar.weekDays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var weekData=[0,0,0,0,0,0,0];
+  var today=new Date();
+  for(var d=0;d<7;d++){
+    var date=new Date(today);date.setDate(date.getDate()-d);
+    var key=date.toDateString();
+    var count=0;
+    var stored=ls('eng_hist_'+key);
+    if(stored)count=parseInt(stored)||0;
+    weekData[6-d]=count;
+  }
+  var max=1;weekData.forEach(function(v){if(v>max)max=v});
+  var html='<h2>📊 '+t('dashTitle')+'</h2>';
+  html+='<div class="chart-container"><h3>📅 '+t('thisWeek','This Week')+'</h3>';
+  html+='<div class="chart-bars">';
+  for(var i=0;i<7;i++){
+    var pct=(weekData[i]/max)*100;
+    var color=weekData[i]>0?'var(--accent)':'var(--border)';
+    html+='<div class="chart-bar-wrap">';
+    html+='<div class="chart-bar" style="height:'+pct+'%;background:'+color+'" title="'+weekData[i]+'"></div>';
+    html+='<div class="chart-label">'+dayNames[i]+'</div></div>';
+  }
+  html+='</div></div>';
+  // Level progress
+  html+='<div class="chart-container"><h3>📚 '+t('levels')+'</h3>';
+  html+='<div class="stats-levels">';
+  if(appData&&appData.curricula)appData.curricula.forEach(function(c,ci){if(c.levels)c.levels.forEach(function(l,li){var p=getLevelProgress(ci,li);var name=l.level_name||'Level '+(li+1);var total=l.modules?l.modules.reduce(function(s,m){return s+(m.lessons?m.lessons.length:0)},0):0;var done=completed.filter(function(id){return id.indexOf(ci+'_'+li+'_')===0}).length;var pct2=total>0?Math.round(done/total*100):0;html+='<div class="stats-level"><span style="min-width:60px;font-weight:600">'+name+'</span><div class="stats-bar"><div class="stats-fill" style="width:'+pct2+'%"></div></div><span class="stats-pct">'+pct2+'%</span></div>'})});
+  html+='</div></div>';
+  html+='<button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';
+  v.innerHTML=html;
+}
+
+// ═══ FEATURE 5: WORKSHEETS PDF ═══
+function showWorksheetGenerator(){
+  hideAllViews();
+  var v=document.getElementById('worksheetView');
+  if(!v){v=document.createElement('div');v.id='worksheetView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+  v.style.display='block';
+  var html='<h2>📄 '+t('worksheetTitle','أوراق عمل')+'</h2>';
+  html+='<p style="text-align:center;color:var(--text-light)">'+t('worksheetDesc','اختر درساً لطباعة أوراق عمل')+'</p>';
+  html+='<div class="worksheet-levels">';
+  if(appData&&appData.curricula)appData.curricula.forEach(function(c,ci){if(c.levels)c.levels.forEach(function(l,li){html+='<div class="worksheet-level"><h3>'+l.level_name+'</h3>';if(l.modules)l.modules.forEach(function(m,mi){html+='<div class="worksheet-module"><strong>'+m.module_title+'</strong>';if(m.lessons)m.lessons.forEach(function(ls){html+='<div class="worksheet-lesson" onclick="generateWorksheet('+ci+','+li+',\''+(ls.lesson_id||ls.lesson_title)+'\',\''+ls.lesson_title.replace(/'/g,"\\'")+'\')">📄 '+ls.lesson_title+'</div>'});html+='</div>'});html+='</div>'})});
+  html+='</div>';
+  html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="margin-top:15px">'+t('back')+'</button>';
+  v.innerHTML=html;
+}
+function generateWorksheet(ci,li,lid,title){
+  var ls=findFullLesson(ci,li,lid);
+  if(!ls){toast(t('noTest'));return;}
+  var html='<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>ورقة عمل - '+title+'</title>';
+  html+='<style>body{font-family:sans-serif;padding:20px;direction:rtl}h2{color:#2c3e50;border-bottom:2px solid #3498db;padding-bottom:5px}.section{margin:15px 0;padding:10px;border:1px solid #ddd;border-radius:8px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ccc;padding:8px}ol{padding-right:20px}.blank{display:inline-block;width:120px;border-bottom:2px solid #666;margin:0 5px}@media print{body{padding:0}}</style></head><body>';
+  html+='<h1>📚 '+t('appTitle')+'</h1>';
+  html+='<h2>'+title+'</h2>';
+  html+='<p>'+t('name','الاسم: ________________')+' | '+t('date','التاريخ: ________________')+'</p>';
+  if(ls.objectives&&ls.objectives.length){html+='<div class="section"><h3>'+t('objectives')+'</h3><ul>';ls.objectives.forEach(function(o){html+='<li>'+o+'</li>'});html+='</ul></div>';}
+  if(ls.vocabulary&&ls.vocabulary.length){html+='<div class="section"><h3>'+t('vocabulary')+'</h3><table><tr><th>'+t('word')+'</th><th>'+t('translation')+'</th></tr>';ls.vocabulary.forEach(function(v){var w=v.word||v;var t=v.translation||v.meaning||'';html+='<tr><td>'+w+'</td><td><span class="blank"></span></td></tr>'});html+='</table></div>';}
+  if(ls.examples&&ls.examples.length){html+='<div class="section"><h3>'+t('examples')+'</h3><ol>';ls.examples.forEach(function(ex){var s=typeof ex==='string'?ex:ex.sentence||ex.example||ex;html+='<li>'+s+'</li>'});html+='</ol></div>';}
+  if(ls.quiz&&ls.quiz.length){html+='<div class="section"><h3>'+t('quiz')+'</h3><ol>';ls.quiz.forEach(function(q){var qtext=typeof q==='string'?q:q.question||q.q||'';html+='<li>'+qtext+'<br>';var opts=typeof q==='string'?[]:q.options||q.choices||[];if(opts.length){opts.forEach(function(o,i){html+='<label style="display:block;margin:3px 0"><input type="radio" name="q"> '+o+'</label>'});}html+='</li>'});html+='</ol></div>';}
+  html+='<br><button onclick="window.print()" style="padding:12px 30px;background:#3498db;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:16px">🖨️ '+t('printCert','طباعة')+'</button>';
+  html+='</body></html>';
+  var w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+// ─── ADD LANGUAGE KEYS FOR NEW FEATURES ───
+LANG.ar.dailyWord='💡 كلمة اليوم';
+LANG.en.dailyWord='💡 Word of the Day';
+LANG.ar.scrambleTitle='🧩 ترتيب الجمل';
+LANG.en.scrambleTitle='🧩 Sentence Scramble';
+LANG.ar.scrambleDesc='رتب الكلمات لتكوين جملة صحيحة';
+LANG.en.scrambleDesc='Arrange the words to form a correct sentence';
+LANG.ar.spellingTitle='🐝 سباق التهجئة';
+LANG.en.spellingTitle='🐝 Spelling Bee';
+LANG.ar.spellingDesc='استمع للكلمة ثم اكتب تهجئتها الصحيحة';
+LANG.en.spellingDesc='Listen and spell the word correctly';
+LANG.ar.spellingListen='🔊 استمع للكلمة';
+LANG.en.spellingListen='🔊 Listen to the word';
+LANG.ar.attemptsLeft='محاولات متبقية';
+LANG.en.attemptsLeft='attempts left';
+LANG.ar.thisWeek='هذا الأسبوع';
+LANG.en.thisWeek='This Week';
+LANG.ar.worksheetTitle='📄 أوراق عمل';
+LANG.en.worksheetTitle='📄 Worksheets';
+LANG.ar.worksheetDesc='اختر درساً لطباعة أوراق عمل';
+LANG.en.worksheetDesc='Select a lesson to print worksheets';
+LANG.ar.name='الاسم';
+LANG.en.name='Name';
+LANG.ar.date='التاريخ';
+LANG.en.date='Date';
+
+// ─── ADD NAV BUTTONS FOR NEW FEATURES ───
+(function(){
+  var orig=navSetup;
+  navSetup=function(){
+    orig();
+    var hr=document.querySelector('.header-right');
+    if(!hr||document.getElementById('navMore'))return;
+    var btn=document.createElement('button');btn.className='nav-btn';btn.id='navMore';btn.title=t('more','المزيد');btn.textContent='➕';
+    btn.onclick=function(){
+      hideAllViews();
+      var v=document.getElementById('moreView');
+      if(!v){v=document.createElement('div');v.id='moreView';v.className='lesson-view';document.getElementById('content').appendChild(v)}
+      v.style.display='block';
+      var html='<h2 style="text-align:center">➕ '+t('more','المزيد')+'</h2>';
+      html+='<div class="welcome-actions">';
+      html+='<div class="welcome-card" onclick="showDailyWord()"><span>💡</span><span>'+t('dailyWord')+'</span></div>';
+      html+='<div class="welcome-card" onclick="showScrambleGame()"><span>🧩</span><span>'+t('scrambleTitle')+'</span></div>';
+      html+='<div class="welcome-card" onclick="showSpellingBee()"><span>🐝</span><span>'+t('spellingTitle')+'</span></div>';
+      html+='<div class="welcome-card" onclick="showProgressCharts()"><span>📊</span><span>'+t('dashTitle')+'</span></div>';
+      html+='<div class="welcome-card" onclick="showWorksheetGenerator()"><span>📄</span><span>'+t('worksheetTitle')+'</span></div>';
+      html+='</div><button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';
+      v.innerHTML=html;
+    };
+    hr.insertBefore(btn,hr.firstChild);
+  };
+})();
+
+// ─── ADD VIEWS TO hideAllViews ───
+(function(){
+  var orig=hideAllViews;
+  hideAllViews=function(){
+    orig();
+    ['dailyWordView','scrambleView','spellingView','chartsView','worksheetView','moreView'].forEach(function(id){
+      var e=document.getElementById(id);if(e)e.style.display='none';
+    });
+  };
+})();
+
+// ─── CSS FOR NEW FEATURES ───
+(function(){
+  var css=document.createElement('style');
+  css.textContent=`
+    .daily-word-card{text-align:center;padding:30px;background:var(--surface);border-radius:20px;box-shadow:var(--card-shadow);max-width:400px;margin:0 auto}
+    .daily-word-date{font-size:.85em;color:var(--text-light);margin-bottom:15px}
+    .daily-word-emoji{font-size:60px;margin-bottom:10px}
+    .daily-word-title{font-size:.95em;color:var(--text-light);margin-bottom:10px}
+    .daily-word-en{font-size:2em;font-weight:700;color:var(--accent);margin:10px 0}
+    .daily-word-ar{font-size:1.3em;color:var(--text-light);margin:5px 0}
+    .daily-word-actions{display:flex;gap:10px;justify-content:center;margin-top:20px}
+    .daily-word-level{margin:10px auto;display:inline-block}
+    .scramble-words{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:15px 0;min-height:60px;padding:15px;background:var(--test-option-bg);border-radius:12px}
+    .scramble-word{padding:8px 16px;background:var(--surface);border:2px solid var(--accent);border-radius:8px;cursor:pointer;font-size:1.1em;transition:all .2s;user-select:none}
+    .scramble-word:hover{background:var(--accent);color:#fff;transform:scale(1.05)}
+    .scramble-word.used{opacity:.3;pointer-events:none;border-color:var(--border)}
+    .scramble-answer{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:50px;padding:15px;background:var(--surface);border:2px dashed var(--accent);border-radius:12px;margin:10px 0}
+    .scramble-ans-word{padding:8px 16px;background:var(--accent);color:#fff;border-radius:8px;cursor:pointer;font-size:1.1em;animation:popIn .2s}
+    .scramble-ans-word:hover{background:var(--danger)}
+    .scramble-actions{display:flex;gap:8px;justify-content:center;margin-top:10px}
+    .spelling-card{text-align:center;padding:30px;max-width:400px;margin:0 auto}
+    .spelling-word{font-size:1.3em;font-weight:600;color:var(--accent);margin-bottom:10px}
+    .spelling-input{width:100%;padding:15px;border:3px solid var(--accent);border-radius:15px;font-size:1.5em;text-align:center;background:var(--input-bg);color:var(--text);outline:none;letter-spacing:3px;margin:15px 0}
+    .spelling-input:focus{border-color:var(--success);box-shadow:0 0 15px rgba(39,174,96,.3)}
+    .chart-bars{display:flex;align-items:flex-end;justify-content:center;gap:12px;height:150px;padding:10px 0}
+    .chart-bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;max-width:60px;height:100%}
+    .chart-bar{width:100%;min-height:4px;border-radius:6px 6px 0 0;transition:height .5s;margin-top:auto}
+    .chart-label{font-size:.75em;color:var(--text-light);margin-top:5px;white-space:nowrap}
+    .worksheet-levels{display:grid;gap:15px}
+    .worksheet-level{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px}
+    .worksheet-level h3{color:var(--accent);margin-bottom:10px}
+    .worksheet-module{margin:8px 0;padding:8px;background:var(--test-option-bg);border-radius:8px}
+    .worksheet-lesson{padding:5px 12px;cursor:pointer;color:var(--accent);font-size:.9em;border-radius:4px;transition:background .2s}
+    .worksheet-lesson:hover{background:var(--test-option-hover)}
+  `;
+  document.head.appendChild(css);
+})();
+
 // ─── INIT REMINDER + TEACHER + KIDS + ACHIEVEMENTS ON LOAD ───
