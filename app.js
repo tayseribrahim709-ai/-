@@ -1522,21 +1522,6 @@ function shuffleArray(arr){
 }
 
 // ─── ADD KIDS BUTTON TO HEADER ───
-var origNavSetup=navSetup;
-navSetup=function(){
-  origNavSetup();
-  var headerRight=document.querySelector('.header-right');
-  if(headerRight&&!document.getElementById('navKids')){
-    var kidsBtn=document.createElement('button');
-    kidsBtn.className='nav-btn';
-    kidsBtn.id='navKids';
-    kidsBtn.title='عالم الأطفال';
-    kidsBtn.textContent='🧸';
-    kidsBtn.onclick=function(){showKidsZone()};
-    headerRight.insertBefore(kidsBtn,headerRight.firstChild);
-  }
-};
-
 // ─── KIDS ZONE CSS ───
 (function(){
   var css=document.createElement('style');
@@ -2178,9 +2163,9 @@ navSetup=function(){
   showWelcome=function(){
     prev();
     var w=document.getElementById('welcomeContent');
-    if(!w)return;
+    if(!w||w.querySelector('.extra-buttons'))return;
     var html=w.innerHTML;
-    html+='<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px">';
+    html+='<div class="extra-buttons" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px">';
     html+='<button class="check-btn" style="background:#9b59b6" onclick="showWritingPractice()">✍️ تمارين الكتابة</button>';
     html+='<button class="check-btn" style="background:#e74c3c" onclick="showSpeakingPractice()">🎤 تدريب النطق</button>';
     html+='<button class="check-btn" style="background:#f39c12" onclick="showStudentDashboard()">📊 لوحة التحكم</button>';
