@@ -758,3 +758,39 @@ footer { text-align: center; padding: 20px; color: var(--text-light); font-size:
   .vocab-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   .lesson-view { padding: 14px; }
 }
+
+/* ─── Landscape / Tablet ─── */
+@media (min-width: 768px) and (orientation: landscape) {
+  .lesson-view { max-width: 90vw; padding: 30px 40px; }
+  .welcome-actions { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .dash-grid { grid-template-columns: repeat(3, 1fr); }
+  header { padding: 8px 30px; }
+  .cert-wrap { max-width: 90vw; }
+}
+
+/* ─── Advanced Chart Styles ─── */
+.chart-month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin: 10px 0; }
+.chart-day-cell { aspect-ratio: 1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: .7em; color: #fff; font-weight: 700; min-height: 30px; }
+.chart-day-label { font-size: .65em; color: var(--text-light); text-align: center; padding: 2px 0; }
+.chart-legend { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 10px 0; font-size: .8em; }
+.chart-legend span { display: flex; align-items: center; gap: 4px; }
+.chart-legend .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+/* ─── Points Display ─── */
+.points-badge { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg,#f39c12,#e67e22); color: #fff; padding: 6px 16px; border-radius: 100px; font-weight: 700; font-size: .9em; box-shadow: 0 2px 8px rgba(243,156,18,.3); }
+.points-hist { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.points-hist span { padding: 3px 10px; border-radius: 6px; font-size: .8em; background: var(--surface); }
+
+/* ─── Unified Features Page ─── */
+.features-page { max-width: 800px; margin: 0 auto; }
+.features-page h2 { text-align: center; font-size: 1.5em; margin-bottom: 5px; }
+.features-count { text-align: center; font-size: .85em; color: var(--text-light); margin-bottom: 18px; }
+.features-group { background: var(--surface); border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: var(--card-shadow); }
+.features-group h3 { display: flex; align-items: center; gap: 8px; font-size: 1em; margin-bottom: 12px; color: var(--accent); }
+.features-group-count { font-size: .75em; background: var(--accent); color: #fff; padding: 1px 10px; border-radius: 100px; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.feature-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 8px; text-align: center; cursor: pointer; transition: all .2s; }
+.feature-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.12); border-color: var(--accent); }
+.feature-icon { font-size: 1.8em; margin-bottom: 4px; }
+.feature-label { font-size: .82em; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.feature-desc { font-size: .68em; color: var(--text-light); line-height: 1.3; }
