@@ -379,7 +379,7 @@ function saveCompletedLessons(a){lss('eng_completed',JSON.stringify(a))}
 function isLessonComplete(lid){return getCompletedLessons().indexOf(lid)!==-1}
 function toggleLessonComplete(lid,el){var a=getCompletedLessons();var i=a.indexOf(lid);if(i===-1){a.push(lid)}else{a.splice(i,1)}saveCompletedLessons(a);if(el)el.textContent=i===-1?'✅':'⬜';updateStreak();}
 
-function toggleLang(){currentLang=currentLang==='ar'?'en':'ar';document.documentElement.dir=LANG[currentLang].dir;document.getElementById('langToggle').textContent=LANG[currentLang].langToggle;renderCurriculumSelector();document.querySelector('h1').textContent=t('appTitle');var mb=document.getElementById('musicBtn');if(mb)mb.textContent=t('musicBtn');updateUILabels();hideAllViews();showWelcome();}
+function toggleLang(){currentLang=currentLang==='ar'?'en':'ar';document.documentElement.dir=LANG[currentLang].dir;document.getElementById('langToggle').textContent=LANG[currentLang].langToggle;renderCurriculumSelector();document.querySelector('h1').textContent=t('appTitle');var mb=document.getElementById('musicBtn');if(mb)mb.textContent=t('musicBtn');if(typeof updateUILabels==='function')updateUILabels();hideAllViews();showWelcome();}
 
 function toggleDark(){document.body.classList.toggle('dark-mode');const b=document.getElementById('darkToggle');b.textContent=document.body.classList.contains('dark-mode')?'☀️':'🌙';lss('eng_dark',document.body.classList.contains('dark-mode')?'1':'0');}
 
@@ -826,7 +826,7 @@ function showOnboarding(){
 function dismissOnboarding(){lss('eng_onboarded','1');hideAllViews();showWelcome();}
 
 // ─── INIT ───
-document.addEventListener('DOMContentLoaded',function(){initApp();initSync();updateUILabels();if(ls('eng_dark')==='1'){document.body.classList.add('dark-mode');const b=document.getElementById('darkToggle');if(b)b.textContent='☀️';}var devBtn=document.getElementById('navDeveloper');if(devBtn){devBtn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();showDeveloper();});}var musicBtn=document.getElementById('musicBtn');if(musicBtn)musicBtn.textContent=t('musicBtn');});
+document.addEventListener('DOMContentLoaded',function(){initApp();initSync();if(typeof updateUILabels==='function')updateUILabels();if(ls('eng_dark')==='1'){document.body.classList.add('dark-mode');const b=document.getElementById('darkToggle');if(b)b.textContent='☀️';}var devBtn=document.getElementById('navDeveloper');if(devBtn){devBtn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();showDeveloper();});}var musicBtn=document.getElementById('musicBtn');if(musicBtn)musicBtn.textContent=t('musicBtn');});
 if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).then(function(){navigator.serviceWorker.register('sw.js?'+Date.now()).catch(function(e){console.warn('SW registration failed:',e)})});}
 // ─── STREAK ───
 function getStreak(){try{var d=JSON.parse(ls('eng_streak'));return d&&typeof d==='object'?d:{count:0,lastDate:''}}catch(e){return{count:0,lastDate:''}}}
