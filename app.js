@@ -50,6 +50,7 @@ function loadDataFiles(callback){
 function t(k){return(LANG[currentLang]||LANG.ar)[k]||k;}
 function ls(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lss(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function imgError(el){el.style.display='none';var fb=el.parentElement&&el.parentElement.querySelector('.teacher-fallback');if(fb)fb.style.display='block';}
 
 // ─── LESSON PROGRESS ───
 function getCompletedLessons(){try{return JSON.parse(ls('eng_completed')||'[]')}catch(e){return[]}}
@@ -331,7 +332,6 @@ function renderLesson(ls,lid){
   };
 }
 
-
 function checkExercise(eid,answer){const el=document.getElementById(eid);const res=document.getElementById('res_'+eid);if(!el||!res)return;const val=el.value.trim();if(!val){el.style.borderColor='orange';res.innerHTML=t('answerFirst');res.style.color='orange';return;}if(answer&&val.toLowerCase()===answer.toLowerCase()){el.style.borderColor='green';res.innerHTML=t('correct');res.style.color='green';}else{el.style.borderColor='red';res.innerHTML=t('wrong')+' ('+t('answered')+' '+answer+')';res.style.color='red';}}
 
 function checkWrite(eid,answer){const el=document.getElementById(eid);const res=document.getElementById('res_'+eid);if(!el||!res)return;if(!el.value.trim()){res.innerHTML=t('answerFirst');res.style.color='orange';return;}if(answer){const user=el.value.trim().toLowerCase().replace(/[^a-z\s]/g,'');const ans=answer.toLowerCase().replace(/[^a-z\s]/g,'');if(user===ans){res.innerHTML=t('correct');res.style.color='green';}else{res.innerHTML=t('closeToCorrect');res.style.color='#e67e22';}}else{res.innerHTML=t('answered');res.style.color='green';}}
@@ -435,7 +435,7 @@ function showDeveloper(){
 }
 
 // ─── CV VIEW ───
-function showCV(){hideAllViews();let v=document.getElementById('cvView');if(!v){v=document.createElement('div');v.id='cvView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const cl=LANG[currentLang];v.innerHTML='<div class="cv-content" style="padding:20px;max-width:800px;margin:0 auto"><img src="/teacher.jpg" alt="'+t('teacherAlt')+'" style="width:100%;max-width:280px;border-radius:16px;display:block;margin:0 auto 20px;box-shadow:0 4px 20px rgba(0,0,0,.15)" onerror="console.error(\'img err\')"><h2>'+t('aboutTitle')+'</h2><div class="cv-section" style="margin:12px 0"><h3>'+t('summary')+'</h3><p>'+t('summaryText')+'</p></div><div class="cv-section" style="margin:12px 0"><h3>'+t('qualifications')+'</h3><ul>'+(cl.qualList||[]).map(q=>'<li>'+q+'</li>').join('')+'</ul></div><div class="cv-section" style="margin:12px 0"><h3>'+t('experience')+'</h3><ul>'+(cl.expList||[]).map(e=>'<li>'+e+'</li>').join('')+'</ul></div><div class="cv-section" style="margin:12px 0"><h3>'+t('skills')+'</h3><ul>'+(cl.skillList||[]).map(s=>'<li>'+s+'</li>').join('')+'</ul></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}
+function showCV(){hideAllViews();let v=document.getElementById('cvView');if(!v){v=document.createElement('div');v.id='cvView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const cl=LANG[currentLang];v.innerHTML='<div class="cv-content" style="padding:20px;max-width:800px;margin:0 auto"><div class="teacher-fallback" style="width:100%;max-width:280px;margin:0 auto 20px;padding:40px;border-radius:16px;background:var(--surface);text-align:center;font-size:64px;display:none">&#x1F9D1;&#x200D;&#x1F3EB;</div><img src="/teacher.jpg" alt="'+t('teacherAlt')+'" style="width:100%;max-width:280px;border-radius:16px;display:block;margin:0 auto 20px;box-shadow:0 4px 20px rgba(0,0,0,.15)" onerror="imgError(this)"><h2>'+t('aboutTitle')+'</h2><div class="cv-section" style="margin:12px 0"><h3>'+t('summary')+'</h3><p>'+t('summaryText')+'</p></div><div class="cv-section" style="margin:12px 0"><h3>'+t('qualifications')+'</h3><ul>'+(cl.qualList||[]).map(q=>'<li>'+q+'</li>').join('')+'</ul></div><div class="cv-section" style="margin:12px 0"><h3>'+t('experience')+'</h3><ul>'+(cl.expList||[]).map(e=>'<li>'+e+'</li>').join('')+'</ul></div><div class="cv-section" style="margin:12px 0"><h3>'+t('skills')+'</h3><ul>'+(cl.skillList||[]).map(s=>'<li>'+s+'</li>').join('')+'</ul></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}
 
 // ─── FLASHCARDS ───
 function showFlashcards(){hideAllViews();let v=document.getElementById('flashcardsView');if(!v){v=document.createElement('div');v.id='flashcardsView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);flashData=[];flashIdx=0;flashKnown=0;flashUnknown=0;if(appData&&appData.curricula){appData.curricula.forEach(c=>{c.levels&&c.levels.forEach(l=>{l.modules&&l.modules.forEach(m=>{m.lessons&&m.lessons.forEach(ls=>{(ls.vocabulary||[]).forEach(w=>{const word=typeof w==='string'?w:w.word||'';const trans=typeof w==='string'?'':w.translation||w.meaning||'';if(word)flashData.push({word,trans})})})})})})}if(!flashData.length){v.innerHTML='<h2>'+t('flashcards')+'</h2><p>'+t('noVocab')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return;}renderFlash();}
@@ -457,7 +457,7 @@ function speakPractice(text,lang){if(!window.speechSynthesis||!window.SpeechSynt
 function showSpeaking(lid){const ls=findFullLesson(lastLessonLn,lastLessonMi,lid);if(!ls||!ls.explanation){toast(t('noTest'));return;}speakPractice(ls.explanation,'en');}
 
 // ─── EXPORT / PRINT ───
-function exportPDF(){const lv=document.getElementById('lessonView');if(!lv||!lv.innerHTML.trim()||lv.style.display==='none'){toast(t('noTest'));return;}const w=window.open('','_blank');w.document.write('<html><head><title>'+t('pdfTitle')+'</title><style>body{font-family:sans-serif;padding:20px;direction:rtl}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:8px}h2{color:#2c3e50}</style></head><body>');w.document.write(lv.innerHTML);w.document.write('</body></html>');w.document.close();w.onload=function(){w.print();};}
+function exportPDF(){const lv=document.getElementById('lessonView');if(!lv||!lv.innerHTML.trim()||lv.style.display==='none'){toast(t('noTest'));return;}const html='<html><head><meta charset="UTF-8"><title>'+t('pdfTitle')+'</title><style>body{font-family:sans-serif;padding:20px;direction:rtl}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:8px}h2{color:#2c3e50}.no-print{display:none!important}</style></head><body>'+lv.innerHTML+'</body></html>';const blob=new Blob([html],{type:'text/html'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=t('pdfTitle')+'.html';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url)},5000);}
 
 // ─── LAST LESSON TRACKING ───
 let lastLessonLn=0,lastLessonMi=0;
@@ -946,7 +946,6 @@ showWelcome=function(){
 function importDataFiles(){var inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.multiple=true;inp.onchange=function(e){var files=Array.from(e.target.files||[]);if(!files.length)return;var data=[null,null,null];var pending=files.length;files.forEach(function(file){var reader=new FileReader();reader.onload=function(ev){try{var json=JSON.parse(ev.target.result);var name=file.name.toLowerCase();if(name.includes('app_data')||(json.curricula&&json.curricula.length))data[0]=json;else if(name.includes('level_test')||(json.tests&&json.tests.length))data[1]=json;else if(name.includes('placement')||(json.questions&&json.questions.length))data[2]=json;else data[0]=json}catch(e){}pending--;if(pending<=0){applyImportedData(data)}};reader.readAsText(file)})};inp.click()}
 function applyImportedData(data){appData=data[0];levelTests=data[1];placementTest=data[2];if(data[0]||data[1]||data[2]){try{lss(DATA_CACHE_KEY,JSON.stringify(data))}catch(e){}}initAppData();hideAllViews();showWelcome();toast(t('dataImported'))}
 function initAppData(){if(appData&&appData.curricula){try{switchCurriculum(0);flatLessons=[];appData.curricula.forEach(function(c,ci){if(c.levels)c.levels.forEach(function(l,li){if(l.modules)l.modules.forEach(function(m){if(m.lessons)m.lessons.forEach(function(ls){flatLessons.push({lesson_id:ls.lesson_id||ls.lesson_title,lesson_title:ls.lesson_title,curriculumIdx:ci,levelIdx:li,moduleIdx:0,moduleTitle:m.module_title})})})})})}catch(e){console&&console.error('init error:',e)}}}
-
 
 // ─── PATCH showSettings TO ADD REMINDER + TEACHER ───
 var origShowSettings=showSettings;
@@ -2519,26 +2518,12 @@ LANG.ar.dailyWord='💡 كلمة اليوم';
 LANG.en.dailyWord='💡 Word of the Day';
 LANG.ar.scrambleTitle='🧩 ترتيب الجمل';
 LANG.en.scrambleTitle='🧩 Sentence Scramble';
-LANG.ar.scrambleDesc='رتب الكلمات لتكوين جملة صحيحة';
-LANG.en.scrambleDesc='Arrange the words to form a correct sentence';
+
 LANG.ar.spellingTitle='🐝 سباق التهجئة';
 LANG.en.spellingTitle='🐝 Spelling Bee';
-LANG.ar.spellingDesc='استمع للكلمة ثم اكتب تهجئتها الصحيحة';
-LANG.en.spellingDesc='Listen and spell the word correctly';
-LANG.ar.spellingListen='🔊 استمع للكلمة';
-LANG.en.spellingListen='🔊 Listen to the word';
-LANG.ar.attemptsLeft='محاولات متبقية';
-LANG.en.attemptsLeft='attempts left';
-LANG.ar.thisWeek='هذا الأسبوع';
-LANG.en.thisWeek='This Week';
+
 LANG.ar.worksheetTitle='📄 أوراق عمل';
 LANG.en.worksheetTitle='📄 Worksheets';
-LANG.ar.worksheetDesc='اختر درساً لطباعة أوراق عمل';
-LANG.en.worksheetDesc='Select a lesson to print worksheets';
-LANG.ar.name='الاسم';
-LANG.en.name='Name';
-LANG.ar.date='التاريخ';
-LANG.en.date='Date';
 
 // ─── ADD NAV BUTTONS FOR NEW FEATURES ───
 (function(){
@@ -2619,22 +2604,18 @@ LANG.en.date='Date';
 // ─── 7 NEW FEATURES ───
 
 // Language keys
-LANG.ar.darkMode='🌙 وضع مظلم';LANG.en.darkMode='🌙 Dark Mode';
+
 LANG.ar.shareProgress='📤 مشاركة التقدم';LANG.en.shareProgress='📤 Share Progress';
 LANG.ar.listeningTitle='🎧 استماع';LANG.en.listeningTitle='🎧 Listening';
-LANG.ar.listeningDesc='استمع للقطعة وأجب عن الأسئلة';LANG.en.listeningDesc='Listen to the passage and answer questions';
+
 LANG.ar.readingTitle='📖 قراءة';LANG.en.readingTitle='📖 Reading';
-LANG.ar.readingDesc='اقرأ النص وأجب عن الأسئلة';LANG.en.readingDesc='Read the text and answer questions';
+
 LANG.ar.speechTitle='🎙️ نطق';LANG.en.speechTitle='🎙️ Pronunciation';
-LANG.ar.speechDesc='تحدث واختبر نطقك';LANG.en.speechDesc='Speak and test your pronunciation';
+
 LANG.ar.reviewTitle='🔄 مراجعة ذكية';LANG.en.reviewTitle='🔄 Spaced Repetition';
-LANG.ar.reviewDesc='راجع المفردات بذكاء';LANG.en.reviewDesc='Review vocabulary with spaced repetition';
-LANG.ar.gamesTitle='🎮 ألعاب';LANG.en.gamesTitle='🎮 Games';
+
 LANG.ar.wordSearch='🔍 بحث عن كلمات';LANG.en.wordSearch='🔍 Word Search';
 LANG.ar.crossword='🟦 كلمات متقاطعة';LANG.en.crossword='🟦 Crossword';
-LANG.ar.listenAINote='🎧 هذا النص يُقرأ بصوت آلي (TTS) — استخدمه كتمرين استماع';LANG.en.listenAINote='🎧 This text is read by AI voice (TTS) — use it as listening practice';
-LANG.ar.cwInstruction='✏️ اكتب الكلمة الإنجليزية المطابقة للترجمة';LANG.en.cwInstruction='✏️ Type the English word for each clue';
-LANG.ar.cwPlace='اكتب الكلمة...';LANG.en.cwPlace='Type the word...';
 
 // Dark Mode
 function applyDarkMode(on){if(on){document.documentElement.style.setProperty('--bg','#1a1a2e');document.documentElement.style.setProperty('--surface','#16213e');document.documentElement.style.setProperty('--text','#eee');document.documentElement.style.setProperty('--text-light','#aaa');document.documentElement.style.setProperty('--border','#333');document.documentElement.style.setProperty('--input-bg','#1a1a2e');document.documentElement.style.setProperty('--card-shadow','0 4px 15px rgba(0,0,0,.3)');document.documentElement.style.setProperty('--test-option-bg','#1a1a2e');document.documentElement.style.setProperty('--test-option-hover','#2a2a4e')}else{document.documentElement.style.removeProperty('--bg');document.documentElement.style.removeProperty('--surface');document.documentElement.style.removeProperty('--text');document.documentElement.style.removeProperty('--text-light');document.documentElement.style.removeProperty('--border');document.documentElement.style.removeProperty('--input-bg');document.documentElement.style.removeProperty('--card-shadow');document.documentElement.style.removeProperty('--test-option-bg');document.documentElement.style.removeProperty('--test-option-hover')}}
@@ -2675,7 +2656,7 @@ function pickSpeechWord(){var allWords=[];if(appData&&appData.curricula){appData
 function nextSpeechWord(){document.getElementById('speechNextBtn').style.display='none';pickSpeechWord();}
 
 // Word Search Game
-function showWordSearch(){hideAllViews();var v=document.getElementById('wordSearchView');if(!v){v=document.createElement('div');v.id='wordSearchView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var allWords=[];if(appData&&appData.curricula){appData.curricula.forEach(function(c){c.levels&&c.levels.forEach(function(l){l.modules&&l.modules.forEach(function(m){m.lessons&&m.lessons.forEach(function(ls){(ls.vocabulary||[]).forEach(function(w){var word=typeof w==='string'?w:w.word||'';if(word&&word.length>2)allWords.push(word.slice(0,8).toUpperCase())})})})})})}if(allWords.length<3){v.innerHTML='<h2>'+t('wordSearch')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return}var pool=allWords.sort(function(){return Math.random()-.5}).slice(0,8);var size=14;var grid=Array.from({length:size},function(){return Array(size).fill('.')});var dirs=[[0,1],[1,0],[1,1],[0,-1],[-1,0],[-1,-1],[1,-1],[-1,1]];function placeWord(word){word=word.toUpperCase();for(var att=0;att<100;att++){var d=dirs[Math.floor(Math.random()*dirs.length)];var r0=Math.floor(Math.random()*size);var c0=Math.floor(Math.random()*size);var ok=true;for(var i=0;i<word.length;i++){var r=r0+i*d[0],cc=c0+i*d[1];if(r<0||r>=size||cc<0||cc>=size||(grid[r][cc]!=='.'&&grid[r][cc]!==word[i])){ok=false;break}}if(!ok)continue;for(var i=0;i<word.length;i++){var r=r0+i*d[0],cc=c0+i*d[1];grid[r][cc]=word[i]}return true}return false}var placed=pool.filter(placeWord);for(var r=0;r<size;r++){for(var c2=0;c2<size;c2++){if(grid[r][c2]==='.')grid[r][c2]=String.fromCharCode(65+Math.floor(Math.random()*26))}}v.innerHTML='<h2>'+t('wordSearch')+'</h2><p style="text-align:center;color:var(--text-light)">'+t('wsFindWords')+'</p><div style="text-align:center"><div id="wsGrid" style="display:inline-grid;grid-template-columns:repeat('+size+',28px);gap:2px;margin:10px auto;direction:ltr">';for(var r=0;r<size;r++){for(var c3=0;c3<size;c3++){var letter=grid[r][c3];v.innerHTML+='<div class="ws-cell" data-r="'+r+'" data-c="'+c3+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);border-radius:4px;font-weight:600;font-size:.85em;cursor:pointer;font-family:monospace">'+letter+'</div>'}}v.innerHTML+='</div></div><div id="wsWordList" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0"></div><button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';var wl=document.getElementById('wsWordList');if(wl){placed.forEach(function(w){wl.innerHTML+='<span class="scramble-word" style="font-size:.85em;padding:4px 10px;border-color:var(--text-light);color:var(--text)">'+w.toLowerCase()+'</span>'})}v.addEventListener('click',function(e){var cell=e.target.closest('.ws-cell');if(!cell)return;var bg=cell.style.background;if(bg==='var(--accent)'||bg==='rgb(39, 174, 96)'||bg==='#27ae60'){cell.style.background='var(--surface)';cell.style.color='var(--text)'}else{cell.style.background='var(--accent)';cell.style.color='#fff'}});}function showCrossword(){hideAllViews();var v=document.getElementById('crosswordView');if(!v){v=document.createElement('div');v.id='crosswordView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var pairs=[];if(appData&&appData.curricula){appData.curricula.forEach(function(c){c.levels&&c.levels.forEach(function(l){l.modules&&l.modules.forEach(function(m){m.lessons&&m.lessons.forEach(function(ls){(ls.vocabulary||[]).forEach(function(w){var word=typeof w==='string'?w:w.word||'';var trans=typeof w==='string'?'':w.translation||w.meaning||'';if(word&&trans)pairs.push({word:word.toUpperCase(),clue:trans})})})})})})}if(pairs.length<3){v.innerHTML='<h2>'+t('crossword')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return}var qs=pairs.sort(function(){return Math.random()-.5}).slice(0,6);var inpIds=[];v.innerHTML='<h2>'+t('crossword')+'</h2><p style="text-align:center;color:var(--text-light)">اكتب الكلمة المناسبة للتعريف</p>';qs.forEach(function(q,i){var id='cw_'+i;inpIds.push(id);v.innerHTML+='<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin:8px 0"><div style="display:flex;gap:10px;align-items:center"><span style="background:var(--accent);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.8em">'+(i+1)+'</span><span style="flex:1;color:var(--text-light)">'+q.clue+'</span></div><input type="text" id="'+id+'" style="width:100%;padding:10px;margin-top:8px;border:2px solid var(--border);border-radius:8px;font-size:1.1em;text-align:center;direction:ltr" placeholder="اكتب الكلمة..."></div>'});v.innerHTML+='<button class="check-btn" id="cwCheckBtn">'+t('checkBtn')+'</button><button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';var checkBtn=document.getElementById('cwCheckBtn');if(checkBtn)checkBtn.onclick=function(){var correct=0;inpIds.forEach(function(id,i){var el=document.getElementById(id);if(el){var val=el.value.toUpperCase().trim();if(val===qs[i].word){el.style.borderColor='green';correct++}else{el.style.borderColor='red'}}});toast(correct+'/'+qs.length+' '+t('correct'))};qs.forEach(function(q,i){var el=document.getElementById('cw_'+i);if(el)el.addEventListener('input',function(){if(this.value.toUpperCase().trim()===q.word){this.style.borderColor='green'}else{this.style.borderColor='var(--border)'}})});}// Add all new feature buttons to the more menu
+function showWordSearch(){hideAllViews();var v=document.getElementById('wordSearchView');if(!v){v=document.createElement('div');v.id='wordSearchView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var allWords=[];if(appData&&appData.curricula){appData.curricula.forEach(function(c){c.levels&&c.levels.forEach(function(l){l.modules&&l.modules.forEach(function(m){m.lessons&&m.lessons.forEach(function(ls){(ls.vocabulary||[]).forEach(function(w){var word=typeof w==='string'?w:w.word||'';if(word&&word.length>2)allWords.push(word.slice(0,8).toUpperCase())})})})})})}if(allWords.length<3){v.innerHTML='<h2>'+t('wordSearch')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return}var pool=allWords.sort(function(){return Math.random()-.5}).slice(0,8);var size=14;var grid=Array.from({length:size},function(){return Array(size).fill('.')});var dirs=[[0,1],[1,0],[1,1],[0,-1],[-1,0],[-1,-1],[1,-1],[-1,1]];function placeWord(word){word=word.toUpperCase();for(var att=0;att<100;att++){var d=dirs[Math.floor(Math.random()*dirs.length)];var r0=Math.floor(Math.random()*size);var c0=Math.floor(Math.random()*size);var ok=true;for(var i=0;i<word.length;i++){var r=r0+i*d[0],cc=c0+i*d[1];if(r<0||r>=size||cc<0||cc>=size||(grid[r][cc]!=='.'&&grid[r][cc]!==word[i])){ok=false;break}}if(!ok)continue;for(var i=0;i<word.length;i++){var r=r0+i*d[0],cc=c0+i*d[1];grid[r][cc]=word[i]}return true}return false}var placed=pool.filter(placeWord);for(var r=0;r<size;r++){for(var c2=0;c2<size;c2++){if(grid[r][c2]==='.')grid[r][c2]=String.fromCharCode(65+Math.floor(Math.random()*26))}}v.innerHTML='<h2>'+t('wordSearch')+'</h2><p style="text-align:center;color:var(--text-light)">'+t('wsFindWords')+'</p><div style="text-align:center"><div id="wsGrid" style="display:inline-grid;grid-template-columns:repeat('+size+',28px);gap:2px;margin:10px auto;direction:ltr">';for(var r=0;r<size;r++){for(var c3=0;c3<size;c3++){var letter=grid[r][c3];v.innerHTML+='<div class="ws-cell" data-r="'+r+'" data-c="'+c3+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);border-radius:4px;font-weight:600;font-size:.85em;cursor:pointer;font-family:monospace">'+letter+'</div>'}}v.innerHTML+='</div></div><div id="wsWordList" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0"></div><button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';var wl=document.getElementById('wsWordList');if(wl){placed.forEach(function(w){wl.innerHTML+='<span class="scramble-word" style="font-size:.85em;padding:4px 10px;border-color:var(--text-light);color:var(--text)">'+w.toLowerCase()+'</span>'})}v.addEventListener('click',function(e){var cell=e.target.closest('.ws-cell');if(!cell)return;var bg=cell.style.background;if(bg==='var(--accent)'||bg==='rgb(39, 174, 96)'||bg==='#27ae60'){cell.style.background='var(--surface)';cell.style.color='var(--text)'}else{cell.style.background='var(--accent)';cell.style.color='#fff'}});}function showCrossword(){hideAllViews();var v=document.getElementById('crosswordView');if(!v){v=document.createElement('div');v.id='crosswordView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var pairs=[];if(appData&&appData.curricula){appData.curricula.forEach(function(c){c.levels&&c.levels.forEach(function(l){l.modules&&l.modules.forEach(function(m){m.lessons&&m.lessons.forEach(function(ls){(ls.vocabulary||[]).forEach(function(w){var word=typeof w==='string'?w:w.word||'';var trans=typeof w==='string'?'':w.translation||w.meaning||'';if(word&&trans)pairs.push({word:word.toUpperCase(),clue:trans})})})})})})}if(pairs.length<3){v.innerHTML='<h2>'+t('crossword')+'</h2><p>'+t('noTest')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>';return}var qs=pairs.sort(function(){return Math.random()-.5}).slice(0,6);var inpIds=[];v.innerHTML='<h2>'+t('crossword')+'</h2><p style="text-align:center;color:var(--text-light)">'+t('cwInstruction')+'</p>';qs.forEach(function(q,i){var id='cw_'+i;inpIds.push(id);v.innerHTML+='<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin:8px 0"><div style="display:flex;gap:10px;align-items:center"><span style="background:var(--accent);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.8em">'+(i+1)+'</span><span style="flex:1;color:var(--text-light)">'+q.clue+'</span></div><input type="text" id="'+id+'" style="width:100%;padding:10px;margin-top:8px;border:2px solid var(--border);border-radius:8px;font-size:1.1em;text-align:center;direction:ltr" placeholder="'+t('cwPlace')+'"></div>'});v.innerHTML+='<button class="check-btn" id="cwCheckBtn">'+t('checkBtn')+'</button><button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';var checkBtn=document.getElementById('cwCheckBtn');if(checkBtn)checkBtn.onclick=function(){var correct=0;inpIds.forEach(function(id,i){var el=document.getElementById(id);if(el){var val=el.value.toUpperCase().trim();if(val===qs[i].word){el.style.borderColor='green';correct++}else{el.style.borderColor='red'}}});toast(correct+'/'+qs.length+' '+t('correct'))};qs.forEach(function(q,i){var el=document.getElementById('cw_'+i);if(el)el.addEventListener('input',function(){if(this.value.toUpperCase().trim()===q.word){this.style.borderColor='green'}else{this.style.borderColor='var(--border)'}})});}// Add all new feature buttons to the more menu
 (function(){
   var orig2=navSetup;
   navSetup=function(){
@@ -2707,21 +2688,13 @@ function showWordSearch(){hideAllViews();var v=document.getElementById('wordSear
 
 // ─── 8 NEW FEATURES ───
 
-LANG.ar.cached='📶 متصل';LANG.en.cached='📶 Online';
-LANG.ar.offlineMode='📶 وضع عدم الاتصال';LANG.en.offlineMode='📶 Offline Mode';
 LANG.ar.remindMe='🔔 ذكرني';LANG.en.remindMe='🔔 Remind Me';
 LANG.ar.profiles='👤 الملفات';LANG.en.profiles='👤 Profiles';
-LANG.ar.addProfile='➕ إضافة ملف';LANG.en.addProfile='➕ Add Profile';
-LANG.ar.switchTo='➡️ تبديل إلى';LANG.en.switchTo='➡️ Switch to';
+
 LANG.ar.certPDF='📄 شهادة PDF';LANG.en.certPDF='📄 Certificate PDF';
 LANG.ar.aiCorrect='🤖 تصحيح ذكي';LANG.en.aiCorrect='🤖 AI Correction';
 LANG.ar.leaderboard='🏆 لوحة الشرف';LANG.en.leaderboard='🏆 Leaderboard';
 LANG.ar.grammarTitle='📝 تمارين قواعد';LANG.en.grammarTitle='📝 Grammar Exercises';
-LANG.ar.aiWriting='🤖 تصحيح كتابة';LANG.en.aiWriting='🤖 Writing Correction';
-LANG.ar.notiTitle='حان وقت التعلم!';LANG.en.notiTitle='Time to learn!';
-LANG.ar.notiBody='افتح التطبيق لتكمل دروسك';LANG.en.notiBody='Open the app to continue your lessons';
-LANG.ar.cachedDate='آخر تحديث';LANG.en.cachedDate='Last updated';
-LANG.ar.grammarExTitle='اختر القاعدة';LANG.en.grammarExTitle='Choose a grammar rule';
 
 // 1. Offline Status Indicator + Data Caching
 function showCachedStatus(){var el=document.getElementById('offlineStatus');if(!el){el=document.createElement('div');el.id='offlineStatus';el.style.cssText='position:fixed;bottom:10px;left:10px;font-size:.75em;padding:4px 10px;border-radius:20px;z-index:999;transition:all.3s';document.body.appendChild(el)}if(navigator.onLine){el.textContent='🟢 '+t('cached');el.style.background='rgba(39,174,96,.15)';el.style.color='var(--success)'}else{el.textContent='🔴 غير متصل';el.style.background='rgba(231,76,60,.15)';el.style.color='var(--danger)'}setTimeout(showCachedStatus,5000)}
@@ -2950,82 +2923,37 @@ setTimeout(showCachedStatus,5000);
 
 // ─── SEARCH ALL CONTENT ───
 LANG.ar.searchAll='🔍 بحث شامل';LANG.en.searchAll='🔍 Search All';
-LANG.ar.searchAllPlace='ابحث في الدروس والمفردات والأمثلة...';LANG.en.searchAllPlace='Search lessons, vocabulary, examples...';
-LANG.ar.searchResults='نتائج البحث';LANG.en.searchResults='Search Results';
-LANG.ar.thisMonth='هذا الشهر';LANG.en.thisMonth='This Month';
-LANG.ar.searchNoResults='⚠️ لا نتائج';LANG.en.searchNoResults='⚠️ No results';
-LANG.ar.grammarExPick='📝 اختر قاعدة نحوية للتمرن عليها';LANG.en.grammarExPick='📝 Pick a grammar topic to practice';
-LANG.ar.geNoExer='لا توجد تمارين لهذه القاعدة بعد';LANG.en.geNoExer='No exercises for this topic yet';
-LANG.ar.geTypeWord='✍️ اكتب الكلمة...';LANG.en.geTypeWord='✍️ Type the word...';
-LANG.ar.geBack='🔙 الرجوع';LANG.en.geBack='🔙 Back';
+
 LANG.ar.aiDesc='اكتب جملة أو فقرة بالانجليزية وسأصححها لك';LANG.en.aiDesc='Write a sentence or paragraph in English and I will correct it';
-LANG.ar.aiPlace='اكتب جملة بالإنجليزية...';LANG.en.aiPlace='Write a sentence in English...';
-LANG.ar.aiBtn='🤖 تصحيح';LANG.en.aiBtn='🤖 Correct';
+
 LANG.ar.aiWriteFirst='اكتب شيئاً أولاً';LANG.en.aiWriteFirst='Write something first';
 LANG.ar.aiAnalysis='📊 تحليل متقدم';LANG.en.aiAnalysis='📊 Advanced Analysis';
-LANG.ar.aiErrorsNote='⚠️ ملاحظات ({0}):';LANG.en.aiErrorsNote='⚠️ Notes ({0}):';
+
 LANG.ar.aiSuggestion='📝 الاقتراح:';LANG.en.aiSuggestion='📝 Suggestion:';
-LANG.ar.aiEstLevel='المستوى التقديري: {0}';LANG.en.aiEstLevel='Estimated Level: {0}';
-LANG.ar.aiStatsWords='📝 {0} كلمة';LANG.en.aiStatsWords='📝 {0} words';
-LANG.ar.aiStatsSent='📄 {0} جملة';LANG.en.aiStatsSent='📄 {0} sentences';
-LANG.ar.aiStatsLong='🔤 {0} كلمة طويلة';LANG.en.aiStatsLong='🔤 {0} long words';
-LANG.ar.aiStatsRatio='📏 {0} كلمة/جملة';LANG.en.aiStatsRatio='📏 {0} words/sentence';
-LANG.ar.profileNoFilesMsg2='لا توجد ملفات بعد. أضف ملفاً جديداً.';LANG.en.profileNoFilesMsg2='No profiles yet. Add a new profile.';
-LANG.ar.srNoReview='🎉 لا توجد كلمات للمراجعة الآن';LANG.en.srNoReview='🎉 No words to review now';
+
 LANG.ar.srShowMeaning='👁️ إظهار المعنى';LANG.en.srShowMeaning='👁️ Show meaning';
-LANG.ar.srDoYouKnow='هل تعرف هذه الكلمة؟';LANG.en.srDoYouKnow='Do you know this word?';
+
 LANG.ar.srYes='✅ نعم';LANG.en.srYes='✅ Yes';
 LANG.ar.srNo='➖ لا';LANG.en.srNo='➖ No';
-LANG.ar.srAnsweredWell='✅ أحسنت!';LANG.en.srAnsweredWell='✅ Well done!';
-LANG.ar.srReviewLater='🔄 ستراجعها غداً';LANG.en.srReviewLater='🔄 Will review tomorrow';
-LANG.ar.srClickShow='اضغط للإظهار';LANG.en.srClickShow='Click to show';
-LANG.ar.listeningListen='🔊 استمع';LANG.en.listeningListen='🔊 Listen';
-LANG.ar.listeningShowText='📖 عرض النص';LANG.en.listeningShowText='📖 Show text';
-LANG.ar.speechGameTitle='قل الكلمة التي تظهر على الشاشة';LANG.en.speechGameTitle='Say the word shown on screen';
-LANG.ar.speechStart='🎙️ ابدأ التسجيل';LANG.en.speechStart='🎙️ Start recording';
+
 LANG.ar.speechListening='🔴 جارٍ الاستماع...';LANG.en.speechListening='🔴 Listening...';
-LANG.ar.speechNotSupported='🚫 غير مدعوم';LANG.en.speechNotSupported='🚫 Not supported';
+
 LANG.ar.speechNext='➡️ التالي';LANG.en.speechNext='➡️ Next';
-LANG.ar.wsFindWords='ابحث عن الكلمات في الشبكة';LANG.en.wsFindWords='Find the words in the grid';
+
 LANG.ar.allFeatures='🚀 جميع الميزات';LANG.en.allFeatures='🚀 All Features';
-LANG.ar.chooseGrammar='📝 اختر قاعدة نحوية للتمرن عليها';LANG.en.chooseGrammar='📝 Choose a grammar topic to practice';
+
 LANG.ar.profileNamePlace='اسم الطالب';LANG.en.profileNamePlace='Student name';
 LANG.ar.profileExists2='⚠️ الملف موجود مسبقاً';LANG.en.profileExists2='⚠️ Profile already exists';
-LANG.ar.adminExplArPlace='الشرح بالعربية...';LANG.en.adminExplArPlace='Arabic explanation...';
-LANG.ar.adminVocabPlace='hello = مرحبا\ngoodbye = وداعا';LANG.en.adminVocabPlace='hello = hello\ngoodbye = goodbye';
-LANG.ar.adminObjPlace='هدف 1\nهدف 2';LANG.en.adminObjPlace='Objective 1\nObjective 2';
-LANG.ar.kidsWorldTitle='🌟 عالم الأطفال 🌟';LANG.en.kidsWorldTitle='🌟 Kids World 🌟';
-LANG.ar.kidsLearnFun='تعلم الإنجليزية بالمرح!';LANG.en.kidsLearnFun='Learn English with fun!';
-LANG.ar.kidsWord='كلمة';LANG.en.kidsWord='word';
-LANG.ar.kidsGames='🎮 ألعاب';LANG.en.kidsGames='🎮 Games';
+
 LANG.ar.kidsMatch='🎯 مطابقة';LANG.en.kidsMatch='🎯 Match';
 LANG.ar.kidsQuiz='❓ اختبار';LANG.en.kidsQuiz='❓ Quiz';
 LANG.ar.kidsMemory='🧠 ذاكرة';LANG.en.kidsMemory='🧠 Memory';
-LANG.ar.kidsDraw='🎨 تلوين';LANG.en.kidsDraw='🎨 Color';
-LANG.ar.kidsListen='🔊 اسمع';LANG.en.kidsListen='🔊 Listen';
-LANG.ar.kidsLearn='📝 تعلمت';LANG.en.kidsLearn='📝 Learned';
-LANG.ar.kidsLearned='✅ تعلمت!';LANG.en.kidsLearned='✅ Learned!';
-LANG.ar.welcomeTitle='🇸🇩 مرحباً بك في تطبيق استاذ ياسر ابراهيم 🇸🇩';LANG.en.welcomeTitle='🇸🇩 Welcome to Mr. Yasser Ibrahim\'s App 🇸🇩';
-LANG.ar.welcomeDesc='دورة كاملة لتعليم اللغة الإنجليزية وفق الإطار الأوروبي المرجعي المشترك (CEFR) ومنهج السودان.';LANG.en.welcomeDesc='A complete English course according to CEFR and the Sudan curriculum.';
-LANG.ar.welcomeDesc2='اختر درساً من القائمة لبدء التعلم، أو استخدم أزرار التنقل في الأعلى للوحة التقدم وبنك المفردات.';LANG.en.welcomeDesc2='Choose a lesson from the list to start learning, or use the navigation buttons above.';
+
+LANG.en.welcomeTitle='🇸🇩 Welcome to Mr. Yasser Ibrahim\'s App 🇸🇩';
+
 LANG.ar.allOpen='📂 إغلاق الكل';LANG.en.allOpen='📂 Close All';
 LANG.ar.allClose='📂 فتح الكل';LANG.en.allClose='📂 Open All';
-LANG.ar.navDashTitle='لوحة التقدم';LANG.en.navDashTitle='Dashboard';
-LANG.ar.navVocabTitle='بنك المفردات';LANG.en.navVocabTitle='Vocabulary Bank';
-LANG.ar.navGramTitle='مرجع القواعد';LANG.en.navGramTitle='Grammar Reference';
-LANG.ar.navPlaceTitle='اختبار تحديد المستوى';LANG.en.navPlaceTitle='Placement Test';
-LANG.ar.navSettingsTitle='الإعدادات';LANG.en.navSettingsTitle='Settings';
-LANG.ar.navSyncTitle='مزامنة';LANG.en.navSyncTitle='Sync';
-LANG.ar.navAboutTitle='عن الاستاذ';LANG.en.navAboutTitle='About';
-LANG.ar.navCVTitle='السيرة الذاتية';LANG.en.navCVTitle='CV';
-LANG.ar.navDevTitle='المطور';LANG.en.navDevTitle='Developer';
-LANG.ar.darkToggleTitle='وضع الليل';LANG.en.darkToggleTitle='Dark Mode';
-LANG.ar.searchPlace='🔍 ابحث عن درس...';LANG.en.searchPlace='🔍 Search lesson...';
-LANG.ar.loadingText='جاري تحميل البيانات...';LANG.en.loadingText='Loading data...';
-LANG.ar.footerText='استاذ ياسر ابراهيم &copy; 2026 — جميع المناهج';LANG.en.footerText='Mr. Yasser Ibrahim &copy; 2026 — All Rights Reserved';
-LANG.ar.docTitle='استاذ ياسر ابراهيم - دورة كامبردج الإنجليزية';LANG.en.docTitle='Mr. Yasser Ibrahim - Cambridge English Course';
-LANG.ar.appleTitle='استاذ ياسر';LANG.en.appleTitle='Mr. Yasser';
-LANG.ar.done='مكتمل';LANG.en.done='Done';
+
 LANG.ar.more='المزيد';LANG.en.more='More';
 LANG.ar.printCert='طباعة';LANG.en.printCert='Print';
 function updateUILabels(){

@@ -36,3 +36,4 @@ new_features.js
 splice_renderLesson.py
 rebuild*.js
 renderLesson_new.js
+sync_db.json
