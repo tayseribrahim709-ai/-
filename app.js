@@ -129,16 +129,21 @@ function getExplanationAr(ls){
   var ar=ls.explanation_ar;
   if(ar)return ar;
   var title=ls.lesson_title||'';
-  if(/Hello|Introducing|Family|Numbers 1-20/.test(title)) return 'يتعلم الطالب في هذا الدرس المفردات والتراكيب الأساسية للتحدث عن "'+title+'" بالإنجليزية. يشمل تمارين النطق والقراءة والكتابة.';
-  if(/Classroom|Teachers|Subject|Objects/.test(title)) return 'يركز هذا الدرس على المفردات المتعلقة بـ"'+title+'" في سياق المدرسة مع أمثلة وتمارين تفاعلية.';
-  if(/Rooms|Members|Routines|Colors/.test(title)) return 'يشرح هذا الدرس كيفية التحدث عن "'+title+'" بالإنجليزية مع مفردات جديدة وتطبيقات عملية.';
-  if(/Meals|Fruits|Drinks|Market/.test(title)) return 'يتناول هذا الدرس "'+title+'" مع مفردات وعبارات يومية وتمارين للتحدث والاستماع.';
-  if(/Animals|Pets|Nile|Weather/.test(title)) return 'يقدم هذا الدرس مفردات عن "'+title+'" بالإنجليزية ويساعد على وصف الظواهر والكائنات.';
-  if(/Neighborhood|Helping|Shopping|Festivals/.test(title)) return 'يتعلم الطالب التعبير عن "'+title+'" بالإنجليزية من خلال حوارات وتمارين تفاعلية.';
-  if(/Daily Life|Travel|Transport|Health|Body|Nature|Culture|Stories/.test(title)) return 'يغطي هذا الدرس "'+title+'" مع تطوير مهارات القراءة والكتابة والمحادثة.';
-  if(/Education|Sudan|Work|Careers|Media|Technology|Environment|Society|Values/.test(title)) return 'يتناول هذا الدرس "'+title+'" بمستوى متقدم مع مفردات أكاديمية وتمارين شاملة.';
-  if(/Sheet Music|Note|Rhythm|Musical|Time Sign/.test(title)) return 'درس موسيقي بعنوان "'+title+'" يشرح المفاهيم الموسيقية الأساسية بطريقة مبسطة.';
-  return 'درس "'+title+'" باللغة الإنجليزية. يغطي المفردات والقواعد والمهارات اللغوية من خلال أمثلة وتطبيقات عملية.';
+  if(/Hello|Introducing|Family|Numbers 1-20/.test(title)) return t('arExplGreet').replace('{0}',title);
+  if(/Classroom|Teachers|Subject|Objects/.test(title)) return t('arExplSchool').replace('{0}',title);
+  if(/Rooms|Members|Routines|Colors/.test(title)) return t('arExplDesc').replace('{0}',title);
+  if(/Meals|Fruits|Drinks|Market/.test(title)) return t('arExplDaily').replace('{0}',title);
+  if(/Animals|Pets|Nile|Weather/.test(title)) return t('arExplNature').replace('{0}',title);
+  if(/Neighborhood|Helping|Shopping|Festivals/.test(title)) return t('arExplSocial').replace('{0}',title);
+  if(/Daily Life|Travel|Transport|Health|Body|Nature|Culture|Stories/.test(title)) return t('arExplSkills').replace('{0}',title);
+  if(/Education|Sudan|Work|Careers|Media|Technology|Environment|Society|Values/.test(title)) return t('arExplAdvanced').replace('{0}',title);
+  if(/Sheet Music|Note|Rhythm|Musical|Time Sign/.test(title)) return t('arExplMusic').replace('{0}',title);
+  return t('arExplGeneric').replace('{0}',title);
+}
+function getLessonTitleAr(ls){return ls.lesson_title_ar||(currentLang==='ar'?t('arTitlePrefix')+ls.lesson_title:ls.lesson_title);}
+function getObjectivesAr(ls){
+  if(ls.objectives_ar&&ls.objectives_ar.length)return ls.objectives_ar;
+  return (ls.objectives||[]).map(function(o){return t('arObjPrefix')+o;});
 }
 // All string concatenation uses proper escaping: ' for strings with ", " for strings with '
 function renderLesson(ls,lid){
@@ -148,25 +153,32 @@ function renderLesson(ls,lid){
   var html='';
 
   // Header
+  var isAr=currentLang==='ar';
   html+='<div class="lesson-view"><div class="lesson-header">'+
     '<button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button>'+
-    '<h2>'+ls.lesson_title+'</h2>'+
+    '<h2>'+(isAr?getLessonTitleAr(ls):ls.lesson_title)+'</h2>'+
     '<span class="fav-btn" onclick="toggleFavLesson(this,\''+lid+'\')">'+fav+'</span></div>';
 
   // Objectives
-  if(ls.objectives&&ls.objectives.length){
+  var objs=isAr?getObjectivesAr(ls):(ls.objectives||[]);
+  if(objs.length){
     html+='<div class="section"><h3>'+t('objectives')+'</h3><ul>';
-    for(var oi=0;oi<ls.objectives.length;oi++){
-      html+='<li>'+ls.objectives[oi]+'</li>';
+    for(var oi=0;oi<objs.length;oi++){
+      html+='<li>'+objs[oi]+'</li>';
     }
     html+='</ul></div>';
   }
 
-  // Explanation (bilingual)
+  // Explanation (language-aware)
   if(ls.explanation){
     html+='<div class="section bilingual"><h3>'+t('explanation')+'</h3>';
-    html+='<div class="ar-content"><p>'+getExplanationAr(ls)+'</p></div>';
-    html+='<div class="en-content"><p>'+ls.explanation+'</p></div>';
+    if(isAr){
+      html+='<div class="ar-content"><p>'+getExplanationAr(ls)+'</p></div>';
+      html+='<details style="margin-top:8px"><summary>'+t('showEnglish')+'</summary><div class="en-content" style="margin-top:6px"><p>'+ls.explanation+'</p></div></details>';
+    }else{
+      html+='<div class="en-content"><p>'+ls.explanation+'</p></div>';
+      html+='<details style="margin-top:8px"><summary>'+t('showArabic')+'</summary><div class="ar-content" style="margin-top:6px"><p>'+getExplanationAr(ls)+'</p></div></details>';
+    }
     html+='</div>';
   }
 
@@ -188,15 +200,19 @@ function renderLesson(ls,lid){
     html+='</div>';
   }
 
-  // Vocabulary
+  // Vocabulary (language-aware)
   if(ls.vocabulary&&ls.vocabulary.length){
     html+='<div class="section"><h3>'+t('vocabulary')+'</h3>';
-    html+='<table class="vocab-table"><tr><th>'+t('word')+'</th><th>'+t('translation')+'</th></tr>';
+    html+='<table class="vocab-table"><tr>';
+    if(isAr){html+='<th>'+t('translation')+'</th><th>'+t('word')+'</th>';}
+    else{html+='<th>'+t('word')+'</th><th>'+t('translation')+'</th>';}
+    html+='</tr>';
     for(var vi=0;vi<ls.vocabulary.length;vi++){
       var v=ls.vocabulary[vi];
       var word=typeof v==='string'?v:v.word||v;
       var trans=typeof v==='string'?'':v.translation||v.meaning||'';
-      html+='<tr><td>'+word+' <span class="speak-btn" onclick="event.stopPropagation();speakText(\''+word.replace(/'/g,"\\'")+'\')" style="cursor:pointer;font-size:.85em">🔊</span></td><td>'+trans+'</td></tr>';
+      if(isAr){html+='<tr><td>'+trans+'</td><td>'+word+' <span class="speak-btn" onclick="event.stopPropagation();speakText(\''+word.replace(/'/g,"\\'")+'\')" style="cursor:pointer;font-size:.85em">🔊</span></td></tr>';}
+      else{html+='<tr><td>'+word+' <span class="speak-btn" onclick="event.stopPropagation();speakText(\''+word.replace(/'/g,"\\'")+'\')" style="cursor:pointer;font-size:.85em">🔊</span></td><td>'+trans+'</td></tr>';}
     }
     html+='</table></div>';
   }
@@ -2698,7 +2714,7 @@ LANG.ar.leaderboard='🏆 لوحة الشرف';LANG.en.leaderboard='🏆 Leaderb
 LANG.ar.grammarTitle='📝 تمارين قواعد';LANG.en.grammarTitle='📝 Grammar Exercises';
 
 // 1. Offline Status Indicator + Data Caching
-function showCachedStatus(){var el=document.getElementById('offlineStatus');if(!el){el=document.createElement('div');el.id='offlineStatus';el.style.cssText='position:fixed;bottom:10px;left:10px;font-size:.75em;padding:4px 10px;border-radius:20px;z-index:999;transition:all.3s';document.body.appendChild(el)}if(navigator.onLine){el.textContent='🟢 '+t('cached');el.style.background='rgba(39,174,96,.15)';el.style.color='var(--success)'}else{el.textContent='🔴 غير متصل';el.style.background='rgba(231,76,60,.15)';el.style.color='var(--danger)'}setTimeout(showCachedStatus,5000)}
+function showCachedStatus(){var el=document.getElementById('offlineStatus');if(!el){el=document.createElement('div');el.id='offlineStatus';el.style.cssText='position:fixed;bottom:10px;left:10px;font-size:.75em;padding:4px 10px;border-radius:20px;z-index:999;transition:all.3s';document.body.appendChild(el)}if(navigator.onLine){el.textContent='🟢 '+t('cached');el.style.background='rgba(39,174,96,.15)';el.style.color='var(--success)'}else{el.textContent='🔴 '+t('offline');el.style.background='rgba(231,76,60,.15)';el.style.color='var(--danger)'}setTimeout(showCachedStatus,5000)}
 window.addEventListener('online',showCachedStatus);
 window.addEventListener('offline',showCachedStatus);
 // Cache all data on first load
@@ -3000,7 +3016,7 @@ function goToLevel(lvl){var idx=-1;if(appData&&appData.curricula){for(var i=0;i<
 // ─── PUSH NOTIFICATION SUBSCRIPTION ───
 function subscribePush(){
 var vapidKey=ls('eng_vapid_key')||'';
-if(!vapidKey){toast('⚠️ ضع مفتاح VAPID في الإعدادات أولاً');return;}
+if(!vapidKey){toast(t('vapidKeyMissing'));return;}
 if(!('serviceWorker'in navigator)||!('PushManager'in window)){toast(t('speechNotSupported'));return}
 var key=urlBase64ToUint8Array(vapidKey);
 navigator.serviceWorker.ready.then(function(reg){
