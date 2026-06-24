@@ -71,4 +71,4 @@ h.createServer(function(q, r) {
       r.end(b);
     });
   }
-}).listen(process.env.PORT || 8082, function() { console.log('Server running on http://localhost:' + (process.env.PORT || 8082)); });
+}).listen(process.env.PORT || 8080, function() { console.log('Server running on http://localhost:' + (process.env.PORT || 8080)); });
