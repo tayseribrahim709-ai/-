@@ -1,50 +1,50 @@
 /* ─── CSS Variables ─── */
 :root {
-  --bg: #f0f2f5;
+  --bg: #fdf2e9;
   --surface: #fff;
-  --header-bg: linear-gradient(135deg, #1a2a3a, #2c3e50);
+  --header-bg: linear-gradient(135deg, #CE1126, #FCD116, #009B3A);
   --header-text: #fff;
   --text: #1a1a2e;
   --text-light: #6b7280;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
-  --border: #e5e7eb;
-  --border-light: #f3f4f6;
+  --accent: #CE1126;
+  --accent-hover: #a50d1e;
+  --border: #e5d5c5;
+  --border-light: #f5ebe0;
   --card-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
   --card-shadow-hover: 0 10px 25px rgba(0,0,0,.1), 0 4px 10px rgba(0,0,0,.06);
-  --success: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
+  --success: #009B3A;
+  --danger: #CE1126;
+  --warning: #FCD116;
   --input-bg: #fff;
   --radius: 12px;
   --radius-sm: 8px;
   --radius-xs: 6px;
   --transition: all .2s cubic-bezier(.4,0,.2,1);
-  --badge-a1: #ef4444;
-  --badge-a2: #f59e0b;
-  --badge-b1: #10b981;
-  --badge-b2: #3b82f6;
-  --badge-c1: #8b5cf6;
-  --badge-c2: #ec4899;
-  --test-option-hover: #eff6ff;
-  --test-option-bg: #f8fafc;
+  --badge-a1: #CE1126;
+  --badge-a2: #FCD116;
+  --badge-b1: #009B3A;
+  --badge-b2: #CE1126;
+  --badge-c1: #FCD116;
+  --badge-c2: #009B3A;
+  --test-option-hover: #fef3e2;
+  --test-option-bg: #fef9f0;
   --modal-overlay: rgba(0,0,0,.5);
 }
 /* Dark mode */
 body.dark-mode {
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --header-bg: linear-gradient(135deg, #0f172a, #1e293b);
+  --bg: #1a0f0a;
+  --surface: #2a1a12;
+  --header-bg: linear-gradient(135deg, #8B0000, #B8860B, #006400);
   --header-text: #f1f5f9;
-  --text: #e2e8f0;
-  --text-light: #94a3b8;
-  --border: #334155;
-  --border-light: #1e293b;
+  --text: #e8d5c4;
+  --text-light: #a08070;
+  --border: #3a2518;
+  --border-light: #2a1a12;
   --card-shadow: 0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);
   --card-shadow-hover: 0 10px 25px rgba(0,0,0,.4);
-  --input-bg: #1e293b;
-  --test-option-hover: #1e3a5f;
-  --test-option-bg: #1e293b;
+  --input-bg: #2a1a12;
+  --test-option-hover: #3a2518;
+  --test-option-bg: #2a1a12;
   --modal-overlay: rgba(0,0,0,.7);
 }
 
@@ -52,7 +52,7 @@ body.dark-mode {
 body { font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif; background: var(--bg); color: var(--text); direction: rtl; line-height: 1.7; -webkit-font-smoothing: antialiased; }
 .loading-spinner { text-align: center; padding: 80px 20px; }
 .spinner { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
-.toast-msg{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:12px 28px;border-radius:30px;font-size:15px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;}.toast-msg.show{opacity:1;}
+.toast-msg{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#CE1126;color:#fff;padding:12px 28px;border-radius:30px;font-size:15px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;}.toast-msg.show{opacity:1;}
 @keyframes spin { to { transform: rotate(360deg); } }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -68,6 +68,7 @@ header {
   justify-content: space-between;
   box-shadow: 0 4px 20px rgba(0,0,0,.15);
   position: sticky; top: 0; z-index: 100;
+  border-bottom: 3px solid #FCD116;
 }
 header.sudan-theme { background: linear-gradient(135deg, #c8102e, #fff, #000); border-bottom: 4px solid #009b3a; }
 header.sudan-theme .header-right span,
@@ -84,7 +85,7 @@ header h1 { font-size: 1.25em; white-space: nowrap; font-weight: 700; letter-spa
 /* ─── Curriculum Selector ─── */
 #curriculumSelector { display: flex; gap: 8px; padding: 10px 24px; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; justify-content: center; position: relative; z-index: 50; }
 .curric-btn { padding: 8px 20px; border: 2px solid var(--border); background: var(--surface); color: var(--text); border-radius: 100px; cursor: pointer; font-size: .85em; font-weight: 500; transition: var(--transition); white-space: nowrap; }
-.curric-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; box-shadow: 0 4px 12px rgba(59,130,246,.35); }
+.curric-btn.active { background: #009B3A; color: #fff; border-color: #009B3A; font-weight: 700; box-shadow: 0 4px 12px rgba(0,155,58,.35); }
 .curric-btn:hover:not(.active) { border-color: var(--accent); background: var(--test-option-hover); transform: translateY(-1px); }
 .music-btn { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; border: none; padding: 8px 20px; border-radius: 100px; cursor: pointer; font-size: .85em; white-space: nowrap; transition: var(--transition); font-weight: 600; }
 .music-btn:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 4px 15px rgba(239,68,68,.4); }
@@ -94,7 +95,7 @@ header h1 { font-size: 1.25em; white-space: nowrap; font-weight: 700; letter-spa
 #curriculumTabs { display: flex; gap: 10px; padding: 16px 24px; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; justify-content: center; }
 .curriculum-tab { display: flex; align-items: center; gap: 6px; padding: 10px 22px; border: 2px solid var(--border); background: var(--surface); color: var(--text); border-radius: 100px; cursor: pointer; font-size: .9em; font-weight: 600; transition: var(--transition); position: relative; }
 .curriculum-tab .cefr-badge { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-size: .75em; font-weight: 800; color: #fff; }
-.curriculum-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 4px 16px rgba(59,130,246,.3); transform: translateY(-2px); }
+.curriculum-tab.active { background: #009B3A; color: #fff; border-color: #009B3A; box-shadow: 0 4px 16px rgba(0,155,58,.3); transform: translateY(-2px); }
 .curriculum-tab.active .cefr-badge { background: rgba(255,255,255,.25); }
 .curriculum-tab:hover:not(.active) { border-color: var(--accent); background: var(--test-option-hover); transform: translateY(-1px); }
 .curriculum-tab .tab-progress { position: absolute; bottom: -1px; left: 10%; right: 10%; height: 3px; border-radius: 3px; background: var(--border); overflow: hidden; }
@@ -113,9 +114,9 @@ header h1 { font-size: 1.25em; white-space: nowrap; font-weight: 700; letter-spa
 /* ─── Search & Toggle ─── */
 .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
 #lessonSearch { flex: 1; min-width: 150px; padding: 10px 18px; border: 2px solid var(--border); border-radius: 100px; font-size: .9em; background: var(--input-bg); color: var(--text); transition: var(--transition); }
-#lessonSearch:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
-#toggleAllBtn { padding: 10px 20px; background: var(--accent); color: #fff; border: none; border-radius: 100px; cursor: pointer; font-size: .85em; font-weight: 600; transition: var(--transition); }
-#toggleAllBtn:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,.3); }
+#lessonSearch:focus { outline: none; border-color: #FCD116; box-shadow: 0 0 0 3px rgba(252,209,22,.2); }
+#toggleAllBtn { padding: 10px 20px; background: #CE1126; color: #fff; border: none; border-radius: 100px; cursor: pointer; font-size: .85em; font-weight: 600; transition: var(--transition); }
+#toggleAllBtn:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(206,17,38,.3); }
 
 /* ─── TOC ─── */
 .level-header {
@@ -715,7 +716,7 @@ body.lite-mode .channel-info { display: none !important; }
 }
 
 /* ─── Custom Colors ─── */
-:root { --custom-header: #1a2a3a; --custom-accent: #3b82f6; }
+:root { --custom-header: #CE1126; --custom-accent: #CE1126; }
 header { background: linear-gradient(135deg, var(--custom-header), var(--custom-accent)) !important; }
 .curriculum-tab.active, .test-btn, .check-btn, .submit-test-btn, .dash-fill { background:var(--custom-accent) !important; }
 .curriculum-tab.active { border-color:var(--custom-accent) !important; }
@@ -794,3 +795,20 @@ footer { text-align: center; padding: 20px; color: var(--text-light); font-size:
 .feature-icon { font-size: 1.8em; margin-bottom: 4px; }
 .feature-label { font-size: .82em; font-weight: 600; color: var(--text); margin-bottom: 3px; }
 .feature-desc { font-size: .68em; color: var(--text-light); line-height: 1.3; }
+
+/* ─── Sudan Welcome Background ─── */
+#welcomeView {
+  position: relative;
+  background:
+    linear-gradient(rgba(253,242,233,.88), rgba(253,242,233,.88)),
+    url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Sudan_Meroe_Pyramids_2001.JPG/800px-Sudan_Meroe_Pyramids_2001.JPG')
+    center/cover no-repeat fixed;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+body.dark-mode #welcomeView {
+  background:
+    linear-gradient(rgba(26,15,10,.88), rgba(26,15,10,.88)),
+    url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Sudan_Meroe_Pyramids_2001.JPG/800px-Sudan_Meroe_Pyramids_2001.JPG')
+    center/cover no-repeat fixed;
+}
