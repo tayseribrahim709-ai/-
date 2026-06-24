@@ -2821,7 +2821,7 @@ function generateWorksheet(ci,li,lid,title){
   var ls=findFullLesson(ci,li,lid);
   if(!ls){toast(t('noTest'));return;}
   var html='<!DOCTYPE html><html dir="'+LANG[currentLang].dir+'"><head><meta charset="UTF-8"><title>'+t('worksheetTitle')+' - '+title+'</title>';
-  html+='<style>body{font-family:sans-serif;padding:20px;direction:rtl}h2{color:#2c3e50;border-bottom:2px solid #3498db;padding-bottom:5px}.section{margin:15px 0;padding:10px;border:1px solid #ddd;border-radius:8px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ccc;padding:8px}ol{padding-right:20px}.blank{display:inline-block;width:120px;border-bottom:2px solid #666;margin:0 5px}@media print{body{padding:0}}</style></head><body>';
+  html+='<style>body{font-family:Arial,sans-serif;padding:30px;direction:rtl;color:#333;max-width:800px;margin:0 auto}h1{color:#2c3e50;font-size:24px;border-bottom:3px solid #3498db;padding-bottom:8px}h2{color:#2980b9;font-size:20px}h3{color:#2c3e50;font-size:16px;margin-top:20px}.section{margin:20px 0;padding:15px;border:1px solid #bdc3c7;border-radius:8px;background:#f9f9f9}table{width:100%;border-collapse:collapse;margin:10px 0}td,th{border:1px solid #bdc3c7;padding:10px;text-align:right}th{background:#3498db;color:#fff}ol{padding-right:25px;direction:rtl}li{margin:8px 0}.blank{display:inline-block;width:140px;border-bottom:2px solid #7f8c8d;margin:0 8px;height:20px}@media print{body{padding:0;background:#fff}.no-print{display:none!important}}</style></head><body>';
   html+='<h1>📚 '+t('appTitle')+'</h1>';
   html+='<h2>'+title+'</h2>';
   html+='<p>'+t('name','الاسم: ________________')+' | '+t('date','التاريخ: ________________')+'</p>';
@@ -2829,7 +2829,7 @@ function generateWorksheet(ci,li,lid,title){
   if(ls.vocabulary&&ls.vocabulary.length){html+='<div class="section"><h3>'+t('vocabulary')+'</h3><table><tr><th>'+t('word')+'</th><th>'+t('translation')+'</th></tr>';ls.vocabulary.forEach(function(v){var w=v.word||v;var t=v.translation||v.meaning||'';html+='<tr><td>'+w+'</td><td><span class="blank"></span></td></tr>'});html+='</table></div>';}
   if(ls.examples&&ls.examples.length){html+='<div class="section"><h3>'+t('examples')+'</h3><ol>';ls.examples.forEach(function(ex){var s=typeof ex==='string'?ex:ex.sentence||ex.example||ex;html+='<li>'+s+'</li>'});html+='</ol></div>';}
   if(ls.quiz&&ls.quiz.length){html+='<div class="section"><h3>'+t('quiz')+'</h3><ol>';ls.quiz.forEach(function(q){var qtext=typeof q==='string'?q:q.question||q.q||'';html+='<li>'+qtext+'<br>';var opts=typeof q==='string'?[]:q.options||q.choices||[];if(opts.length){opts.forEach(function(o,i){html+='<label style="display:block;margin:3px 0"><input type="radio" name="q"> '+o+'</label>'});}html+='</li>'});html+='</ol></div>';}
-  html+='<br><button onclick="window.print()" style="padding:12px 30px;background:#3498db;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:16px">🖨️ '+t('printCert','طباعة')+'</button>';
+  html+='<br><button class="no-print" onclick="window.print()" style="padding:12px 30px;background:#3498db;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:16px">🖨️ '+t('printCert','طباعة')+'</button>';
   html+='</body></html>';
   var w=window.open('','_blank');
   w.document.write(html);
@@ -2954,6 +2954,7 @@ LANG.ar.reviewDesc='راجع المفردات بذكاء';LANG.en.reviewDesc='Re
 LANG.ar.gamesTitle='🎮 ألعاب';LANG.en.gamesTitle='🎮 Games';
 LANG.ar.wordSearch='🔍 بحث عن كلمات';LANG.en.wordSearch='🔍 Word Search';
 LANG.ar.crossword='🟦 كلمات متقاطعة';LANG.en.crossword='🟦 Crossword';
+LANG.ar.listenAINote='🎧 هذا النص يُقرأ بصوت آلي (TTS) — استخدمه كتمرين استماع';LANG.en.listenAINote='🎧 This text is read by AI voice (TTS) — use it as listening practice';
 LANG.ar.cwInstruction='✏️ اكتب الكلمة الإنجليزية المطابقة للترجمة';LANG.en.cwInstruction='✏️ Type the English word for each clue';
 LANG.ar.cwPlace='اكتب الكلمة...';LANG.en.cwPlace='Type the word...';
 
@@ -2961,7 +2962,7 @@ LANG.ar.cwPlace='اكتب الكلمة...';LANG.en.cwPlace='Type the word...';
 function applyDarkMode(on){if(on){document.documentElement.style.setProperty('--bg','#1a1a2e');document.documentElement.style.setProperty('--surface','#16213e');document.documentElement.style.setProperty('--text','#eee');document.documentElement.style.setProperty('--text-light','#aaa');document.documentElement.style.setProperty('--border','#333');document.documentElement.style.setProperty('--input-bg','#1a1a2e');document.documentElement.style.setProperty('--card-shadow','0 4px 15px rgba(0,0,0,.3)');document.documentElement.style.setProperty('--test-option-bg','#1a1a2e');document.documentElement.style.setProperty('--test-option-hover','#2a2a4e')}else{document.documentElement.style.removeProperty('--bg');document.documentElement.style.removeProperty('--surface');document.documentElement.style.removeProperty('--text');document.documentElement.style.removeProperty('--text-light');document.documentElement.style.removeProperty('--border');document.documentElement.style.removeProperty('--input-bg');document.documentElement.style.removeProperty('--card-shadow');document.documentElement.style.removeProperty('--test-option-bg');document.documentElement.style.removeProperty('--test-option-hover')}}
 
 // Auto Dark Mode (time-based)
-function applyAutoDark(){var s=getSettings();if(s.autoDark){var h=new Date().getHours();var isNight=h<6||h>=19;if(isNight&&!s.darkMode){s.darkMode=true;saveSettings(s);applyDarkMode(true)}else if(!isNight&&s.darkMode&&!ls('eng_manualDark')){s.darkMode=false;saveSettings(s);applyDarkMode(false)}}}
+function applyAutoDark(){var s=getSettings();if(s.autoDark){var mq=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)');var p=mq?mq.matches:false;var h=new Date().getHours();var isNight=p||h<6||h>=19;if(isNight&&!s.darkMode){s.darkMode=true;saveSettings(s);applyDarkMode(true)}else if(!isNight&&s.darkMode&&!ls('eng_manualDark')){s.darkMode=false;saveSettings(s);applyDarkMode(false)}}}
 function toggleDarkMode(){var s=getSettings();s.darkMode=!s.darkMode;saveSettings(s);applyDarkMode(s.darkMode);lss('eng_manualDark',s.darkMode?'1':'');showSettings();}
 // Sound Effects
 var actx=null;function getAudioCtx(){if(!actx)try{actx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}return actx}
@@ -3380,6 +3381,6 @@ function doSearch(q){q=q.toLowerCase().trim();var res=document.getElementById('s
 (function(){var origSW=showWelcome;showWelcome=function(){origSW();var h2=document.querySelector('.welcome-header');if(h2&&!document.querySelector('.points-badge')){var ptsDiv=document.createElement('div');ptsDiv.style.margin='auto';ptsDiv.style.textAlign='center';ptsDiv.innerHTML=showPointsBadge();h2.parentNode.insertBefore(ptsDiv,h2.nextSibling)}}})();
 
 // ─── AUTO LOCAL BACKUP (localStorage only — not cloud) ───
-setInterval(function(){try{var allData={};['eng_progress','eng_activeProfile','eng_settings','eng_points'].forEach(function(k){var v=ls(k);if(v)allData[k]=v});var allProfiles=getProfiles();allProfiles.forEach(function(p){var pk='eng_progress_'+p.name;var v=ls(pk);if(v)allData[pk]=v;var pts=ls('eng_points_'+p.name);if(pts)allData['eng_points_'+p.name]=pts});var backup=JSON.stringify(allData);var bkp=new Blob([backup]).size;if(bkp>512000)return;lss('eng_local_backup',backup);lss('eng_lastBackup',Date.now()+'')}catch(e){}},300000);
+setInterval(function(){try{var allData={};['eng_progress','eng_activeProfile','eng_settings','eng_points'].forEach(function(k){var v=ls(k);if(v)allData[k]=v});var allProfiles=getProfiles();allProfiles.forEach(function(p){var pk='eng_progress_'+p.name;var v=ls(pk);if(v)allData[pk]=v;var pts=ls('eng_points_'+p.name);if(pts)allData['eng_points_'+p.name]=pts});var backup=JSON.stringify(allData);var bkp=new Blob([backup]).size;if(bkp>512000)return;lss('eng_local_backup',backup);lss('eng_lastBackup',Date.now()+'')}catch(e){}try{if(typeof syncUser!=='undefined'&&syncUser)fetch('/api/sync/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:syncUser,data:allData})})}catch(e2){}},300000);
 
 // ─── INIT REMINDER + TEACHER + KIDS + ACHIEVEMENTS ON LOAD ───
