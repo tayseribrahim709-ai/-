@@ -81,7 +81,7 @@ function initApp(){navSetup();var initTimer=setTimeout(function(){checkReady();i
 
 function cefrLevel(l){return l.cefr_level||l.level||'';}
 function renderCurriculumSelector(){const sel=document.getElementById('curriculumSelector');if(!sel||!appData||!appData.curricula)return;const main=appData.curricula.filter(function(c){return c.id!=='yasser_spanish'});sel.innerHTML=main.map(function(c,i){return'<button class="curric-btn'+(c.id===(appData.curricula[activeCurriculum]||{}).id?' active':'')+'" onclick="selectCurriculum('+appData.curricula.findIndex(function(x){return x.id===c.id})+')">'+(currentLang==='en'?(c.name_en||c.name):c.name)+'</button>'}).join('');}
-function showMusicSection(){var idx=-1;if(appData&&appData.curricula){for(var i=0;i<appData.curricula.length;i++){if(appData.curricula[i].id==='yasser_spanish'){idx=i;break}}}if(idx===-1){toast(t('noMusicCurriculum'));return}hideAllViews();var v=document.getElementById('musicWelcomeView');if(!v){v=document.createElement('div');v.id='musicWelcomeView';v.className='lesson-view';document.getElementById('content').appendChild(v)}var c=appData.curricula[idx];var lvl=c.levels&&c.levels[0];var desc=lvl?lvl.description:'';var html='<div class="music-welcome"><div class="music-icon">🎵🎶</div><h2>'+(currentLang==='en'&&c.name_en?c.name_en:c.name)+'</h2>'+(c.name_en&&currentLang!=='en'?'<p class="music-subtitle">'+c.name_en+'</p>':'')+'<div class="music-description"><p>'+t('musicDesc')+'</p><p>'+t('musicForBeginners')+'</p></div><div class="music-details"><span>🎯 '+t('musicStartLevel').replace('{0}',lvl.level_name||'A1')+'</span></div><button class="start-music-btn" onclick="selectCurriculum('+idx+')">'+t('musicStart')+'</button><button class="back-btn" style="margin-top:10px" onclick="showWelcome()">'+t('back')+'</button></div>';v.innerHTML=html;v.style.display='block';}
+function showMusicSection(){var idx=-1;if(appData&&appData.curricula){for(var i=0;i<appData.curricula.length;i++){if(appData.curricula[i].id==='yasser_spanish'){idx=i;break}}}if(idx===-1){toast(t('noMusicCurriculum'));return}hideAllViews();var v=document.getElementById('musicWelcomeView');if(!v){v=document.createElement('div');v.id='musicWelcomeView';v.className='lesson-view';document.getElementById('content').appendChild(v)}var c=appData.curricula[idx];var lvl=c.levels&&c.levels[0];var desc=lvl?lvl.description:'';var html='<div class="music-welcome"><div class="music-icon">🎵🎶</div><h2>'+cn(c)+'</h2>'+(c.name_en&&currentLang!=='en'?'<p class="music-subtitle">'+c.name_en+'</p>':'')+'<div class="music-description"><p>'+t('musicDesc')+'</p><p>'+t('musicForBeginners')+'</p></div><div class="music-details"><span>🎯 '+t('musicStartLevel').replace('{0}',lvl.level_name||'A1')+'</span></div><button class="start-music-btn" onclick="selectCurriculum('+idx+')">'+t('musicStart')+'</button><button class="back-btn" style="margin-top:10px" onclick="showWelcome()">'+t('back')+'</button></div>';v.innerHTML=html;v.style.display='block';}
 function selectCurriculum(idx){if(idx===activeCurriculum)return;switchCurriculum(idx);hideAllViews();renderTOC(0);}
 function toggleCurriculum(){const len=appData&&appData.curricula?appData.curricula.length:0;if(len<2)return;selectCurriculum((activeCurriculum+1)%len);}
 function switchCurriculum(idx){activeCurriculum=idx;if(appData&&appData.curricula&&appData.curricula[idx]){courseData=appData.curricula[idx];const lvls=courseData.levels||[];const tabs=document.getElementById('curriculumTabs');if(tabs)tabs.innerHTML=lvls.map((l,i)=>'<span class="curriculum-tab'+(i===0?' active':'')+'" data-idx="'+i+'" onclick="switchLevelTab('+i+')">'+cefrLevel(l)+'</span>').join('');renderCurriculumSelector();}}
@@ -110,7 +110,9 @@ function saveScrollPos(lid){const el=document.getElementById('lessonView');if(el
 function restoreScrollPos(lid){const pos=ls('scroll_'+lid);if(pos){const el=document.getElementById('lessonView');if(el)setTimeout(()=>el.scrollTop=parseInt(pos),300);}}
 
 // ─── TOC ───
-function renderTOC(levelIdx){hideAllViews();const idx=levelIdx||0;const lvl=courseData.levels&&courseData.levels[idx];if(!lvl){document.getElementById('content').innerHTML='<p style="padding:20px;text-align:center">'+t('noTest')+'</p>';return;}renderStats(idx);const toc=document.getElementById('toc');if(!toc)return;let html='<div class="level-header"><h2>'+lvl.level_name+'</h2><p>'+(lvl.description||'')+'</p><button class="check-btn" onclick="showLevelTest('+idx+')" style="margin-top:8px;font-size:.85em;padding:6px 14px">🧪 '+t('levelTest')+'</button></div>';lvl.modules&&lvl.modules.forEach((m,mi)=>{html+='<div class="module"><div class="mod-title" onclick="toggleModule(this)"><span>'+m.module_title+'</span><span class="mod-icon">▼</span></div><div class="mod-lessons">';m.lessons&&m.lessons.forEach(ls=>{const lid=ls.lesson_id||(lvl.level_name+'_'+mi+'_'+ls.lesson_title);const elid=esc(lid);const fav=isFav(lid)?'⭐':'☆';const done=isLessonComplete(lid)?'✅':'⬜';html+='<div class="lesson-item" onclick="showLesson('+idx+','+mi+',\''+elid+'\')"><span class="done-icon" onclick="event.stopPropagation();toggleLessonComplete(\''+elid+'\',this)">'+done+'</span><span class="fav-icon" onclick="event.stopPropagation();toggleFavLesson(this,\''+elid+'\')">'+fav+'</span><span>'+esc(ls.lesson_title)+'</span></div>';});html+='</div></div>';});toc.innerHTML=html;const statsEl=document.getElementById('stats');if(statsEl)statsEl.style.display='block';}
+function ln(l){return currentLang==='ar'?(l.level_name_ar||(t('levelPrefix')+' '+cefrLevel(l))):(l.level_name||cefrLevel(l));}
+function mn(m){return currentLang==='ar'?(m.module_title_ar||m.module_title):m.module_title;}
+function renderTOC(levelIdx){hideAllViews();const idx=levelIdx||0;const lvl=courseData.levels&&courseData.levels[idx];if(!lvl){document.getElementById('content').innerHTML='<p style="padding:20px;text-align:center">'+t('noTest')+'</p>';return;}renderStats(idx);const toc=document.getElementById('toc');if(!toc)return;let html='<div class="level-header"><h2>'+ln(lvl)+'</h2><p>'+(lvl.description||'')+'</p><button class="check-btn" onclick="showLevelTest('+idx+')" style="margin-top:8px;font-size:.85em;padding:6px 14px">🧪 '+t('levelTest')+'</button></div>';lvl.modules&&lvl.modules.forEach((m,mi)=>{html+='<div class="module"><div class="mod-title" onclick="toggleModule(this)"><span>'+mn(m)+'</span><span class="mod-icon">▼</span></div><div class="mod-lessons">';m.lessons&&m.lessons.forEach(ls=>{const lid=ls.lesson_id||(lvl.level_name+'_'+mi+'_'+ls.lesson_title);const elid=esc(lid);const fav=isFav(lid)?'⭐':'☆';const done=isLessonComplete(lid)?'✅':'⬜';html+='<div class="lesson-item" onclick="showLesson('+idx+','+mi+',\''+elid+'\')"><span class="done-icon" onclick="event.stopPropagation();toggleLessonComplete(\''+elid+'\',this)">'+done+'</span><span class="fav-icon" onclick="event.stopPropagation();toggleFavLesson(this,\''+elid+'\')">'+fav+'</span><span>'+esc(ls.lesson_title)+'</span></div>';});html+='</div></div>';});toc.innerHTML=html;const statsEl=document.getElementById('stats');if(statsEl)statsEl.style.display='block';}
 
 function renderStats(idx){const lvl=courseData.levels&&courseData.levels[idx];if(!lvl)return;let total=0,done=0;lvl.modules&&lvl.modules.forEach((m,mi)=>{if(m.lessons){m.lessons.forEach(ls=>{total++;var lid=ls.lesson_id||(lvl.level_name+'_'+mi+'_'+ls.lesson_title);if(isLessonComplete(lid))done++})}});const p=getLevelProgress(activeCurriculum,idx);const el=document.getElementById('stats');if(el)el.innerHTML='<div class="stats-bar"><span>📚 '+t('lessons')+': '+done+'/'+total+'</span><span>'+t('passedLevels')+': '+(p.passed?t('passMsg'):t('failMsg'))+'</span></div>';}
 
@@ -441,13 +443,13 @@ function updateSetting(k,v){const s=getSettings();s[k]=v;saveSettings(s);showSet
 function toggleStudyDay(d){const s=getSettings();const idx=s.studyDays.indexOf(d);if(idx>-1)s.studyDays.splice(idx,1);else s.studyDays.push(d);saveSettings(s);showSettings();}
 
 // ─── SETTINGS VIEW ───
-function showSettings(){try{console.log('showSettings called');hideAllViews();let v=document.getElementById('settingsView');if(!v){v=document.createElement('div');v.id='settingsView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const s=getSettings();v.innerHTML='<h2>'+t('settingsTitle')+'</h2><div class="settings-group"><label>'+t('langToggle')+'</label><button onclick="toggleLang()">'+LANG[currentLang==='ar'?'en':'ar'].appTitle+'</button></div><div class="settings-group"><label>'+t('fontSize')+'</label><select onchange="updateSetting(\'fontSize\',this.value)"><option value="small" '+(s.fontSize==='small'?'selected':'')+'>S</option><option value="medium" '+(s.fontSize==='medium'?'selected':'')+'>M</option><option value="large" '+(s.fontSize==='large'?'selected':'')+'>L</option></select></div><div class="settings-group"><label>'+t('studyDays')+'</label><div style="display:flex;gap:4px;flex-wrap:wrap">'+[0,1,2,3,4,5,6].map(d=>'<button class="day-btn'+(s.studyDays.includes(d)?' active':'')+'" onclick="toggleStudyDay('+d+')">'+(LANG[currentLang].weekDays[d]||d)+'</button>').join('')+'</div></div><div class="settings-group"><label>'+t('reminder')+'</label><input type="time" value="'+s.reminderTime+'" onchange="updateSetting(\'reminderTime\',this.value)"><button onclick="var s=getSettings();updateSetting(\'reminderOn\',!s.reminderOn)">'+(s.reminderOn?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('accentColor')+'</label><input type="color" value="'+s.accentColor+'" onchange="applyColor(\'accentColor\',this.value)"></div><div class="settings-group"><label>'+t('headerColor')+'</label><input type="color" value="'+s.headerColor+'" onchange="applyColor(\'headerColor\',this.value)"></div><div class="settings-group"><label>'+t('darkModeLabel')+'</label><button onclick="var s=getSettings();s.autoDark=!s.autoDark;saveSettings(s);showSettings();applyAutoDark()">'+(s.autoDark?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('liteDesc')+'</label><button onclick="var s=getSettings();updateSetting(\'liteMode\',!s.liteMode)">'+(s.liteMode?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('export')+'</label><button onclick="exportData()">'+t('export')+'</button></div><div class="settings-group"><label>'+t('reset')+'</label><button onclick="if(confirm(\''+t('resetConfirm')+'\')){localStorage.clear();location.reload()}">'+t('reset')+'</button></div><div class="settings-group"><label>'+t('back')+'</label><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}catch(e){console.error('showSettings error:',e);toast('⚠️ Error: '+e.message);}}
+function showSettings(){try{console.log('showSettings called');hideAllViews();let v=document.getElementById('settingsView');if(!v){v=document.createElement('div');v.id='settingsView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const s=getSettings();v.innerHTML='<h2>'+t('settingsTitle')+'</h2><div class="settings-group"><label>'+t('langToggle')+'</label><button onclick="toggleLang()">'+LANG[currentLang==='ar'?'en':'ar'].appTitle+'</button></div><div class="settings-group"><label>'+t('fontSize')+'</label><select onchange="updateSetting(\'fontSize\',this.value)"><option value="small" '+(s.fontSize==='small'?'selected':'')+'>'+t('fontSmall')+'</option><option value="medium" '+(s.fontSize==='medium'?'selected':'')+'>'+t('fontMedium')+'</option><option value="large" '+(s.fontSize==='large'?'selected':'')+'>'+t('fontLarge')+'</option></select></div><div class="settings-group"><label>'+t('studyDays')+'</label><div style="display:flex;gap:4px;flex-wrap:wrap">'+[0,1,2,3,4,5,6].map(d=>'<button class="day-btn'+(s.studyDays.includes(d)?' active':'')+'" onclick="toggleStudyDay('+d+')">'+(LANG[currentLang].weekDays[d]||d)+'</button>').join('')+'</div></div><div class="settings-group"><label>'+t('reminder')+'</label><input type="time" value="'+s.reminderTime+'" onchange="updateSetting(\'reminderTime\',this.value)"><button onclick="var s=getSettings();updateSetting(\'reminderOn\',!s.reminderOn)">'+(s.reminderOn?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('accentColor')+'</label><input type="color" value="'+s.accentColor+'" onchange="applyColor(\'accentColor\',this.value)"></div><div class="settings-group"><label>'+t('headerColor')+'</label><input type="color" value="'+s.headerColor+'" onchange="applyColor(\'headerColor\',this.value)"></div><div class="settings-group"><label>'+t('darkModeLabel')+'</label><button onclick="var s=getSettings();s.autoDark=!s.autoDark;saveSettings(s);showSettings();applyAutoDark()">'+(s.autoDark?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('liteDesc')+'</label><button onclick="var s=getSettings();updateSetting(\'liteMode\',!s.liteMode)">'+(s.liteMode?t('reminderOn'):t('reminderOff'))+'</button></div><div class="settings-group"><label>'+t('export')+'</label><button onclick="exportData()">'+t('export')+'</button></div><div class="settings-group"><label>'+t('reset')+'</label><button onclick="if(confirm(\''+t('resetConfirm')+'\')){localStorage.clear();location.reload()}">'+t('reset')+'</button></div><div class="settings-group"><label>'+t('back')+'</label><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}catch(e){console.error('showSettings error:',e);toast('⚠️ Error: '+e.message);}}
 function applyColor(k,v){updateSetting(k,v);document.documentElement.style.setProperty('--'+k,v||'inherit');}
 function exportData(){const d={progress:getProgress(),favs:getFavorites(),settings:getSettings(),completed:getCompletedLessons(),streak:getStreak(),date:new Date().toISOString()};const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='english_progress_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);toast(t('dataExported'))}
 function importData(){var inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=function(e){var file=e.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(d.progress){saveProgress(d.progress);toast(t('progressImported'))}if(d.favs){setFavorites(d.favs)}if(d.settings){saveSettings(d.settings)}if(d.completed&&Array.isArray(d.completed)){saveCompletedLessons(d.completed)}if(d.streak){saveStreak(d.streak)}toast(t('dataImported'));showSettings()}catch(ex){toast(t('importFailed'))}};reader.readAsText(file)};inp.click()}
 
 // ─── ABOUT VIEW ───
-function showAbout(){hideAllViews();let v=document.getElementById('aboutView');if(!v){v=document.createElement('div');v.id='aboutView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const cl=LANG[currentLang];const arts=currentLang==='ar'?[{t:'\ud83c\udfb5 \u0634\u0627\u0639\u0631',d:'\u064a\u0643\u062a\u0628 \u0627\u0644\u0634\u0639\u0631 \u0648\u0627\u0644\u0646\u0635\u0648\u0635 \u0627\u0644\u0623\u062f\u0628\u064a\u0629 \u0628\u0627\u0644\u0644\u063a\u062a\u064a\u0646 \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0648\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629'},{t:'\ud83c\udfb6 \u0645\u0644\u062d\u0646',d:'\u064a\u064f\u0644\u062d\u0651\u0646 \u0627\u0644\u0623\u0644\u062d\u0627\u0646 \u0648\u064a\u0628\u062a\u0643\u0631 \u0627\u0644\u0623\u0639\u0645\u0627\u0644 \u0627\u0644\u0645\u0648\u0633\u064a\u0642\u064a\u0629 \u0628\u0623\u0633\u0627\u0644\u064a\u0628 \u0645\u062a\u0646\u0648\u0639\u0629'},{t:'\ud83c\udfb9 \u0645\u0648\u0632\u0639 \u0645\u0648\u0633\u064a\u0642\u064a',d:'\u064a\u064f\u0648\u0632\u0651\u0639 \u0627\u0644\u0623\u0639\u0645\u0627\u0644 \u0627\u0644\u0645\u0648\u0633\u064a\u0642\u064a\u0629 \u0648\u064a\u064f\u0646\u0633\u0651\u0642 \u0627\u0644\u0622\u0644\u0627\u062a \u0648\u0627\u0644\u0623\u0635\u0648\u0627\u062a'},{t:'\ud83c\udfa8 \u0641\u0646\u0627\u0646',d:'\u0645\u0628\u062f\u0639 \u0645\u062a\u0639\u062f\u062f \u0627\u0644\u0645\u0648\u0627\u0647\u0628 \u0641\u064a \u0645\u062c\u0627\u0644\u0627\u062a \u0627\u0644\u0644\u063a\u0629 \u0648\u0627\u0644\u0641\u0646 \u0648\u0627\u0644\u062b\u0642\u0627\u0641\u0629'}]:[{t:'\ud83c\udfb5 Poet',d:'Writes poetry and literary texts in both Arabic and English'},{t:'\ud83c\udfb6 Composer',d:'Creates melodies and composes musical works in diverse styles'},{t:'\ud83c\udfb9 Music Arranger',d:'Arranges musical works, orchestrates instruments and voices'},{t:'\ud83c\udfa8 Artist',d:'Multi-talented creative in language, art, and culture'}];v.innerHTML='<div class="about-content" style="padding:20px;max-width:800px;margin:0 auto"><h2>'+t('aboutTitle')+'</h2><div class="about-arts" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0">'+arts.map(function(a){return'<div class="art-card" style="text-align:center;background:var(--surface);padding:18px 10px;border-radius:12px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.06)"><div style="font-size:36px;margin-bottom:8px">'+a.t.slice(0,2)+'</div><h4 style="margin:4px 0;font-size:1em;color:var(--accent,#e74c3c)">'+a.t+'</h4><p style="font-size:.8em;color:var(--text-light);margin:4px 0 0">'+a.d+'</p></div>'}).join('')+'</div><div class="about-section" style="margin:15px 0"><h3>'+t('summary')+'</h3><p>'+t('summaryText')+'</p></div><div class="about-section" style="margin:15px 0"><h3>'+t('qualifications')+'</h3><ul>'+(cl.qualList||[]).map(q=>'<li>'+q+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('experience')+'</h3><ul>'+(cl.expList||[]).map(e=>'<li>'+e+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('skills')+'</h3><ul>'+(cl.skillList||[]).map(s=>'<li>'+s+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('interests')+'</h3><ul>'+(cl.intList||[]).map(i=>'<li>'+i+'</li>').join('')+'</ul></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}
+function showAbout(){hideAllViews();let v=document.getElementById('aboutView');if(!v){v=document.createElement('div');v.id='aboutView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const cl=LANG[currentLang];var arts=[{t:t('aboutArt1Title'),d:t('aboutArt1Desc')},{t:t('aboutArt2Title'),d:t('aboutArt2Desc')},{t:t('aboutArt3Title'),d:t('aboutArt3Desc')},{t:t('aboutArt4Title'),d:t('aboutArt4Desc')}];v.innerHTML='<div class="about-content" style="padding:20px;max-width:800px;margin:0 auto"><h2>'+t('aboutTitle')+'</h2><div class="about-arts" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0">'+arts.map(function(a){return'<div class="art-card" style="text-align:center;background:var(--surface);padding:18px 10px;border-radius:12px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.06)"><div style="font-size:36px;margin-bottom:8px">'+a.t.slice(0,2)+'</div><h4 style="margin:4px 0;font-size:1em;color:var(--accent,#e74c3c)">'+a.t+'</h4><p style="font-size:.8em;color:var(--text-light);margin:4px 0 0">'+a.d+'</p></div>'}).join('')+'</div><div class="about-section" style="margin:15px 0"><h3>'+t('summary')+'</h3><p>'+t('summaryText')+'</p></div><div class="about-section" style="margin:15px 0"><h3>'+t('qualifications')+'</h3><ul>'+(cl.qualList||[]).map(q=>'<li>'+q+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('experience')+'</h3><ul>'+(cl.expList||[]).map(e=>'<li>'+e+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('skills')+'</h3><ul>'+(cl.skillList||[]).map(s=>'<li>'+s+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('interests')+'</h3><ul>'+(cl.intList||[]).map(i=>'<li>'+i+'</li>').join('')+'</ul></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}
 
 // ─── DEVELOPER VIEW ───
 function showDeveloper(){
@@ -460,14 +462,14 @@ function showDeveloper(){
     if(!v){v=document.createElement('div');v.id='developerView';v.className='lesson-view'}
     v.style.display='block';
     document.getElementById('content').appendChild(v);
-    var skills=['JavaScript / Node.js','HTML5 / CSS3','React / Vue.js','Python',t('devExpertise'),t('devPerf')];
+    var skills=[t('devSkillJS'),t('devSkillHTML'),t('devSkillReact'),t('devSkillPython'),t('devExpertise'),t('devPerf')];
     var projects=[t('devEduApps'),t('devCMS'),t('devEcom'),t('devAuto')];
     var skillsHtml=skills.map(function(s){return '<span style="padding:6px 14px;background:var(--test-option-bg);border:1px solid var(--border);border-radius:20px;font-size:.9em">'+s+'</span>';}).join('');
     var projectsHtml=projects.map(function(p){return '<li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">&#10003;</span> '+p+'</li>';}).join('');
     v.innerHTML='<div style="padding:20px;max-width:800px;margin:0 auto">'
       +'<div style="text-align:center;margin-bottom:30px">'
       +'<div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#9b59b6);margin:0 auto 15px;display:flex;align-items:center;justify-content:center;font-size:48px;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.2)">&#128104;&#8205;&#128187;</div>'
-      +'<h2 style="font-size:1.8em;margin:0 0 5px">Tito Rasta</h2>'
+      +'<h2 style="font-size:1.8em;margin:0 0 5px">'+t('devName')+'</h2>'
       +'<p style="color:var(--accent);font-size:1.1em;margin:0">'+t('devTitle')+'</p>'
       +'</div>'
       +'<div style="background:var(--surface);border-radius:12px;padding:20px;margin:15px 0;box-shadow:var(--card-shadow)">'
@@ -2571,17 +2573,6 @@ function generateWorksheet(ci,li,lid,title){
 }
 
 // ─── ADD LANGUAGE KEYS FOR NEW FEATURES ───
-LANG.ar.dailyWord='💡 كلمة اليوم';
-LANG.en.dailyWord='💡 Word of the Day';
-LANG.ar.scrambleTitle='🧩 ترتيب الجمل';
-LANG.en.scrambleTitle='🧩 Sentence Scramble';
-
-LANG.ar.spellingTitle='🐝 سباق التهجئة';
-LANG.en.spellingTitle='🐝 Spelling Bee';
-
-LANG.ar.worksheetTitle='📄 أوراق عمل';
-LANG.en.worksheetTitle='📄 Worksheets';
-
 // ─── ADD NAV BUTTONS FOR NEW FEATURES ───
 (function(){
   var orig=navSetup;
@@ -2662,18 +2653,6 @@ LANG.en.worksheetTitle='📄 Worksheets';
 
 // Language keys
 
-LANG.ar.shareProgress='📤 مشاركة التقدم';LANG.en.shareProgress='📤 Share Progress';
-LANG.ar.listeningTitle='🎧 استماع';LANG.en.listeningTitle='🎧 Listening';
-
-LANG.ar.readingTitle='📖 قراءة';LANG.en.readingTitle='📖 Reading';
-
-LANG.ar.speechTitle='🎙️ نطق';LANG.en.speechTitle='🎙️ Pronunciation';
-
-LANG.ar.reviewTitle='🔄 مراجعة ذكية';LANG.en.reviewTitle='🔄 Spaced Repetition';
-
-LANG.ar.wordSearch='🔍 بحث عن كلمات';LANG.en.wordSearch='🔍 Word Search';
-LANG.ar.crossword='🟦 كلمات متقاطعة';LANG.en.crossword='🟦 Crossword';
-
 // Dark Mode
 function applyDarkMode(on){if(on){document.documentElement.style.setProperty('--bg','#1a1a2e');document.documentElement.style.setProperty('--surface','#16213e');document.documentElement.style.setProperty('--text','#eee');document.documentElement.style.setProperty('--text-light','#aaa');document.documentElement.style.setProperty('--border','#333');document.documentElement.style.setProperty('--input-bg','#1a1a2e');document.documentElement.style.setProperty('--card-shadow','0 4px 15px rgba(0,0,0,.3)');document.documentElement.style.setProperty('--test-option-bg','#1a1a2e');document.documentElement.style.setProperty('--test-option-hover','#2a2a4e')}else{document.documentElement.style.removeProperty('--bg');document.documentElement.style.removeProperty('--surface');document.documentElement.style.removeProperty('--text');document.documentElement.style.removeProperty('--text-light');document.documentElement.style.removeProperty('--border');document.documentElement.style.removeProperty('--input-bg');document.documentElement.style.removeProperty('--card-shadow');document.documentElement.style.removeProperty('--test-option-bg');document.documentElement.style.removeProperty('--test-option-hover')}}
 
@@ -2744,14 +2723,6 @@ function showWordSearch(){hideAllViews();var v=document.getElementById('wordSear
 })();
 
 // ─── 8 NEW FEATURES ───
-
-LANG.ar.remindMe='🔔 ذكرني';LANG.en.remindMe='🔔 Remind Me';
-LANG.ar.profiles='👤 الملفات';LANG.en.profiles='👤 Profiles';
-
-LANG.ar.certPDF='📄 شهادة PDF';LANG.en.certPDF='📄 Certificate PDF';
-LANG.ar.aiCorrect='🤖 تصحيح ذكي';LANG.en.aiCorrect='🤖 AI Correction';
-LANG.ar.leaderboard='🏆 لوحة الشرف';LANG.en.leaderboard='🏆 Leaderboard';
-LANG.ar.grammarTitle='📝 تمارين قواعد';LANG.en.grammarTitle='📝 Grammar Exercises';
 
 // 1. Offline Status Indicator + Data Caching
 function showCachedStatus(){var el=document.getElementById('offlineStatus');if(!el){el=document.createElement('div');el.id='offlineStatus';el.style.cssText='position:fixed;bottom:10px;left:10px;font-size:.75em;padding:4px 10px;border-radius:20px;z-index:999;transition:all.3s';document.body.appendChild(el)}if(navigator.onLine){el.textContent='🟢 '+t('cached');el.style.background='rgba(39,174,96,.15)';el.style.color='var(--success)'}else{el.textContent='🔴 '+t('offline');el.style.background='rgba(231,76,60,.15)';el.style.color='var(--danger)'}setTimeout(showCachedStatus,5000)}
@@ -2902,6 +2873,11 @@ function showCertSelector(){
   v.innerHTML=html;
 }
 
+// ─── CROSSWORD PUZZLE ───
+function showCrossword(){hideAllViews();var v=document.getElementById('crosswordView');if(!v){v=document.createElement('div');v.id='crosswordView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var allPairs=[];if(appData&&appData.curricula){appData.curricula.forEach(function(c){c.levels&&c.levels.forEach(function(l){l.modules&&l.modules.forEach(function(m){m.lessons&&m.lessons.forEach(function(ls){(ls.vocabulary||[]).forEach(function(w){var word=typeof w==='string'?w:w.word||'';var clue=typeof w==='string'?'':w.translation||w.meaning||'';if(word&&word.length>1&&clue)allPairs.push({word:word.toLowerCase(),clue:clue})})})})})})}if(allPairs.length<3){v.innerHTML='<h2>'+t('crossword')+'</h2><p style="text-align:center;padding:30px;color:var(--text-light)">'+t('cwNoData')+'</p><button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';return}allPairs.sort(function(){return Math.random()-0.5});var total=Math.min(10,allPairs.length);var html='<h2>'+t('crossword')+'</h2><p style="text-align:center;color:var(--text-light);margin-bottom:12px">'+t('cwInstruction')+'</p><div id="cwContainer">';var score=0;for(var i=0;i<total;i++){var p=allPairs[i];var hint=p.clue;var word=p.word;var display=word.replace(/[a-z]/g,'_').split('').join(' ');html+='<div class="cw-item" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;margin:8px 0">';html+='<div style="font-size:.9em;color:var(--text-light);margin-bottom:4px"><strong>'+t('cwClue')+':</strong> '+hint+'</div>';html+='<div style="font-family:monospace;font-size:1.3em;letter-spacing:2px;margin:6px 0;direction:ltr">'+display+'</div>';html+='<input type="text" id="cw_'+i+'" placeholder="'+t('writeHere')+'" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px" data-ans="'+word+'">';html+='<button class="check-btn" style="margin-top:4px;font-size:.85em;padding:4px 12px" onclick="checkCrossword('+i+')">'+t('checkBtn')+'</button>';html+='<span id="cwRes_'+i+'"></span></div>';}html+='</div><div id="cwScore" style="text-align:center;font-size:1.1em;margin:10px 0"></div>';html+='<button class="check-btn" onclick="scoreCrossword('+total+')" style="display:block;margin:10px auto">'+t('cwScoreBtn')+'</button>';html+='<button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';v.innerHTML=html;}
+function checkCrossword(idx){var inp=document.getElementById('cw_'+idx);var res=document.getElementById('cwRes_'+idx);if(!inp||!res)return;var ans=(inp.dataset.ans||'').toLowerCase();var val=inp.value.trim().toLowerCase();if(val===ans){inp.style.borderColor='green';res.innerHTML='✅ '+t('correct');res.style.color='green';}else{inp.style.borderColor='red';res.innerHTML=t('wrong');res.style.color='red';}}
+function scoreCrossword(total){var c=0;for(var i=0;i<total;i++){var inp=document.getElementById('cw_'+i);if(inp&&inp.style.borderColor==='green')c++}document.getElementById('cwScore').innerHTML='📊 '+c+'/'+total+' '+t('correct');}
+
 // ─── UNIFIED FEATURES PAGE ───
 function showAllFeatures(){hideAllViews();var v=document.getElementById('allFeaturesView');if(!v){v=document.createElement('div');v.id='allFeaturesView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var groups=[
   {title: t('featSection1'),items:[
@@ -2979,40 +2955,6 @@ setTimeout(showCachedStatus,5000);
 (function(){var s=getSettings();applyAutoDark();if(s.autoDark)setInterval(applyAutoDark,60000)})();
 
 // ─── SEARCH ALL CONTENT ───
-LANG.ar.searchAll='🔍 بحث شامل';LANG.en.searchAll='🔍 Search All';
-
-LANG.ar.aiDesc='اكتب جملة أو فقرة بالانجليزية وسأصححها لك';LANG.en.aiDesc='Write a sentence or paragraph in English and I will correct it';
-
-LANG.ar.aiWriteFirst='اكتب شيئاً أولاً';LANG.en.aiWriteFirst='Write something first';
-LANG.ar.aiAnalysis='📊 تحليل متقدم';LANG.en.aiAnalysis='📊 Advanced Analysis';
-
-LANG.ar.aiSuggestion='📝 الاقتراح:';LANG.en.aiSuggestion='📝 Suggestion:';
-
-LANG.ar.srShowMeaning='👁️ إظهار المعنى';LANG.en.srShowMeaning='👁️ Show meaning';
-
-LANG.ar.srYes='✅ نعم';LANG.en.srYes='✅ Yes';
-LANG.ar.srNo='➖ لا';LANG.en.srNo='➖ No';
-
-LANG.ar.speechListening='🔴 جارٍ الاستماع...';LANG.en.speechListening='🔴 Listening...';
-
-LANG.ar.speechNext='➡️ التالي';LANG.en.speechNext='➡️ Next';
-
-LANG.ar.allFeatures='🚀 جميع الميزات';LANG.en.allFeatures='🚀 All Features';
-
-LANG.ar.profileNamePlace='اسم الطالب';LANG.en.profileNamePlace='Student name';
-LANG.ar.profileExists2='⚠️ الملف موجود مسبقاً';LANG.en.profileExists2='⚠️ Profile already exists';
-
-LANG.ar.kidsMatch='🎯 مطابقة';LANG.en.kidsMatch='🎯 Match';
-LANG.ar.kidsQuiz='❓ اختبار';LANG.en.kidsQuiz='❓ Quiz';
-LANG.ar.kidsMemory='🧠 ذاكرة';LANG.en.kidsMemory='🧠 Memory';
-
-LANG.en.welcomeTitle='🇸🇩 Welcome to Mr. Yasser Ibrahim\'s App 🇸🇩';
-
-LANG.ar.allOpen='📂 إغلاق الكل';LANG.en.allOpen='📂 Close All';
-LANG.ar.allClose='📂 فتح الكل';LANG.en.allClose='📂 Open All';
-
-LANG.ar.more='المزيد';LANG.en.more='More';
-LANG.ar.printCert='طباعة';LANG.en.printCert='Print';
 function updateUILabels(){
   var navMap={'navDashboard':'navDashTitle','navVocab':'navVocabTitle','navGrammar':'navGramTitle','navPlacement':'navPlaceTitle','navSettings':'navSettingsTitle','navSync':'navSyncTitle','navAbout':'navAboutTitle','navCV':'navCVTitle','navDeveloper':'navDevTitle','darkToggle':'darkToggleTitle'};
   Object.keys(navMap).forEach(function(id){
