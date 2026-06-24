@@ -397,7 +397,7 @@ function checkReady(){const spinner=document.getElementById('loadingSpinner');co
 function navSetup(){const btns={'navDashboard':'showDashboard','navVocab':'showVocabBank','navGrammar':'showGrammarRef','navPlacement':'showPlacementTest','navSettings':'showSettings','navSync':'showSync','navCV':'showCV','navAbout':'showAbout'};Object.keys(btns).forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=function(){checkReady();if(typeof window[btns[id]]==='function')window[btns[id]]()};});renderCurriculumSelector();}
 
 // ─── DATA LOADING ───
-function initApp(){navSetup();var initTimer=setTimeout(function(){checkReady();if(ls('eng_onboarded')!=='1')showOnboarding();else showWelcome()},8000);loadDataFiles(function(data,test,pt){appData=data;levelTests=test;placementTest=pt;initAppData();checkReady();clearTimeout(initTimer);if(ls('eng_onboarded')!=='1')showOnboarding();else{showWelcome();checkResume()}});}
+function initApp(){navSetup();var initTimer=setTimeout(function(){checkReady();if(ls('eng_onboarded')!=='1')showOnboarding();else showWelcome()},30000);loadDataFiles(function(data,test,pt){appData=data;levelTests=test;placementTest=pt;initAppData();checkReady();clearTimeout(initTimer);if(ls('eng_onboarded')!=='1')showOnboarding();else{showWelcome();checkResume()}});}
 
 function cefrLevel(l){return l.cefr_level||l.level||'';}
 function renderCurriculumSelector(){const sel=document.getElementById('curriculumSelector');if(!sel||!appData||!appData.curricula)return;const main=appData.curricula.filter(function(c){return c.id!=='yasser_spanish'});sel.innerHTML=main.map(function(c,i){return'<button class="curric-btn'+(c.id===(appData.curricula[activeCurriculum]||{}).id?' active':'')+'" onclick="selectCurriculum('+appData.curricula.findIndex(function(x){return x.id===c.id})+')">'+(currentLang==='en'?(c.name_en||c.name):c.name)+'</button>'}).join('');}
@@ -1063,7 +1063,7 @@ function toggleTeacherMode(){
   var current=getTeacherMode();
   if(!current){
     var pin=prompt(t('adminPinPrompt'));
-    if(pin!==(ls('eng_admin_pin')||'1234')){toast(t('adminPinWrong'));return;}
+    if(pin!==(ls('eng_admin_pin')||ls('eng_set_pin')||'8888')){toast(t('adminPinWrong'));return;}
   }
   lss('eng_teacher_mode',current?'0':'1');
   toast(current?t('teacherModeOff'):t('teacherModeOn'));
@@ -2953,7 +2953,9 @@ LANG.ar.reviewTitle='🔄 مراجعة ذكية';LANG.en.reviewTitle='🔄 Space
 LANG.ar.reviewDesc='راجع المفردات بذكاء';LANG.en.reviewDesc='Review vocabulary with spaced repetition';
 LANG.ar.gamesTitle='🎮 ألعاب';LANG.en.gamesTitle='🎮 Games';
 LANG.ar.wordSearch='🔍 بحث عن كلمات';LANG.en.wordSearch='🔍 Word Search';
-LANG.ar.crossword='❌ كلمات متقاطعة';LANG.en.crossword='❌ Crossword';
+LANG.ar.crossword='🟦 كلمات متقاطعة';LANG.en.crossword='🟦 Crossword';
+LANG.ar.cwInstruction='✏️ اكتب الكلمة الإنجليزية المطابقة للترجمة';LANG.en.cwInstruction='✏️ Type the English word for each clue';
+LANG.ar.cwPlace='اكتب الكلمة...';LANG.en.cwPlace='Type the word...';
 
 // Dark Mode
 function applyDarkMode(on){if(on){document.documentElement.style.setProperty('--bg','#1a1a2e');document.documentElement.style.setProperty('--surface','#16213e');document.documentElement.style.setProperty('--text','#eee');document.documentElement.style.setProperty('--text-light','#aaa');document.documentElement.style.setProperty('--border','#333');document.documentElement.style.setProperty('--input-bg','#1a1a2e');document.documentElement.style.setProperty('--card-shadow','0 4px 15px rgba(0,0,0,.3)');document.documentElement.style.setProperty('--test-option-bg','#1a1a2e');document.documentElement.style.setProperty('--test-option-hover','#2a2a4e')}else{document.documentElement.style.removeProperty('--bg');document.documentElement.style.removeProperty('--surface');document.documentElement.style.removeProperty('--text');document.documentElement.style.removeProperty('--text-light');document.documentElement.style.removeProperty('--border');document.documentElement.style.removeProperty('--input-bg');document.documentElement.style.removeProperty('--card-shadow');document.documentElement.style.removeProperty('--test-option-bg');document.documentElement.style.removeProperty('--test-option-hover')}}
@@ -3213,7 +3215,7 @@ function showAllFeatures(){hideAllViews();var v=document.getElementById('allFeat
     {icon:'❌',label:t('crossword'),action:'showCrossword()',desc:t('featCrossword')}
   ]},
   {title: t('featSection4'),items:[
-    {icon:'👤',label:t('profiles'),action:'showProfiles()',desc:t('featProfiles')},
+    {icon:'👤',label:t('profiles'),action:'showProfileManager()',desc:t('featProfiles')},
     {icon:'🏆',label:t('leaderboard'),action:'showLeaderboard()',desc:t('featLeaderboard')},
     {icon:'🧪',label:t('levelTest'),action:'showLevelTest(0)',desc:t('featLevelTest')},
     {icon:'🔍',label:t('placeTitle'),action:'showPlacementTest()',desc:t('featPlacement')},
@@ -3272,7 +3274,7 @@ LANG.ar.searchAll='🔍 بحث شامل';LANG.en.searchAll='🔍 Search All';
 LANG.ar.searchAllPlace='ابحث في الدروس والمفردات والأمثلة...';LANG.en.searchAllPlace='Search lessons, vocabulary, examples...';
 LANG.ar.searchResults='نتائج البحث';LANG.en.searchResults='Search Results';
 LANG.ar.thisMonth='هذا الشهر';LANG.en.thisMonth='This Month';
-LANG.ar.searchNoResults='❌ لا نتائج';LANG.en.searchNoResults='❌ No results';
+LANG.ar.searchNoResults='⚠️ لا نتائج';LANG.en.searchNoResults='⚠️ No results';
 LANG.ar.grammarExPick='📝 اختر قاعدة نحوية للتمرن عليها';LANG.en.grammarExPick='📝 Pick a grammar topic to practice';
 LANG.ar.geNoExer='لا توجد تمارين لهذه القاعدة بعد';LANG.en.geNoExer='No exercises for this topic yet';
 LANG.ar.geTypeWord='✍️ اكتب الكلمة...';LANG.en.geTypeWord='✍️ Type the word...';
@@ -3294,7 +3296,7 @@ LANG.ar.srNoReview='🎉 لا توجد كلمات للمراجعة الآن';LAN
 LANG.ar.srShowMeaning='👁️ إظهار المعنى';LANG.en.srShowMeaning='👁️ Show meaning';
 LANG.ar.srDoYouKnow='هل تعرف هذه الكلمة؟';LANG.en.srDoYouKnow='Do you know this word?';
 LANG.ar.srYes='✅ نعم';LANG.en.srYes='✅ Yes';
-LANG.ar.srNo='❌ لا';LANG.en.srNo='❌ No';
+LANG.ar.srNo='➖ لا';LANG.en.srNo='➖ No';
 LANG.ar.srAnsweredWell='✅ أحسنت!';LANG.en.srAnsweredWell='✅ Well done!';
 LANG.ar.srReviewLater='🔄 ستراجعها غداً';LANG.en.srReviewLater='🔄 Will review tomorrow';
 LANG.ar.srClickShow='اضغط للإظهار';LANG.en.srClickShow='Click to show';
@@ -3303,7 +3305,7 @@ LANG.ar.listeningShowText='📖 عرض النص';LANG.en.listeningShowText='📖
 LANG.ar.speechGameTitle='قل الكلمة التي تظهر على الشاشة';LANG.en.speechGameTitle='Say the word shown on screen';
 LANG.ar.speechStart='🎙️ ابدأ التسجيل';LANG.en.speechStart='🎙️ Start recording';
 LANG.ar.speechListening='🔴 جارٍ الاستماع...';LANG.en.speechListening='🔴 Listening...';
-LANG.ar.speechNotSupported='❌ غير مدعوم';LANG.en.speechNotSupported='❌ Not supported';
+LANG.ar.speechNotSupported='🚫 غير مدعوم';LANG.en.speechNotSupported='🚫 Not supported';
 LANG.ar.speechNext='➡️ التالي';LANG.en.speechNext='➡️ Next';
 LANG.ar.wsFindWords='ابحث عن الكلمات في الشبكة';LANG.en.wsFindWords='Find the words in the grid';
 LANG.ar.allFeatures='🚀 جميع الميزات';LANG.en.allFeatures='🚀 All Features';
@@ -3377,7 +3379,7 @@ function doSearch(q){q=q.toLowerCase().trim();var res=document.getElementById('s
 // ─── POINTS ON DASHBOARD ───
 (function(){var origSW=showWelcome;showWelcome=function(){origSW();var h2=document.querySelector('.welcome-header');if(h2&&!document.querySelector('.points-badge')){var ptsDiv=document.createElement('div');ptsDiv.style.margin='auto';ptsDiv.style.textAlign='center';ptsDiv.innerHTML=showPointsBadge();h2.parentNode.insertBefore(ptsDiv,h2.nextSibling)}}})();
 
-// ─── AUTO CLOUD BACKUP ───
-setInterval(function(){try{var allData={};['eng_progress','eng_activeProfile','eng_settings','eng_points'].forEach(function(k){var v=ls(k);if(v)allData[k]=v});var allProfiles=getProfiles();allProfiles.forEach(function(p){var pk='eng_progress_'+p.name;var v=ls(pk);if(v)allData[pk]=v;var pts=ls('eng_points_'+p.name);if(pts)allData['eng_points_'+p.name]=pts});var backup=JSON.stringify(allData);var bkp=new Blob([backup]).size;if(bkp>512000)return;lss('eng_cloud_backup',backup);lss('eng_lastBackup',Date.now()+'')}catch(e){}},300000);
+// ─── AUTO LOCAL BACKUP (localStorage only — not cloud) ───
+setInterval(function(){try{var allData={};['eng_progress','eng_activeProfile','eng_settings','eng_points'].forEach(function(k){var v=ls(k);if(v)allData[k]=v});var allProfiles=getProfiles();allProfiles.forEach(function(p){var pk='eng_progress_'+p.name;var v=ls(pk);if(v)allData[pk]=v;var pts=ls('eng_points_'+p.name);if(pts)allData['eng_points_'+p.name]=pts});var backup=JSON.stringify(allData);var bkp=new Blob([backup]).size;if(bkp>512000)return;lss('eng_local_backup',backup);lss('eng_lastBackup',Date.now()+'')}catch(e){}},300000);
 
 // ─── INIT REMINDER + TEACHER + KIDS + ACHIEVEMENTS ON LOAD ───
