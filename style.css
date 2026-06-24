@@ -1,5 +1,63 @@
-/* ─── CSS Variables ─── */
+/* ─── Theme System ─── */
+/* Global variables (always applied) */
 :root {
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --transition: all .2s cubic-bezier(.4,0,.2,1);
+  --card-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --card-shadow-hover: 0 10px 25px rgba(0,0,0,.1), 0 4px 10px rgba(0,0,0,.06);
+  --modal-overlay: rgba(0,0,0,.5);
+}
+/* Dark mode global overrides */
+body.dark-mode {
+  --card-shadow: 0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);
+  --card-shadow-hover: 0 10px 25px rgba(0,0,0,.4);
+  --modal-overlay: rgba(0,0,0,.7);
+}
+
+/* ─── THEME: Classic (default) ─── */
+body.theme-classic, body:not(.theme-rasta):not(.theme-festive):not(.theme-sudan) {
+  --bg: #f0f2f5;
+  --surface: #fff;
+  --header-bg: linear-gradient(135deg, #1a2a3a, #2c3e50);
+  --header-text: #fff;
+  --text: #1a1a2e;
+  --text-light: #6b7280;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --input-bg: #fff;
+  --badge-a1: #ef4444;
+  --badge-a2: #f59e0b;
+  --badge-b1: #10b981;
+  --badge-b2: #3b82f6;
+  --badge-c1: #8b5cf6;
+  --badge-c2: #ec4899;
+  --test-option-hover: #eff6ff;
+  --test-option-bg: #f8fafc;
+}
+body.dark-mode.theme-classic, body.dark-mode:not(.theme-rasta):not(.theme-festive):not(.theme-sudan) {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --header-bg: linear-gradient(135deg, #0f172a, #1e293b);
+  --header-text: #f1f5f9;
+  --text: #e2e8f0;
+  --text-light: #94a3b8;
+  --border: #334155;
+  --border-light: #1e293b;
+  --input-bg: #1e293b;
+  --test-option-hover: #1e3a5f;
+  --test-option-bg: #1e293b;
+  --modal-overlay: rgba(0,0,0,.7);
+}
+
+/* ─── THEME: Rasta ─── */
+body.theme-rasta {
   --bg: #fdf2e9;
   --surface: #fff;
   --header-bg: linear-gradient(135deg, #CE1126, #FCD116, #009B3A);
@@ -10,16 +68,10 @@
   --accent-hover: #a50d1e;
   --border: #e5d5c5;
   --border-light: #f5ebe0;
-  --card-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
-  --card-shadow-hover: 0 10px 25px rgba(0,0,0,.1), 0 4px 10px rgba(0,0,0,.06);
   --success: #009B3A;
   --danger: #CE1126;
   --warning: #FCD116;
   --input-bg: #fff;
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-xs: 6px;
-  --transition: all .2s cubic-bezier(.4,0,.2,1);
   --badge-a1: #CE1126;
   --badge-a2: #FCD116;
   --badge-b1: #009B3A;
@@ -28,10 +80,8 @@
   --badge-c2: #009B3A;
   --test-option-hover: #fef3e2;
   --test-option-bg: #fef9f0;
-  --modal-overlay: rgba(0,0,0,.5);
 }
-/* Dark mode */
-body.dark-mode {
+body.dark-mode.theme-rasta {
   --bg: #1a0f0a;
   --surface: #2a1a12;
   --header-bg: linear-gradient(135deg, #8B0000, #B8860B, #006400);
@@ -40,11 +90,90 @@ body.dark-mode {
   --text-light: #a08070;
   --border: #3a2518;
   --border-light: #2a1a12;
-  --card-shadow: 0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);
-  --card-shadow-hover: 0 10px 25px rgba(0,0,0,.4);
   --input-bg: #2a1a12;
   --test-option-hover: #3a2518;
   --test-option-bg: #2a1a12;
+  --modal-overlay: rgba(0,0,0,.7);
+}
+
+/* ─── THEME: Festive ─── */
+body.theme-festive {
+  --bg: #fef7e6;
+  --surface: #fff;
+  --header-bg: linear-gradient(135deg, #E01111, #FFD700, #FF6347);
+  --header-text: #fff;
+  --text: #2d1b00;
+  --text-light: #8b6914;
+  --accent: #E01111;
+  --accent-hover: #b00e0e;
+  --border: #f0d9a0;
+  --border-light: #f8ecd0;
+  --success: #FFD700;
+  --danger: #E01111;
+  --warning: #FF8C00;
+  --input-bg: #fff;
+  --badge-a1: #E01111;
+  --badge-a2: #FFD700;
+  --badge-b1: #FF6347;
+  --badge-b2: #FF4500;
+  --badge-c1: #FFD700;
+  --badge-c2: #E01111;
+  --test-option-hover: #fff3d6;
+  --test-option-bg: #fffaf0;
+}
+body.dark-mode.theme-festive {
+  --bg: #1a0b00;
+  --surface: #2a1500;
+  --header-bg: linear-gradient(135deg, #8B0000, #B8860B, #8B2500);
+  --header-text: #f1f5f9;
+  --text: #ffd700;
+  --text-light: #b8860b;
+  --border: #3a1f00;
+  --border-light: #2a1500;
+  --input-bg: #2a1500;
+  --test-option-hover: #3a1f00;
+  --test-option-bg: #2a1500;
+  --modal-overlay: rgba(0,0,0,.7);
+}
+
+/* ─── THEME: Sudanese ─── */
+body.theme-sudan {
+  --bg: #f0f5f0;
+  --surface: #fff;
+  --header-bg: linear-gradient(135deg, #CE1126 0%, #CE1126 30%, #FFFFFF 50%, #000000 70%, #009B3A 100%);
+  --header-text: #fff;
+  --text: #1a1a2e;
+  --text-light: #6b7280;
+  --accent: #CE1126;
+  --accent-hover: #a50d1e;
+  --border: #c5d5c5;
+  --border-light: #e0f0e0;
+  --success: #009B3A;
+  --danger: #CE1126;
+  --warning: #FCD116;
+  --input-bg: #fff;
+  --badge-a1: #CE1126;
+  --badge-a2: #FCD116;
+  --badge-b1: #009B3A;
+  --badge-b2: #000000;
+  --badge-c1: #FCD116;
+  --badge-c2: #009B3A;
+  --test-option-hover: #e8f5e8;
+  --test-option-bg: #f0faf0;
+  --sudan-pattern: repeating-linear-gradient(45deg, rgba(0,155,58,.03) 0px, rgba(0,155,58,.03) 10px, transparent 10px, transparent 20px);
+}
+body.dark-mode.theme-sudan {
+  --bg: #0a0f0a;
+  --surface: #1a251a;
+  --header-bg: linear-gradient(135deg, #8B0000 0%, #8B0000 30%, #333333 50%, #000000 70%, #006400 100%);
+  --header-text: #f1f5f9;
+  --text: #d4e8d4;
+  --text-light: #809080;
+  --border: #2a3a2a;
+  --border-light: #1a251a;
+  --input-bg: #1a251a;
+  --test-option-hover: #2a3a2a;
+  --test-option-bg: #1a251a;
   --modal-overlay: rgba(0,0,0,.7);
 }
 
@@ -52,7 +181,7 @@ body.dark-mode {
 body { font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif; background: var(--bg); color: var(--text); direction: rtl; line-height: 1.7; -webkit-font-smoothing: antialiased; }
 .loading-spinner { text-align: center; padding: 80px 20px; }
 .spinner { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
-.toast-msg{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#CE1126;color:#fff;padding:12px 28px;border-radius:30px;font-size:15px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;}.toast-msg.show{opacity:1;}
+.toast-msg{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:12px 28px;border-radius:30px;font-size:15px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;}.toast-msg.show{opacity:1;}
 @keyframes spin { to { transform: rotate(360deg); } }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -68,7 +197,7 @@ header {
   justify-content: space-between;
   box-shadow: 0 4px 20px rgba(0,0,0,.15);
   position: sticky; top: 0; z-index: 100;
-  border-bottom: 3px solid #FCD116;
+  border-bottom: 3px solid var(--warning);
 }
 header.sudan-theme { background: linear-gradient(135deg, #c8102e, #fff, #000); border-bottom: 4px solid #009b3a; }
 header.sudan-theme .header-right span,
@@ -716,7 +845,11 @@ body.lite-mode .channel-info { display: none !important; }
 }
 
 /* ─── Custom Colors ─── */
-:root { --custom-header: #CE1126; --custom-accent: #CE1126; }
+:root { --custom-header: var(--accent); --custom-accent: var(--accent); }
+body.theme-classic { --custom-header: #1a2a3a; --custom-accent: #3b82f6; }
+body.theme-rasta { --custom-header: #CE1126; --custom-accent: #CE1126; }
+body.theme-festive { --custom-header: #E01111; --custom-accent: #E01111; }
+body.theme-sudan { --custom-header: #CE1126; --custom-accent: #CE1126; }
 header { background: linear-gradient(135deg, var(--custom-header), var(--custom-accent)) !important; }
 .curriculum-tab.active, .test-btn, .check-btn, .submit-test-btn, .dash-fill { background:var(--custom-accent) !important; }
 .curriculum-tab.active { border-color:var(--custom-accent) !important; }
@@ -796,19 +929,51 @@ footer { text-align: center; padding: 20px; color: var(--text-light); font-size:
 .feature-label { font-size: .82em; font-weight: 600; color: var(--text); margin-bottom: 3px; }
 .feature-desc { font-size: .68em; color: var(--text-light); line-height: 1.3; }
 
-/* ─── Sudan Welcome Background ─── */
-#welcomeView {
-  position: relative;
+/* ─── Welcome Background per Theme ─── */
+#welcomeView { position:relative; border-radius:var(--radius); overflow:hidden; }
+/* Classic: no background image */
+body.theme-classic #welcomeView, body:not(.theme-rasta):not(.theme-festive):not(.theme-sudan) #welcomeView { background:var(--bg); }
+/* Rasta: textured pattern */
+body.theme-rasta #welcomeView {
   background:
-    linear-gradient(rgba(253,242,233,.88), rgba(253,242,233,.88)),
+    linear-gradient(rgba(253,242,233,.92), rgba(253,242,233,.92)),
+    repeating-linear-gradient(45deg, rgba(206,17,38,.05) 0px, rgba(206,17,38,.05) 2px, transparent 2px, transparent 8px),
+    repeating-linear-gradient(-45deg, rgba(0,155,58,.05) 0px, rgba(0,155,58,.05) 2px, transparent 2px, transparent 8px);
+}
+body.dark-mode.theme-rasta #welcomeView {
+  background:
+    linear-gradient(rgba(26,15,10,.92), rgba(26,15,10,.92)),
+    repeating-linear-gradient(45deg, rgba(206,17,38,.08) 0px, rgba(206,17,38,.08) 2px, transparent 2px, transparent 8px),
+    repeating-linear-gradient(-45deg, rgba(0,155,58,.08) 0px, rgba(0,155,58,.08) 2px, transparent 2px, transparent 8px);
+}
+/* Festive: confetti dots */
+body.theme-festive #welcomeView {
+  background:
+    linear-gradient(rgba(254,247,230,.92), rgba(254,247,230,.92)),
+    radial-gradient(circle at 20% 30%, #FFD700 0px, transparent 4px),
+    radial-gradient(circle at 70% 20%, #E01111 0px, transparent 5px),
+    radial-gradient(circle at 40% 70%, #FF6347 0px, transparent 4px),
+    radial-gradient(circle at 80% 60%, #FFD700 0px, transparent 6px),
+    radial-gradient(circle at 10% 80%, #E01111 0px, transparent 3px);
+}
+body.dark-mode.theme-festive #welcomeView {
+  background:
+    linear-gradient(rgba(26,11,0,.92), rgba(26,11,0,.92)),
+    radial-gradient(circle at 20% 30%, #B8860B 0px, transparent 4px),
+    radial-gradient(circle at 70% 20%, #8B0000 0px, transparent 5px),
+    radial-gradient(circle at 40% 70%, #8B2500 0px, transparent 4px),
+    radial-gradient(circle at 80% 60%, #B8860B 0px, transparent 6px);
+}
+/* Sudanese: Meroe pyramids background */
+body.theme-sudan #welcomeView {
+  background:
+    linear-gradient(rgba(240,245,240,.88), rgba(240,245,240,.88)),
     url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Sudan_Meroe_Pyramids_2001.JPG/800px-Sudan_Meroe_Pyramids_2001.JPG')
     center/cover no-repeat fixed;
-  border-radius: var(--radius);
-  overflow: hidden;
 }
-body.dark-mode #welcomeView {
+body.dark-mode.theme-sudan #welcomeView {
   background:
-    linear-gradient(rgba(26,15,10,.88), rgba(26,15,10,.88)),
+    linear-gradient(rgba(10,15,10,.88), rgba(10,15,10,.88)),
     url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Sudan_Meroe_Pyramids_2001.JPG/800px-Sudan_Meroe_Pyramids_2001.JPG')
     center/cover no-repeat fixed;
 }
