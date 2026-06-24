@@ -262,6 +262,10 @@ const LANG = {
     arExplMusic:'درس موسيقي بعنوان "{0}" يشرح المفاهيم الموسيقية الأساسية بطريقة مبسطة.',
     arExplGeneric:'درس "{0}" باللغة الإنجليزية. يغطي المفردات والقواعد والمهارات اللغوية من خلال أمثلة وتطبيقات عملية.',
     vapidKeyMissing:'⚠️ ضع مفتاح VAPID في الإعدادات أولاً',
+    prevLesson:'الدرس السابق',
+    nextLesson:'الدرس التالي',
+    noPrevLesson:'هذا أول درس',
+    noNextLesson:'هذا آخر درس',
   },
   en: {
     dir:'ltr', appTitle:'\ud83d\udcda Mr. Yasser',
@@ -511,5 +515,9 @@ const LANG = {
     showEnglish:'⬇️ Show English',
     showArabic:'⬇️ Show Arabic',
     vapidKeyMissing:'⚠️ Set VAPID key in settings first',
+    prevLesson:'Previous Lesson',
+    nextLesson:'Next Lesson',
+    noPrevLesson:'This is the first lesson',
+    noNextLesson:'This is the last lesson',
   }
 };
