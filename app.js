@@ -3050,7 +3050,7 @@ function showCachedStatus(){var el=document.getElementById('offlineStatus');if(!
 window.addEventListener('online',showCachedStatus);
 window.addEventListener('offline',showCachedStatus);
 // Cache all data on first load
-(function(){if('caches'in window){setTimeout(function(){caches.open('opencode-v9').then(function(c){var files=['/app_data.json','/level_tests.json','/placement_test.json'];files.forEach(function(f){fetch(f).then(function(r){if(r.ok)c.put(f,r)}).catch(function(){})})})},3000)}})();
+(function(){if('caches'in window){setTimeout(function(){caches.open('opencode-v10').then(function(c){var files=['/app_data.json','/level_tests.json','/placement_test.json'];files.forEach(function(f){fetch(f).then(function(r){if(r.ok)c.put(f,r)}).catch(function(){})})})},3000)}})();
 
 // 2. Study Reminder Notifications (uses old reminder system at line 669)
 function requestNotiPermission(){if(!('Notification'in window)){toast(t('notifUnsupported'));return}if(Notification.permission==='default'){Notification.requestPermission().then(function(p){if(p!=='granted')return})}var s=getReminderSettings();s.enabled=true;saveReminderSettings(s);scheduleReminder();toast(t('reminderActivated'))}
