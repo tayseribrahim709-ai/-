@@ -471,7 +471,16 @@ function importData(){var inp=document.createElement('input');inp.type='file';in
 function showAbout(){hideAllViews();let v=document.getElementById('aboutView');if(!v){v=document.createElement('div');v.id='aboutView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const cl=LANG[currentLang];var arts=[{t:t('aboutArt1Title'),d:t('aboutArt1Desc')},{t:t('aboutArt2Title'),d:t('aboutArt2Desc')},{t:t('aboutArt3Title'),d:t('aboutArt3Desc')},{t:t('aboutArt4Title'),d:t('aboutArt4Desc')}];v.innerHTML='<div class="about-content" style="padding:20px;max-width:800px;margin:0 auto"><h2>'+t('aboutTitle')+'</h2><div class="about-arts" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0">'+arts.map(function(a){return'<div class="art-card" style="text-align:center;background:var(--surface);padding:18px 10px;border-radius:12px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.06)"><div style="font-size:36px;margin-bottom:8px">'+a.t.slice(0,2)+'</div><h4 style="margin:4px 0;font-size:1em;color:var(--accent,#e74c3c)">'+a.t+'</h4><p style="font-size:.8em;color:var(--text-light);margin:4px 0 0">'+a.d+'</p></div>'}).join('')+'</div><div class="about-section" style="margin:15px 0"><h3>'+t('summary')+'</h3><p>'+t('summaryText')+'</p></div><div class="about-section" style="margin:15px 0"><h3>'+t('qualifications')+'</h3><ul>'+(cl.qualList||[]).map(q=>'<li>'+q+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('experience')+'</h3><ul>'+(cl.expList||[]).map(e=>'<li>'+e+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('skills')+'</h3><ul>'+(cl.skillList||[]).map(s=>'<li>'+s+'</li>').join('')+'</ul></div><div class="about-section" style="margin:15px 0"><h3>'+t('interests')+'</h3><ul>'+(cl.intList||[]).map(i=>'<li>'+i+'</li>').join('')+'</ul></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}
 
 // ─── DEVELOPER VIEW ───
+function devAuth(){
+  var p=ls('eng_dev_pass');
+  if(!p){p=prompt('🔐 تعيين كلمة مرور المطور (سيتم حفظها):');if(p&&p.trim()){lss('eng_dev_pass',p.trim());toast('✅ تم تعيين كلمة المرور');return true}return false}
+  var a=prompt('🔐 كلمة مرور المطور:');
+  if(a===p)return true;
+  toast('❌ كلمة المرور خطأ');return false
+}
+function changeDevPass(){var o=prompt('🔐 كلمة المرور الحالية:');var p=ls('eng_dev_pass');if(o!==p){toast('❌ خطأ');return}var n=prompt('🔐 كلمة المرور الجديدة:');if(n&&n.trim()){lss('eng_dev_pass',n.trim());toast('✅ تم تغيير كلمة المرور')}}
 function showDeveloper(){
+  if(!devAuth())return;
   try{
     hideAllViews();
     var toc=document.getElementById('toc');if(toc)toc.style.display='none';
@@ -481,36 +490,61 @@ function showDeveloper(){
     if(!v){v=document.createElement('div');v.id='developerView';v.className='lesson-view'}
     v.style.display='block';
     document.getElementById('content').appendChild(v);
-    var skills=[t('devSkillJS'),t('devSkillHTML'),t('devSkillReact'),t('devSkillPython'),t('devExpertise'),t('devPerf')];
-    var projects=[t('devEduApps'),t('devCMS'),t('devEcom'),t('devAuto')];
-    var skillsHtml=skills.map(function(s){return '<span style="padding:6px 14px;background:var(--test-option-bg);border:1px solid var(--border);border-radius:20px;font-size:.9em">'+s+'</span>';}).join('');
-    var projectsHtml=projects.map(function(p){return '<li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">&#10003;</span> '+p+'</li>';}).join('');
-    v.innerHTML='<div style="padding:20px;max-width:800px;margin:0 auto">'
-      +'<div style="text-align:center;margin-bottom:30px">'
-      +'<div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#9b59b6);margin:0 auto 15px;display:flex;align-items:center;justify-content:center;font-size:48px;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.2)">&#128104;&#8205;&#128187;</div>'
-      +'<h2 style="font-size:1.8em;margin:0 0 5px">'+t('devName')+'</h2>'
-      +'<p style="color:var(--accent);font-size:1.1em;margin:0">'+t('devTitle')+'</p>'
-      +'</div>'
-      +'<div style="background:var(--surface);border-radius:12px;padding:20px;margin:15px 0;box-shadow:var(--card-shadow)">'
-      +'<h3 style="color:var(--accent);margin-bottom:10px">'+t('devBioShort')+'</h3>'
-      +'<p style="line-height:1.8;color:var(--text)">'+t('devBio')+'</p>'
-      +'</div>'
-      +'<div style="background:var(--surface);border-radius:12px;padding:20px;margin:15px 0;box-shadow:var(--card-shadow)">'
-      +'<h3 style="color:var(--accent);margin-bottom:10px">'+t('devSkills')+'</h3>'
-      +'<div style="display:flex;flex-wrap:wrap;gap:8px">'+skillsHtml+'</div>'
-      +'</div>'
-      +'<div style="background:var(--surface);border-radius:12px;padding:20px;margin:15px 0;box-shadow:var(--card-shadow)">'
-      +'<h3 style="color:var(--accent);margin-bottom:10px">'+t('devProjects')+'</h3>'
-      +'<ul style="list-style:none;padding:0">'+projectsHtml+'</ul>'
-      +'</div>'
-      +'<div style="background:linear-gradient(135deg,var(--accent),#9b59b6);border-radius:12px;padding:20px;margin:15px 0;color:#fff;text-align:center">'
-      +'<h3 style="margin-bottom:10px">'+t('devMessage')+'</h3>'
-      +'<p style="font-size:1.05em;line-height:1.8;opacity:.95">'+t('devMsg')+'</p>'
-      +'</div>'
+    var lsSize=0;try{for(var k in localStorage){if(localStorage.hasOwnProperty(k)){lsSize+=localStorage[k].length*2}}lsSize=(lsSize/1024).toFixed(1)}catch(e){}
+    var lsKeys=[];try{for(var k in localStorage){if(localStorage.hasOwnProperty(k)&&k.startsWith('eng_'))lsKeys.push(k)}}catch(e){}
+    var p=getProgress();var completed=getCompletedLessons();var favs=getFavorites();
+    var cacheSize=0;try{var raw=ls('eng_data_cache_v1');if(raw)cacheSize=(raw.length*2/1024).toFixed(1)}catch(e){}
+    v.innerHTML='<div style="padding:16px;max-width:800px;margin:0 auto">'
+      +'<div style="text-align:center;margin-bottom:20px">'
+      +'<h2 style="font-size:1.6em;margin:0">👨‍💻 '+t('devPanel')+'</h2>'
+      +'<p style="color:var(--accent);font-size:.9em;margin:4px 0 0">'+t('devPanelDesc')+'</p></div>'
+      // System Info
+      +'<div style="background:var(--surface);border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
+      +'<h3 style="color:var(--accent);margin-bottom:8px">🖥️ '+t('sysInfo')+'</h3>'
+      +'<table style="width:100%;font-size:.85em;line-height:2"><tr><td>'+t('version')+':</td><td>v2.5 ('+t('updated')+': 2026-06-25)</td></tr>'
+      +'<tr><td>'+t('cacheSize')+':</td><td>'+cacheSize+' KB</td></tr>'
+      +'<tr><td>'+t('lsSize')+':</td><td>'+lsSize+' KB ('+lsKeys.length+' '+t('key')+')</td></tr>'
+      +'<tr><td>'+t('modules')+':</td><td>'+(appData&&appData.curricula?appData.curricula.length:0)+' '+t('curricula')+'</td></tr>'
+      +'<tr><td>📊 '+t('lessons')+':</td><td>'+completed.length+' '+t('completed')+'</td></tr>'
+      +'<tr><td>⭐ '+t('favShort')+':</td><td>'+favs.length+'</td></tr></table></div>'
+      // Data Management
+      +'<div style="background:var(--surface);border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
+      +'<h3 style="color:var(--accent);margin-bottom:8px">💾 '+t('dataManage')+'</h3>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:6px">'
+      +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="exportAll()">📤 '+t('exportAll')+'</button>'
+      +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="importAll()">📥 '+t('importAll')+'</button>'
+      +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="clearAllData()">🗑️ '+t('reset')+'</button>'
+      +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="clearCache()">🧹 '+t('clearCache')+'</button>'
+      +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="showAdmin()">📝 '+t('adminLessons')+'</button>'
+      +'</div></div>'
+      // Security
+      +'<div style="background:var(--surface);border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
+      +'<h3 style="color:var(--accent);margin-bottom:8px">🔒 '+t('security')+'</h3>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:6px">'
+      +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="changeDevPass()">🔑 '+t('changePass')+'</button>'
+      +'</div></div>'
+      // localStorage Viewer
+      +'<div style="background:var(--surface);border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
+      +'<h3 style="color:var(--accent);margin-bottom:8px">🗂️ '+t('lsViewer')+'</h3>'
+      +'<div style="max-height:200px;overflow-y:auto;font-size:.8em;line-height:1.8;direction:ltr;text-align:left">'
+      +lsKeys.map(function(k){var v=ls(k);var disp=v&&v.length>80?v.slice(0,80)+'...':v;return'<div style="padding:3px 0;border-bottom:1px solid var(--border)"><span style="color:var(--accent)">'+k+'</span> = <span style="opacity:.7">'+disp+'</span></div>'}).join('')
+      +'</div></div>'
+      // Danger Zone
+      +'<div style="background:#fee2e2;border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
+      +'<h3 style="color:#991b1b;margin-bottom:8px">⚠️ '+t('dangerZone')+'</h3>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:6px">'
+      +'<button style="font-size:.8em;padding:6px 10px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer" onclick="nukeAll()">💀 '+t('nukeAll')+'</button>'
+      +'</div></div>'
+      // Back
       +'<button class="back-btn" onclick="hideAllViews();showWelcome()" style="margin-top:15px">'+t('back')+'</button>'
       +'</div>';
   }catch(e){console.error('showDeveloper error:',e);toast('Error: '+e.message);}
 }
+function exportAll(){var d={progress:getProgress(),favs:getFavorites(),settings:getSettings(),completed:getCompletedLessons(),streak:getStreak(),notes:{}};try{for(var k in localStorage){if(localStorage.hasOwnProperty(k)&&k.startsWith('eng_note_'))d.notes[k]=ls(k)}}catch(e){};var blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='eng_backup_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);toast('✅ '+t('exportDone'))}
+function importAll(){var inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=function(e){var file=e.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(d.progress){saveProgress(d.progress)}if(d.favs){setFavorites(d.favs)}if(d.settings){saveSettings(d.settings)}if(d.completed){saveCompletedLessons(d.completed)}if(d.streak){saveStreak(d.streak)}if(d.notes){try{for(var k in d.notes){if(k.startsWith('eng_note_'))lss(k,d.notes[k])}}catch(e){}}toast('✅ '+t('importDone'));showDeveloper()}catch(ex){toast('❌ '+t('importFailed'))}};reader.readAsText(file)};inp.click()}
+function clearCache(){lss('eng_data_cache_v1','');lss('eng_data_files_cached','');toast('🧹 '+t('cacheCleared'))}
+function clearAllData(){if(!confirm(t('resetConfirm')))return;localStorage.clear();toast('🗑️ '+t('resetDone'))}
+function nukeAll(){if(!confirm('💀 '+t('nukeConfirm')))return;if(!confirm('⚠️ '+t('nukeConfirm2')))return;localStorage.clear();location.reload()}
 
 // ─── CV VIEW ───
 function showCV(){hideAllViews();let v=document.getElementById('cvView');if(!v){v=document.createElement('div');v.id='cvView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const cl=LANG[currentLang];v.innerHTML='<div class="cv-content" style="padding:20px;max-width:800px;margin:0 auto"><div class="teacher-fallback" style="width:100%;max-width:280px;margin:0 auto 20px;padding:40px;border-radius:16px;background:var(--surface);text-align:center;font-size:64px;display:none">&#x1F9D1;&#x200D;&#x1F3EB;</div><img src="/teacher.jpg" alt="'+t('teacherAlt')+'" style="width:100%;max-width:280px;border-radius:16px;display:block;margin:0 auto 20px;box-shadow:0 4px 20px rgba(0,0,0,.15)" onerror="imgError(this)"><h2>'+t('aboutTitle')+'</h2><div class="cv-section" style="margin:12px 0"><h3>'+t('summary')+'</h3><p>'+t('summaryText')+'</p></div><div class="cv-section" style="margin:12px 0"><h3>'+t('qualifications')+'</h3><ul>'+(cl.qualList||[]).map(q=>'<li>'+q+'</li>').join('')+'</ul></div><div class="cv-section" style="margin:12px 0"><h3>'+t('experience')+'</h3><ul>'+(cl.expList||[]).map(e=>'<li>'+e+'</li>').join('')+'</ul></div><div class="cv-section" style="margin:12px 0"><h3>'+t('skills')+'</h3><ul>'+(cl.skillList||[]).map(s=>'<li>'+s+'</li>').join('')+'</ul></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}
