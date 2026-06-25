@@ -517,6 +517,12 @@ function showDeveloper(){
       +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="clearCache()">🧹 '+t('clearCache')+'</button>'
       +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="showAdmin()">📝 '+t('adminLessons')+'</button>'
       +'</div></div>'
+      // Guide
+      +'<div style="background:var(--surface);border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
+      +'<h3 style="color:var(--accent);margin-bottom:8px">📘 '+t('userGuide')+'</h3>'
+      +'<p style="font-size:.85em;opacity:.8;margin-bottom:8px">'+t('guideDesc')+'</p>'
+      +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="window.open(\'USER_GUIDE.md\',\'_blank\')">📖 '+t('openGuide')+'</button>'
+      +'</div>'
       // Security
       +'<div style="background:var(--surface);border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
       +'<h3 style="color:var(--accent);margin-bottom:8px">🔒 '+t('security')+'</h3>'

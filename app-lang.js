@@ -308,6 +308,9 @@ const LANG = {
     cacheCleared:'تم مسح الكاش',
     nukeConfirm:'هل أنت متأكد من مسح كل شيء؟',
     nukeConfirm2:'هذا الإجراء لا يمكن التراجع عنه! هل أنت متأكد؟',
+    userGuide:'دليل المستخدم',
+    guideDesc:'شرح كامل لجميع ميزات التطبيق وكيفية الاستخدام',
+    openGuide:'📖 فتح الدليل',
   },
   en: {
     dir:'ltr', appTitle:'\ud83d\udcda Mr. Yasser',
@@ -603,5 +606,8 @@ const LANG = {
     cacheCleared:'Cache cleared',
     nukeConfirm:'Are you sure you want to delete everything?',
     nukeConfirm2:'This action cannot be undone! Are you sure?',
+    userGuide:'User Guide',
+    guideDesc:'Complete explanation of all app features and how to use them',
+    openGuide:'📖 Open Guide',
   }
 };
