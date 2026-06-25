@@ -281,6 +281,8 @@ const LANG = {
     nextLesson:'الدرس التالي',
     noPrevLesson:'هذا أول درس',
     noNextLesson:'هذا آخر درس',
+    readAbout:'اقرأ عن السودان وحضارته',
+    hideReading:'إخفاء القطعة',
   },
   en: {
     dir:'ltr', appTitle:'\ud83d\udcda Mr. Yasser',
@@ -549,5 +551,7 @@ const LANG = {
     nextLesson:'Next Lesson',
     noPrevLesson:'This is the first lesson',
     noNextLesson:'This is the last lesson',
+    readAbout:'Read about Sudan and its Civilization',
+    hideReading:'Hide Reading',
   }
 };

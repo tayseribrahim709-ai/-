@@ -9,6 +9,9 @@
 <meta name="theme-color" content="#2c3e50">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="استاذ ياسر">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 </head>
 <body>
 <header>
@@ -50,6 +53,25 @@
       <h2 id="wlcTitle">🇸🇩 مرحباً بك في تطبيق استاذ ياسر ابراهيم 🇸🇩</h2>
       <p id="wlcDesc">دورة كاملة لتعليم اللغة الإنجليزية وفق الإطار الأوروبي المرجعي المشترك (CEFR) ومنهج السودان.</p>
       <p id="wlcDesc2">اختر درساً من القائمة لبدء التعلم، أو استخدم أزرار التنقل في الأعلى للوحة التقدم وبنك المفردات.</p>
+      <button class="check-btn" id="sudanReadToggle" onclick="toggleSudanReading()" style="margin-top:12px;font-size:.85em">📖 اقرأ عن السودان وحضارته</button>
+      <div id="sudanReading" style="margin-top:12px;padding:16px;background:var(--surface);border-radius:12px;border:1px solid var(--border);max-height:380px;overflow-y:auto;text-align:right;line-height:1.8">
+        <h3 style="color:var(--accent);margin-bottom:8px">🇸🇩 السودان: أرض الحضارات والمستقبل المشرق</h3>
+        <div class="ar-content"><p><strong>المقدمة:</strong> السودان، المعروف باسم "بلاد النيلين"، هو بلد يتميز بتنوعه الجغرافي والثقافي والحضاري. يمتد السودان على مساحة شاسعة تجعله من أكبر الدول الأفريقية، ويحتضن تراثاً غنياً يعود إلى آلاف السنين.</p>
+        <p><strong>الحضارة النوبية والمروية:</strong> قامت على أرض السودان أقدم الحضارات الإنسانية. الحضارة النوبية (3500 ق.م) والحضارة المروية (800 ق.م - 350 م) هما من أعرق الحضارات في القارة الأفريقية. الأهرامات في البجراوية ومروي هي شواهد حية على عظمة هذه الحضارات، وتفوق أعدادها أهرامات مصر.</p>
+        <p><strong>التنوع الجغرافي:</strong> يتميز السودان بمناظر طبيعية خلابة تتراوح بين الصحاري الذهبية في الشمال والغابات الاستوائية في الجنوب، وبين الجبال الشامخة مثل جبل مرة وجبل أولياء، والنيل الأبيض والأزرق اللذين يلتقيان في قلب الخرطوم.</p>
+        <p><strong>الثقافة والتراث:</strong> يتمتع السودان بتنوع ثقافي فريد يضم أكثر من 500 قبيلة تتحدث أكثر من 100 لغة. الموسيقى السودانية التراثية كالطمبور والدليب، والرقصات التقليدية كالكمبلا والعرديب، تعكس غنى التراث. كما أن الضيافة السودانية مضرب مثل في الكرم.</p>
+        <p><strong>الاقتصاد والمستقبل:</strong> يمتلك السودان موارد طبيعية هائلة تشمل الذهب، النفط، الغاز، الأراضي الزراعية الخصبة، والثروة الحيوانية. الزراعة تمثل عماد الاقتصاد خاصة محصولي الذرة الرفيعة والسمسم. مع الاستقرار والتنمية المستدامة، يتجه السودان نحو مستقبل أكثر إشراقاً بفضل طاقة شبابه الواعدة.</p>
+        <p><strong>الخلاصة:</strong> السودان ليس مجرد بلد، بل هو قصة حضارة عريقة، وتنوع طبيعي وثقافي فريد، وإنسان كريم، ومستقبل واعد بامتيازاته الطبيعية والبشرية.</p></div>
+        <hr style="margin:10px 0;border-color:var(--border)">
+        <div class="en-content" style="text-align:left;color:var(--text);opacity:.9">
+        <h3 style="color:var(--accent);margin-bottom:8px">🇸🇩 Sudan: Land of Civilizations and a Bright Future</h3>
+        <p><strong>Introduction:</strong> Sudan, known as the "Land of the Two Niles," is a country distinguished by its geographical, cultural, and civilizational diversity. Spanning a vast area that makes it one of Africa's largest countries, Sudan embraces a rich heritage dating back thousands of years.</p>
+        <p><strong>Nubian and Meroitic Civilization:</strong> Some of the earliest human civilizations flourished on Sudanese soil. The Nubian civilization (3500 BC) and the Meroitic civilization (800 BC - 350 AD) are among the oldest in Africa. The pyramids at Al-Bajrawiya and Meroë stand as living testimonies to the greatness of these civilizations, surpassing the number of pyramids in Egypt.</p>
+        <p><strong>Geographical Diversity:</strong> Sudan boasts breathtaking landscapes ranging from golden deserts in the north to tropical rainforests in the south, majestic mountains such as Jebel Marra and Jebel Awliya, and the White and Blue Niles that meet at the heart of Khartoum.</p>
+        <p><strong>Culture and Heritage:</strong> Sudan enjoys a unique cultural diversity encompassing over 500 tribes speaking more than 100 languages. Traditional Sudanese music such as Tambour and Dalib, and folk dances like Kambala and Ardeeb, reflect a rich heritage. Sudanese hospitality is legendary for its generosity.</p>
+        <p><strong>Economy and Future:</strong> Sudan possesses immense natural resources including gold, oil, gas, fertile agricultural lands, and livestock. Agriculture forms the backbone of the economy, especially sorghum and sesame crops. With stability and sustainable development, Sudan is heading toward a brighter future thanks to the promising energy of its youth.</p>
+        <p><strong>Conclusion:</strong> Sudan is not merely a country; it is a story of an ancient civilization, unique natural and cultural diversity, generous people, and a promising future blessed with natural and human endowments.</p></div>
+      </div>
     </div>
   </div>
 
@@ -60,7 +82,7 @@
   <p>استاذ ياسر ابراهيم &copy; 2026 — جميع المناهج</p>
 </footer>
 
-<script src="app-lang.js?v=5"></script>
-<script src="app.js?v=24"></script>
+<script src="app-lang.js?v=6"></script>
+<script src="app.js?v=25"></script>
 </body>
 </html>

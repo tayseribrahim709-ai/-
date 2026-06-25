@@ -840,7 +840,13 @@ body.lite-mode .channel-info { display: none !important; }
 /* Touch devices */
 @media (hover: none) and (pointer: coarse) {
   .lesson-item, .level-header, .module-header { padding: 12px; }
-  .test-option, .quiz-option, .vq-option { padding: 12px 15px; }
+  #sudanReading { scrollbar-width:thin;scrollbar-color:var(--accent) transparent;font-size:.92em }
+#sudanReading::-webkit-scrollbar { width:5px }
+#sudanReading::-webkit-scrollbar-thumb { background:var(--accent);border-radius:4px }
+#sudanReading .ar-content p { margin:6px 0 }
+#sudanReading .en-content p { margin:6px 0 }
+#sudanReading hr { opacity:.4 }
+.test-option, .quiz-option, .vq-option { padding: 12px 15px; }
   .nav-btn, .tool-btn, .test-btn, .back-btn { min-height: 40px; display: flex; align-items: center; justify-content: center; }
 }
 

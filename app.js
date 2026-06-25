@@ -86,9 +86,9 @@ function toast(m){let e=document.getElementById('toast');if(!e){e=document.creat
 
 function hideAllViews(){['welcome','lessonView','aboutView','cvView','settingsView','dashboardView','vocabBankView','grammarRefView','placementView','syncView','flashcardsView','levelTestView','notesView','achieveView','musicWelcomeView','developerView','vocabQuizView','planView','adminView'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});}
 
-function showWelcome(){hideAllViews();const w=document.getElementById('welcome');if(w)w.style.display='block';clearResumeBanner();var st=getSettings();var th=st.theme||'classic';var tEl=document.getElementById('wlcTitle');var dEl=document.getElementById('wlcDesc');var themeKey='theme'+(th.charAt(0).toUpperCase()+th.slice(1));if(tEl)tEl.textContent=t(th==='sudan'?'sudanWelcome':th==='festive'?'festiveGreeting':th==='rasta'?'rastaGreeting':'classicGreeting');if(dEl)dEl.innerHTML='<small style="opacity:.7;display:block;margin-bottom:4px">🎨 '+t('themeLabel')+': '+t(themeKey)+'</small>'+t('welcomeDesc');}
+function showWelcome(){hideAllViews();const w=document.getElementById('welcome');if(w)w.style.display='block';clearResumeBanner();var st=getSettings();var th=st.theme||'classic';var tEl=document.getElementById('wlcTitle');var dEl=document.getElementById('wlcDesc');var themeKey='theme'+(th.charAt(0).toUpperCase()+th.slice(1));if(tEl)tEl.textContent=t(th==='sudan'?'sudanWelcome':th==='festive'?'festiveGreeting':th==='rasta'?'rastaGreeting':'classicGreeting');if(dEl)dEl.innerHTML='<small style="opacity:.7;display:block;margin-bottom:4px">🎨 '+t('themeLabel')+': '+t(themeKey)+'</small>'+t('welcomeDesc');var sBtn=document.getElementById('sudanReadToggle');if(sBtn)sBtn.textContent='📖 '+t('readAbout');}
 
-function clearResumeBanner(){const b=document.getElementById('resumeBanner');if(b)b.innerHTML='';}
+function toggleSudanReading(){const el=document.getElementById('sudanReading');const btn=document.getElementById('sudanReadToggle');if(!el||!btn)return;const vis=el.style.display!=='none';el.style.display=vis?'none':'block';btn.textContent=(vis?'📖 ':'📖 ')+t(vis?'readAbout':'hideReading');}
 
 function checkReady(){const spinner=document.getElementById('loadingSpinner');const wc=document.getElementById('welcomeContent');if(spinner)spinner.style.display='none';if(wc)wc.style.display='block';}
 
@@ -414,7 +414,7 @@ function checkExercise(eid,answer){const el=document.getElementById(eid);const r
 
 function checkWrite(eid,answer){const el=document.getElementById(eid);const res=document.getElementById('res_'+eid);if(!el||!res)return;if(!el.value.trim()){res.innerHTML=t('answerFirst');res.style.color='orange';return;}if(answer){const user=el.value.trim().toLowerCase().replace(/[^a-z\s]/g,'');const ans=answer.toLowerCase().replace(/[^a-z\s]/g,'');if(user===ans){res.innerHTML=t('correct');res.style.color='green';}else{res.innerHTML=t('closeToCorrect');res.style.color='#e67e22';}}else{res.innerHTML=t('answered');res.style.color='green';}}
 
-function selectQuizOption(el,qi,oi){const parent=el.closest('.quiz-item');if(parent){parent.querySelectorAll('.quiz-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');}}
+function selectQuizOption(el,qi,oi){const parent=el.closest('.quiz-item');if(parent){parent.querySelectorAll('.quiz-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');const radio=el.querySelector('input[type="radio"]');if(radio)radio.checked=true;}}
 
 function checkQuiz(lid,num){let correct=0;for(let i=0;i<num;i++){const ansEl=document.getElementById('qans_'+lid+'_'+i);const resEl=document.getElementById('qres_'+lid+'_'+i);if(!ansEl||!resEl)continue;const selected=document.querySelector('input[name="quiz_'+i+'"]:checked');if(selected){const selectedVal=parseInt(selected.value);const ansIdx=parseInt(ansEl.getAttribute('data-ans-idx'));if(!isNaN(ansIdx)&&selectedVal===ansIdx){resEl.innerHTML=t('correct');resEl.style.color='green';correct++;}else if(isNaN(ansIdx)&&selected.nextElementSibling){const st=selected.nextElementSibling.textContent.trim().toLowerCase();const at=ansEl.value.trim().toLowerCase();if(st===at){resEl.innerHTML=t('correct');resEl.style.color='green';correct++;}else{resEl.innerHTML=t('wrong');resEl.style.color='red';}}else{resEl.innerHTML=t('wrong');resEl.style.color='red';}}else{resEl.innerHTML=t('answerFirst');resEl.style.color='orange';}}const scoreEl=document.getElementById('qscore_'+lid);if(scoreEl)scoreEl.innerHTML='<p>'+correct+'/'+num+' '+t('correct')+'</p>';}
 
@@ -453,7 +453,7 @@ function syncDelete(){if(!syncUser||!confirm(t('deleteAccount')))return;fetch('/
 function initSync(){const saved=ls('syncUser');if(saved){try{syncUser=JSON.parse(saved)}catch(e){syncUser=null}}}
 
 // ─── SETTINGS ───
-function getSettings(){try{const d=JSON.parse(ls('eng_settings'));return d&&typeof d==='object'?d:{fontSize:'medium',theme:s.theme||'classic',studyDays:[0,1,2,3,4,5,6],liteMode:false,reminderOn:false,reminderTime:'09:00',headerColor:'',customColors:'',accentColor:'',autoDark:false}}catch(e){return{fontSize:'medium',studyDays:[0,1,2,3,4,5,6],liteMode:false,reminderOn:false,reminderTime:'09:00',headerColor:'',customColors:'',accentColor:'',autoDark:false}}}
+function getSettings(){try{const d=JSON.parse(ls('eng_settings'));return d&&typeof d==='object'?d:{fontSize:'medium',theme:'classic',studyDays:[0,1,2,3,4,5,6],liteMode:false,reminderOn:false,reminderTime:'09:00',headerColor:'',customColors:'',accentColor:'',autoDark:false}}catch(e){return{fontSize:'medium',studyDays:[0,1,2,3,4,5,6],liteMode:false,reminderOn:false,reminderTime:'09:00',headerColor:'',customColors:'',accentColor:'',autoDark:false}}}
 
 function saveSettings(s){lss('eng_settings',JSON.stringify(s));}
 
