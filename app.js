@@ -473,14 +473,20 @@ function showAbout(){hideAllViews();let v=document.getElementById('aboutView');i
 // ─── DEVELOPER VIEW ───
 function devAuth(){
   var p=ls('eng_dev_pass');
-  if(!p){p=prompt('🔐 تعيين كلمة مرور المطور (سيتم حفظها):');if(p&&p.trim()){lss('eng_dev_pass',p.trim());toast('✅ تم تعيين كلمة المرور');return true}return false}
+  if(!p){
+    var v=prompt('🔐 تعيين كلمة مرور المطور (سيتم حفظها محلياً):');
+    if(v===null||v===undefined){toast('❌ تم الإلغاء');return false}
+    if(v.trim()){lss('eng_dev_pass',v.trim());toast('✅ تم تعيين كلمة المرور');return true}
+    toast('❌ كلمة المرور فارغة');return false
+  }
   var a=prompt('🔐 كلمة مرور المطور:');
-  if(a===p)return true;
+  if(a===null||a===undefined){toast('❌ تم الإلغاء');return false}
+  if(a.trim()===p.trim())return true;
   toast('❌ كلمة المرور خطأ');return false
 }
 function changeDevPass(){var o=prompt('🔐 كلمة المرور الحالية:');var p=ls('eng_dev_pass');if(o!==p){toast('❌ خطأ');return}var n=prompt('🔐 كلمة المرور الجديدة:');if(n&&n.trim()){lss('eng_dev_pass',n.trim());toast('✅ تم تغيير كلمة المرور')}}
 function showDeveloper(){
-  if(!devAuth())return;
+  try{if(!devAuth())return}catch(e){toast('❌ Auth error: '+e.message);return}
   try{
     hideAllViews();
     var toc=document.getElementById('toc');if(toc)toc.style.display='none';
@@ -533,7 +539,7 @@ function showDeveloper(){
       +'<div style="background:var(--surface);border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
       +'<h3 style="color:var(--accent);margin-bottom:8px">🗂️ '+t('lsViewer')+'</h3>'
       +'<div style="max-height:200px;overflow-y:auto;font-size:.8em;line-height:1.8;direction:ltr;text-align:left">'
-      +lsKeys.map(function(k){var v=ls(k);var disp=v&&v.length>80?v.slice(0,80)+'...':v;return'<div style="padding:3px 0;border-bottom:1px solid var(--border)"><span style="color:var(--accent)">'+k+'</span> = <span style="opacity:.7">'+disp+'</span></div>'}).join('')
+      +(function(){try{return lsKeys.map(function(k){try{var v=ls(k);var disp=v&&v.length>80?v.slice(0,80)+'...':String(v).replace(/</g,'&lt;').replace(/>/g,'&gt;');return'<div style="padding:3px 0;border-bottom:1px solid var(--border)"><span style="color:var(--accent)">'+k.replace(/</g,'&lt;')+'</span> = <span style="opacity:.7">'+disp+'</span></div>'}catch(e){return''}}).join('')}catch(e){return'<span style="color:red">Error: '+e.message+'</span>'}})()
       +'</div></div>'
       // Danger Zone
       +'<div style="background:#fee2e2;border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
