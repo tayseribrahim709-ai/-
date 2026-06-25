@@ -5,7 +5,7 @@ const FILES = [
   '/app.js?v=26&ts='+TS,
   '/app_data.json?ts='+TS, '/level_tests.json?ts='+TS, '/placement_test.json?ts='+TS,
   '/manifest.json?ts='+TS, '/icon-192.png', '/icon-512.png',
-  '/teacher.jpg', '/USER_GUIDE.md?ts='+TS
+  '/teacher.jpg', '/USER_GUIDE.html?ts='+TS
 ];
 
 self.addEventListener('install', e => {

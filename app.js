@@ -527,7 +527,7 @@ function showDeveloper(){
       +'<div style="background:var(--surface);border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
       +'<h3 style="color:var(--accent);margin-bottom:8px">📘 '+t('userGuide')+'</h3>'
       +'<p style="font-size:.85em;opacity:.8;margin-bottom:8px">'+t('guideDesc')+'</p>'
-      +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="window.open(\'USER_GUIDE.md\',\'_blank\')">📖 '+t('openGuide')+'</button>'
+      +'<button class="check-btn" style="font-size:.8em;padding:6px 10px" onclick="window.open(\'USER_GUIDE.html\',\'_blank\')">📖 '+t('openGuide')+'</button>'
       +'</div>'
       // Security
       +'<div style="background:var(--surface);border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
