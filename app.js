@@ -539,6 +539,7 @@ function showDeveloper(){
       +'<div style="background:#fee2e2;border-radius:12px;padding:16px;margin:10px 0;box-shadow:var(--card-shadow)">'
       +'<h3 style="color:#991b1b;margin-bottom:8px">⚠️ '+t('dangerZone')+'</h3>'
       +'<div style="display:flex;flex-wrap:wrap;gap:6px">'
+      +'<button style="font-size:.8em;padding:6px 10px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer" onclick="forceUpdateSW()">🔄 '+t('forceUpdate')+'</button>'
       +'<button style="font-size:.8em;padding:6px 10px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer" onclick="nukeAll()">💀 '+t('nukeAll')+'</button>'
       +'</div></div>'
       // Back
@@ -551,6 +552,7 @@ function importAll(){var inp=document.createElement('input');inp.type='file';inp
 function clearCache(){lss('eng_data_cache_v1','');lss('eng_data_files_cached','');toast('🧹 '+t('cacheCleared'))}
 function clearAllData(){if(!confirm(t('resetConfirm')))return;localStorage.clear();toast('🗑️ '+t('resetDone'))}
 function nukeAll(){if(!confirm('💀 '+t('nukeConfirm')))return;if(!confirm('⚠️ '+t('nukeConfirm2')))return;localStorage.clear();location.reload()}
+function forceUpdateSW(){if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).then(function(){caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k)}))}).then(function(){toast('🔄 '+t('updateReady'));setTimeout(function(){location.reload(true)},1500)})}).catch(function(e){toast('❌ Error: '+e.message)})}else{toast('⚠️ SW not supported')}}
 
 // ─── CV VIEW ───
 function showCV(){hideAllViews();let v=document.getElementById('cvView');if(!v){v=document.createElement('div');v.id='cvView';v.className='lesson-view'}v.style.display='block';document.getElementById('content').appendChild(v);const cl=LANG[currentLang];v.innerHTML='<div class="cv-content" style="padding:20px;max-width:800px;margin:0 auto"><div class="teacher-fallback" style="width:100%;max-width:280px;margin:0 auto 20px;padding:40px;border-radius:16px;background:var(--surface);text-align:center;font-size:64px;display:none">&#x1F9D1;&#x200D;&#x1F3EB;</div><img src="/teacher.jpg" alt="'+t('teacherAlt')+'" style="width:100%;max-width:280px;border-radius:16px;display:block;margin:0 auto 20px;box-shadow:0 4px 20px rgba(0,0,0,.15)" onerror="imgError(this)"><h2>'+t('aboutTitle')+'</h2><div class="cv-section" style="margin:12px 0"><h3>'+t('summary')+'</h3><p>'+t('summaryText')+'</p></div><div class="cv-section" style="margin:12px 0"><h3>'+t('qualifications')+'</h3><ul>'+(cl.qualList||[]).map(q=>'<li>'+q+'</li>').join('')+'</ul></div><div class="cv-section" style="margin:12px 0"><h3>'+t('experience')+'</h3><ul>'+(cl.expList||[]).map(e=>'<li>'+e+'</li>').join('')+'</ul></div><div class="cv-section" style="margin:12px 0"><h3>'+t('skills')+'</h3><ul>'+(cl.skillList||[]).map(s=>'<li>'+s+'</li>').join('')+'</ul></div><button class="back-btn" onclick="hideAllViews();showWelcome()">'+t('back')+'</button></div>';}
