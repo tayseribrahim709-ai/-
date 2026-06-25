@@ -1,4 +1,4 @@
-const CACHE = 'opencode-v15';
+const CACHE = 'opencode-v16';
 const TS = Date.now();
 const FILES = [
   '/', '/index.html?ts='+TS, '/style.css?ts='+TS,   '/app-lang.js?v=7&ts='+TS,

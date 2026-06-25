@@ -1,6 +1,7 @@
 
 
 // ─── STATE ───
+const APP_VER = 'v2.6';
 let currentLang = 'ar';
 let activeCurriculum = 0;
 let appData = null, levelTests = null, placementTest = null;
@@ -96,7 +97,7 @@ function checkReady(){const spinner=document.getElementById('loadingSpinner');co
 function navSetup(){const btns={'navDashboard':'showDashboard','navVocab':'showVocabBank','navGrammar':'showGrammarRef','navPlacement':'showPlacementTest','navSettings':'showSettings','navSync':'showSync','navCV':'showCV','navAbout':'showAbout'};Object.keys(btns).forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=function(){checkReady();if(typeof window[btns[id]]==='function')window[btns[id]]()};});renderCurriculumSelector();}
 
 // ─── DATA LOADING ───
-function initApp(){navSetup();var initTimer=setTimeout(function(){checkReady();if(ls('eng_onboarded')!=='1')showOnboarding();else showWelcome()},30000);loadDataFiles(function(data,test,pt){appData=data;levelTests=test;placementTest=pt;initAppData();checkReady();clearTimeout(initTimer);if(ls('eng_onboarded')!=='1')showOnboarding();else{showWelcome();checkResume()}});}
+function initApp(){navSetup();var oldVer=ls('eng_app_ver');if(oldVer!==APP_VER){try{if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister())})).then(function(){caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k)}))})}).catch(function(e){})}lss('eng_app_ver',APP_VER)}catch(e){}}var initTimer=setTimeout(function(){checkReady();if(ls('eng_onboarded')!=='1')showOnboarding();else showWelcome()},30000);loadDataFiles(function(data,test,pt){appData=data;levelTests=test;placementTest=pt;initAppData();checkReady();clearTimeout(initTimer);if(ls('eng_onboarded')!=='1')showOnboarding();else{showWelcome();checkResume()}});}
 
 function cefrLevel(l){return l.cefr_level||l.level||'';}
 function renderCurriculumSelector(){const sel=document.getElementById('curriculumSelector');if(!sel||!appData||!appData.curricula)return;const main=appData.curricula.filter(function(c){return c.id!=='yasser_spanish'});sel.innerHTML=main.map(function(c,i){return'<button class="curric-btn'+(c.id===(appData.curricula[activeCurriculum]||{}).id?' active':'')+'" onclick="selectCurriculum('+appData.curricula.findIndex(function(x){return x.id===c.id})+')">'+(currentLang==='en'?(c.name_en||c.name):c.name)+'</button>'}).join('');}
