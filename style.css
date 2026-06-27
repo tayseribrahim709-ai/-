@@ -136,6 +136,45 @@ body.dark-mode.theme-festive {
   --modal-overlay: rgba(0,0,0,.7);
 }
 
+/* ─── THEME: Black (AMOLED) ─── */
+body.theme-black {
+  --bg: #000000;
+  --surface: #111111;
+  --header-bg: linear-gradient(135deg, #000000, #1a1a2e);
+  --header-text: #e0e0e0;
+  --text: #e0e0e0;
+  --text-light: #888888;
+  --accent: #00d4ff;
+  --accent-hover: #00b8e6;
+  --border: #222222;
+  --border-light: #1a1a1a;
+  --success: #00d4ff;
+  --danger: #ff3355;
+  --warning: #ffaa00;
+  --input-bg: #111111;
+  --badge-a1: #ff3355;
+  --badge-a2: #ffaa00;
+  --badge-b1: #00d4ff;
+  --badge-b2: #7c3aed;
+  --badge-c1: #00d4ff;
+  --badge-c2: #ff3355;
+  --test-option-hover: #1a1a2e;
+  --test-option-bg: #111111;
+}
+body.dark-mode.theme-black {
+  --bg: #000000;
+  --surface: #0a0a0a;
+  --header-bg: linear-gradient(135deg, #000000, #0a0a1a);
+  --header-text: #ffffff;
+  --text: #ffffff;
+  --text-light: #999999;
+  --border: #1a1a1a;
+  --border-light: #111111;
+  --input-bg: #0a0a0a;
+  --test-option-hover: #111122;
+  --test-option-bg: #0a0a0a;
+}
+
 /* ─── THEME: Sudanese ─── */
 body.theme-sudan {
   --bg: #f0f5f0;
@@ -938,7 +977,10 @@ footer { text-align: center; padding: 20px; color: var(--text-light); font-size:
 /* ─── Welcome Background per Theme ─── */
 #welcomeView { position:relative; border-radius:var(--radius); overflow:hidden; }
 /* Classic: no background image */
-body.theme-classic #welcomeView, body:not(.theme-rasta):not(.theme-festive):not(.theme-sudan) #welcomeView { background:var(--bg); }
+body.theme-classic #welcomeView, body:not(.theme-rasta):not(.theme-festive):not(.theme-sudan):not(.theme-black) #welcomeView { background:var(--bg); }
+/* Black: pure black */
+body.theme-black #welcomeView { background:var(--bg); }
+body.dark-mode.theme-black #welcomeView { background:var(--bg); }
 /* Rasta: textured pattern */
 body.theme-rasta #welcomeView {
   background:
