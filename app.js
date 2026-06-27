@@ -2545,10 +2545,11 @@ function showSpellingBee(){
   v.style.display='block';
   // Collect words
   var words=[];
-  if(appData&&appData.curricula)appData.curricula.forEach(function(c){if(c.levels)c.levels.forEach(function(l){if(l.modules)l.modules.forEach(function(m){if(m.lessons)m.lessons.forEach(function(ls){if(ls.vocabulary)ls.vocabulary.forEach(function(vw){var w=vw.word||vw;var t=vw.translation||vw.meaning||'';if(w)words.push({word:w,trans:t})})})})})});
+  if(appData&&appData.curricula)appData.curricula.forEach(function(c){if(c.levels)c.levels.forEach(function(l){if(l.modules)l.modules.forEach(function(m){if(m.lessons)m.lessons.forEach(function(ls){if(ls.vocabulary)ls.vocabulary.forEach(function(vw){if(typeof vw==='string'){words.push({word:vw,trans:''})}else{var w=vw.word||'';var t=vw.translation||vw.meaning||'';if(w&&typeof w==='string')words.push({word:w,trans:t})}})})})})});
   if(!words.length){v.innerHTML='<p>'+t('noVocab')+'</p><button class="back-btn" onclick="showWelcome()">'+t('back')+'</button>';return;}
   var wordObj=words[Math.floor(Math.random()*words.length)];
-  var word=wordObj.word.replace(/[^a-zA-Z\s-]/g,'');
+  if(!wordObj||typeof wordObj.word!=='string'){showSpellingBee();return;}
+  var word=wordObj.word.replace(/[^a-zA-Z\s-']/g,'');
   if(!word){showSpellingBee();return;}
   spellingState.currentWord=word;
   spellingState.currentTrans=wordObj.trans;
@@ -2574,8 +2575,8 @@ function checkSpelling(){
   var input=document.getElementById('spellingInput');
   var res=document.getElementById('spellingResult');
   if(!input||!res)return;
-  var userWord=input.value.trim().toLowerCase();
-  var correct=spellingState.currentWord.toLowerCase();
+  var userWord=input.value.trim().replace(/\s+/g,' ').toLowerCase();
+  var correct=spellingState.currentWord.trim().toLowerCase();
   if(userWord===correct){
     res.innerHTML='<span class="match-feedback correct" style="display:block">✅ '+t('correct')+' 🎉</span>';
     fireConfetti();
