@@ -38,3 +38,4 @@ rebuild*.js
 renderLesson_new.js
 sync_db.json
 *.txt
+preload_data.js

@@ -983,3 +983,47 @@ body.dark-mode.theme-sudan #welcomeView {
     url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Sudan_Meroe_Pyramids_2001.JPG/800px-Sudan_Meroe_Pyramids_2001.JPG')
     center/cover no-repeat fixed;
 }
+
+/* ─── Dashboard ─── */
+.dashboardView { display:flex; flex-direction:column; gap:10px; padding:10px; }
+.fav-list { display:flex; flex-wrap:wrap; gap:6px; padding:6px 0; }
+.fav-chip { display:inline-block; padding:3px 10px; background:var(--surface); border:1px solid var(--border); border-radius:100px; font-size:.8em; color:var(--text-light); }
+.progress-bar { height:8px; background:var(--border); border-radius:100px; overflow:hidden; margin:4px 0; }
+.progress-fill { height:100%; background:var(--accent); border-radius:100px; transition:width .3s ease; }
+
+/* ─── Spelling Bee ─── */
+.spelling-card { max-width:500px; margin:20px auto; padding:25px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--card-shadow); text-align:center; }
+.spelling-word { font-size:2em; font-weight:700; color:var(--text); letter-spacing:2px; margin:15px 0; font-family:monospace; direction:ltr; }
+.spelling-input { width:100%; padding:12px; font-size:1.2em; text-align:center; border:2px solid var(--border); border-radius:var(--radius-sm); background:var(--input-bg); color:var(--text); font-family:monospace; direction:ltr; outline:none; }
+.spelling-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
+
+/* ─── Lesson extras ─── */
+.lesson-nav { display:flex; flex-wrap:wrap; gap:4px; padding:6px 10px; border-bottom:1px solid var(--border); margin-bottom:10px; font-size:.85em; }
+.lesson-rating { display:flex; gap:4px; align-items:center; padding:5px 0; }
+.next-lesson { display:inline-block; padding:8px 18px; background:var(--accent); color:#fff; border-radius:var(--radius-sm); font-size:.9em; cursor:pointer; border:none; }
+.next-lesson:hover { background:var(--accent-hover); }
+.example { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xs); padding:8px 12px; margin:4px 0; }
+.dialogue-lines { white-space:pre-wrap; background:var(--input-bg); padding:12px; border-radius:var(--radius-sm); line-height:1.8; }
+.dialogue-setting { font-size:.9em; color:var(--text-light); font-style:italic; margin-bottom:8px; padding:6px 12px; background:var(--surface); border-radius:var(--radius-xs); border:1px solid var(--border); }
+.grammar-lvl { display:inline-block; padding:1px 8px; font-size:.75em; background:var(--test-option-bg); border:1px solid var(--border); border-radius:100px; color:var(--text-light); margin-left:6px; }
+.vocab-lvl { display:inline-block; padding:1px 8px; font-size:.7em; background:var(--badge-c2); color:#fff; border-radius:100px; margin-left:6px; }
+.extra-buttons { display:flex; gap:8px; flex-wrap:wrap; padding:8px 0; justify-content:center; }
+.star-btn { background:none; border:none; font-size:1.3em; cursor:pointer; padding:4px; transition:transform .2s; }
+.star-btn:hover { transform:scale(1.2); }
+
+/* ─── Speaking ─── */
+.speaking-evaluation { padding:15px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); margin:10px 0; }
+.speaking-feedback { font-size:.95em; color:var(--text); line-height:1.7; padding:8px; background:var(--input-bg); border-radius:var(--radius-xs); }
+.speaking-tips { font-size:.85em; color:var(--text-light); padding:6px 10px; background:var(--test-option-bg); border-radius:var(--radius-xs); margin-top:6px; }
+
+/* ─── Writing ─── */
+.writing-evaluation { padding:15px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); margin:10px 0; }
+.writing-level { display:inline-block; padding:2px 10px; background:var(--accent); color:#fff; border-radius:100px; font-size:.8em; font-weight:700; margin:4px 0; }
+.writing-stats { display:flex; gap:12px; flex-wrap:wrap; padding:8px 0; font-size:.85em; color:var(--text-light); }
+
+/* ─── Misc ─── */
+.dedication-btn { display:block; margin:10px auto; padding:6px 18px; background:var(--surface); border:1px solid var(--border); border-radius:100px; cursor:pointer; font-size:.8em; color:var(--text-light); transition:var(--transition); }
+.dedication-btn:hover { border-color:var(--accent); color:var(--accent); }
+.teacher-fallback { width:60px; height:60px; border-radius:50%; background:var(--test-option-bg); display:flex; align-items:center; justify-content:center; font-size:1.5em; color:var(--text-light); }
+.header-avatar-fallback { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; font-size:1em; }
+.cv-content { padding:10px 0; }
