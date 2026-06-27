@@ -160,6 +160,8 @@ body.theme-black {
   --badge-c2: #ff3355;
   --test-option-hover: #1a1a2e;
   --test-option-bg: #111111;
+  --custom-header: #000000;
+  --custom-accent: #00d4ff;
 }
 body.dark-mode.theme-black {
   --bg: #000000;
@@ -173,6 +175,8 @@ body.dark-mode.theme-black {
   --input-bg: #0a0a0a;
   --test-option-hover: #111122;
   --test-option-bg: #0a0a0a;
+  --custom-header: #000000;
+  --custom-accent: #00d4ff;
 }
 
 /* ─── THEME: Sudanese ─── */
