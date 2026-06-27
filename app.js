@@ -2580,10 +2580,12 @@ function checkSpelling(){
   if(userWord===correct){
     res.innerHTML='<span class="match-feedback correct" style="display:block">✅ '+t('correct')+' 🎉</span>';
     fireConfetti();
+    setTimeout(showSpellingBee,1800);
   }else{
     spellingState.attempts++;
     if(spellingState.attempts>=spellingState.maxAttempts){
       res.innerHTML='<span class="match-feedback wrong" style="display:block">❌ '+t('wrong')+'<br>'+t('correctAns')+' <strong>'+spellingState.currentWord+'</strong></span>';
+      setTimeout(showSpellingBee,2500);
     }else{
       var remaining=spellingState.maxAttempts-spellingState.attempts;
       res.innerHTML='<span class="match-feedback wrong" style="display:block">❌ '+t('tryAgain')+' ('+remaining+' '+t('attemptsLeft')+')</span>';
