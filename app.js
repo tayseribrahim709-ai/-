@@ -2828,6 +2828,12 @@ function showWordSearch(){hideAllViews();var v=document.getElementById('wordSear
       sbtn.onclick=function(){showSearchAll()};
       hr.insertBefore(sbtn,hr.firstChild);
     }
+    if(!document.getElementById('navExam')){
+      var ebtn=document.createElement('button');ebtn.className='nav-btn';ebtn.id='navExam';ebtn.textContent='🧪';
+      ebtn.title=t('levelTest');ebtn.style.fontSize='1.1em';
+      ebtn.onclick=function(){showLevelTest(0)};
+      hr.appendChild(ebtn);
+    }
     if(!document.getElementById('navMore2')){
       var btn=document.createElement('button');btn.className='nav-btn';btn.id='navMore2';btn.textContent='🚀';
       btn.title=t('allFeatures');
