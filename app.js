@@ -3014,6 +3014,8 @@ function checkCrossword(idx){var inp=document.getElementById('cw_'+idx);var res=
 function scoreCrossword(total){var c=0;for(var i=0;i<total;i++){var inp=document.getElementById('cw_'+i);if(inp&&inp.style.borderColor==='green')c++}document.getElementById('cwScore').innerHTML='📊 '+c+'/'+total+' '+t('correct');}
 
 // ─── UNIFIED FEATURES PAGE ───
+function showLiveClass(){hideAllViews();var v=document.getElementById('liveClassView');if(!v){v=document.createElement('div');v.id='liveClassView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var isAr=currentLang==='ar';v.innerHTML='<h2>📺 '+t('liveClass')+'</h2><p style="text-align:center;color:var(--text-light);margin-bottom:10px">'+t('liveClassDesc')+'</p><div style="display:flex;gap:8px;justify-content:center;margin:10px 0;flex-wrap:wrap"><input id="liveRoomName" style="flex:1;min-width:200px;padding:10px;border:2px solid var(--accent);border-radius:8px;font-size:1em;background:var(--input-bg);color:var(--text);text-align:center" placeholder="'+t('liveRoomPlaceholder')+'" value="استاذ_ياسر"><button class="check-btn" onclick="joinLiveClass()">📺 '+t('liveJoin')+'</button></div><div id="liveContainer" style="width:100%;height:0;transition:height .3s"></div><button class="back-btn" onclick="hideAllViews();showWelcome()" style="display:block;margin:15px auto">'+t('back')+'</button>';}
+function joinLiveClass(){var name=document.getElementById('liveRoomName');if(!name)return;var room=name.value.trim();if(!room)room='استاذ_ياسر';var container=document.getElementById('liveContainer');if(!container)return;container.innerHTML='<iframe src="https://meet.jit.si/'+encodeURIComponent(room)+'#config.disableDeepLinking=true&config.startWithAudioMuted=true&config.startWithVideoMuted=true" allow="camera;microphone;display-capture;autoplay" style="width:100%;height:500px;border:2px solid var(--accent);border-radius:12px;background:#000" allowfullscreen></iframe>';container.style.height='500px';container.scrollIntoView({behavior:'smooth',block:'center'});}
 function showAllFeatures(){hideAllViews();var v=document.getElementById('allFeaturesView');if(!v){v=document.createElement('div');v.id='allFeaturesView';v.className='lesson-view';document.getElementById('content').appendChild(v)}v.style.display='block';var groups=[
   {title: t('featSection1'),items:[
     {icon:'📖',label:t('readingTitle'),action:'showReadingTest()',desc:t('featReading')},
@@ -3039,7 +3041,8 @@ function showAllFeatures(){hideAllViews();var v=document.getElementById('allFeat
     {icon:'🏆',label:t('leaderboard'),action:'showLeaderboard()',desc:t('featLeaderboard')},
     {icon:'🧪',label:t('levelTest'),action:'showLevelTest(0)',desc:t('featLevelTest')},
     {icon:'🔍',label:t('placeTitle'),action:'showPlacementTest()',desc:t('featPlacement')},
-    {icon:'🎓',label:t('titleCert'),action:'showCertSelector()',desc:t('featCertificates')}
+    {icon:'🎓',label:t('titleCert'),action:'showCertSelector()',desc:t('featCertificates')},
+    {icon:'📺',label:t('liveClass'),action:'showLiveClass()',desc:t('featLiveClass')}
   ]},
   {title: t('featSection5'),items:[
     {icon:'🔍',label:t('searchAll'),action:'showSearchAll()',desc:t('featSearch')},
