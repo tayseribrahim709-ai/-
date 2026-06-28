@@ -87,7 +87,7 @@ function setTheme(t){
 function applyTheme(t){
   var theme=t||'black';
   document.body.className=document.body.className.replace(/theme-\w+/g,'').trim();
-  if(theme!=='black')document.body.classList.add('theme-'+theme);
+  document.body.classList.add('theme-'+theme);
   lss('eng_theme',theme);
 }
 function applySavedTheme(){
@@ -1126,14 +1126,24 @@ function importDataFiles(){var inp=document.createElement('input');inp.type='fil
 function applyImportedData(data){appData=data[0];levelTests=data[1];placementTest=data[2];if(data[0]||data[1]||data[2]){try{lss(DATA_CACHE_KEY,JSON.stringify(data))}catch(e){}}initAppData();hideAllViews();showWelcome();toast(t('dataImported'))}
 function initAppData(){if(appData&&appData.curricula){try{switchCurriculum(0)}catch(e){console&&console.error('init error:',e)}}}
 
-// ─── PATCH showSettings TO ADD REMINDER + TEACHER ───
+// ─── PATCH showSettings TO ADD REMINDER + TEACHER + THEME ───
 var origShowSettings=showSettings;
 showSettings=function(){
   origShowSettings();
   var v=document.getElementById('settingsView');
   if(!v)return;
+  var st=getSettings();
   var s=getReminderSettings();
   var html=v.innerHTML;
+  html+='<div class="settings-group"><h3>'+t('themeLabel')+'</h3><div style="display:flex;gap:6px;flex-wrap:wrap">';
+  var themes=['black','classic','rasta','festive','sudan'];
+  var themeIcons=['⬛','✨','🌿','🎊','🇸🇩'];
+  var themeKeys=['themeBlack','themeClassic','themeRasta','themeFestive','themeSudan'];
+  for(var i=0;i<themes.length;i++){
+    var active=st.theme===themes[i]?' style="border:2px solid var(--accent);background:var(--accent);color:#fff"':'';
+    html+='<button onclick="setTheme(\''+themes[i]+'\')"'+active+'>'+themeIcons[i]+' '+t(themeKeys[i])+'</button>';
+  }
+  html+='</div></div>';
   html+='<div class="settings-group">';
   html+='<h3>'+t('reminderTitle2')+'</h3>';
   html+='<p style="color:var(--text-light);font-size:.9em;margin-bottom:8px">'+t('reminderDesc')+'</p>';
