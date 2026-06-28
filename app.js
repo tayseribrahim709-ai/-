@@ -2821,11 +2821,19 @@ function showWordSearch(){hideAllViews();var v=document.getElementById('wordSear
   navSetup=function(){
     orig2();
     var hr=document.querySelector('.header-right');
-    if(!hr||document.getElementById('navMore2'))return;
-    var btn=document.createElement('button');btn.className='nav-btn';btn.id='navMore2';btn.textContent='🚀';
-    btn.title=t('allFeatures');
-    btn.onclick=function(){showAllFeatures()};
-    hr.appendChild(btn);
+    if(!hr)return;
+    if(!document.getElementById('navSearchAll')){
+      var sbtn=document.createElement('button');sbtn.className='nav-btn';sbtn.id='navSearchAll';sbtn.textContent='🔍';
+      sbtn.title=t('searchAll');sbtn.style.fontSize='1.1em';
+      sbtn.onclick=function(){showSearchAll()};
+      hr.insertBefore(sbtn,hr.firstChild);
+    }
+    if(!document.getElementById('navMore2')){
+      var btn=document.createElement('button');btn.className='nav-btn';btn.id='navMore2';btn.textContent='🚀';
+      btn.title=t('allFeatures');
+      btn.onclick=function(){showAllFeatures()};
+      hr.appendChild(btn);
+    }
   };
 })();
 
