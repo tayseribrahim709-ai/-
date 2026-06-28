@@ -262,6 +262,7 @@ const LANG = {
     arExplMusic:'درس موسيقي بعنوان "{0}" يشرح المفاهيم الموسيقية الأساسية بطريقة مبسطة.',
     arExplGeneric:'درس "{0}" باللغة الإنجليزية. يغطي المفردات والقواعد والمهارات اللغوية من خلال أمثلة وتطبيقات عملية.',
     pushSubscribed:'✅ تم الاشتراك في الإشعارات',pushFailed:'❌ فشل الإشعارات',pushUnsubscribed:'تم إلغاء الاشتراك',
+    pushNotifTitle:'🔔 إشعارات الدفع',pushNotifDesc:'استقبل تذكيراً يومياً للدراسة عبر إشعارات المتصفح حتى لو كان التطبيق مغلقاً',
     themeLabel:'🎨 الثيم',themeClassic:'✨ كلاسيكي',themeRasta:'🌿 راستا',themeFestive:'🎊 فرائحي'
 ,themeBlack:'أسود',themeSudan:'السودان',
     sudanWelcome:'🇸🇩 مرحباً بك في التطبيق السوداني',
@@ -565,6 +566,7 @@ const LANG = {
     showEnglish:'⬇️ Show English',
     showArabic:'⬇️ Show Arabic',
     pushSubscribed:'✅ Push subscribed',pushFailed:'❌ Push failed',pushUnsubscribed:'Push unsubscribed',
+    pushNotifTitle:'🔔 Push Notifications',pushNotifDesc:'Receive a daily study reminder via browser push notifications even when the app is closed',
     themeLabel:'🎨 Theme',themeClassic:'✨ Classic',themeRasta:'🌿 Rasta',themeFestive:'🎊 Festive',themeBlack:'⬛ Black',themeSudan:'🇸🇩 Sudan',
     sudanWelcome:'🇸🇩 Welcome to the Sudanese Theme',
     festiveGreeting:'🎉 Happy Celebrations!',

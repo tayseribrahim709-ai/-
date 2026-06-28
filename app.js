@@ -117,7 +117,7 @@ function checkReady(){const spinner=document.getElementById('loadingSpinner');co
 function navSetup(){const btns={'navDashboard':'showDashboard','navVocab':'showVocabBank','navGrammar':'showGrammarRef','navPlacement':'showPlacementTest','navSettings':'showSettings','navSync':'showSync','navCV':'showCV','navAbout':'showAbout'};Object.keys(btns).forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=function(){checkReady();if(typeof window[btns[id]]==='function')window[btns[id]]()};});renderCurriculumSelector();}
 
 // ─── DATA LOADING ───
-function initApp(){navSetup();var oldVer=ls('eng_app_ver');if(oldVer!==APP_VER){try{if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).then(function(){caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k)}))})}).catch(function(e){})}lss('eng_app_ver',APP_VER)}catch(e){}}var initTimer=setTimeout(function(){if(!appData){checkReady();if(ls('eng_onboarded')!=='1')showOnboarding();else{showWelcome();setTimeout(restoreViewState,600)}}},8000);loadDataFiles(function(data,test,pt){appData=data;levelTests=test;placementTest=pt;initAppData();checkReady();clearTimeout(initTimer);if(ls('eng_onboarded')!=='1')showOnboarding();else{showWelcome();checkResume();setTimeout(restoreViewState,600)}});setTimeout(showDedication,1500);}
+function initApp(){navSetup();var oldVer=ls('eng_app_ver');if(oldVer!==APP_VER){try{if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).then(function(){caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k)}))})}).catch(function(e){})}lss('eng_app_ver',APP_VER)}catch(e){}}var initTimer=setTimeout(function(){if(!appData){checkReady();if(ls('eng_onboarded')!=='1')showOnboarding();else{showWelcome();setTimeout(restoreViewState,600)}}},8000);  loadDataFiles(function(data,test,pt){appData=data;levelTests=test;placementTest=pt;initAppData();checkReady();clearTimeout(initTimer);if(ls('eng_onboarded')!=='1')showOnboarding();else{showWelcome();checkResume();setTimeout(restoreViewState,600)}});setTimeout(showDedication,1500);setTimeout(fetchVapidKey,3000);}
 
 function cefrLevel(l){return l.cefr_level||l.level||'';}
 function renderCurriculumSelector(){const sel=document.getElementById('curriculumSelector');if(!sel||!appData||!appData.curricula)return;const main=appData.curricula.filter(function(c){return c.id!=='yasser_spanish'});sel.innerHTML=main.map(function(c,i){return'<button class="curric-btn'+(c.id===(appData.curricula[activeCurriculum]||{}).id?' active':'')+'" onclick="selectCurriculum('+appData.curricula.findIndex(function(x){return x.id===c.id})+')">'+(currentLang==='en'?(c.name_en||c.name):c.name)+'</button>'}).join('');}
@@ -1153,6 +1153,12 @@ showSettings=function(){
     html+='<input type="time" id="reminderTime" value="'+(s.hour<10?'0':'')+s.hour+':'+(s.minute<10?'0':'')+s.minute+'" onchange="updateReminderTime(this.value)" style="padding:6px;border:1px solid var(--border);border-radius:6px">';
   }
   html+='</div></div>';
+  html+='<div class="settings-group">';
+  html+='<h3>🔔 '+t('pushNotifTitle')+'</h3>';
+  html+='<p style="color:var(--text-light);font-size:.9em;margin-bottom:8px">'+t('pushNotifDesc')+'</p>';
+  var pn=ls('eng_push_notif')==='true';
+  html+='<button class="day-btn '+(pn?'active':'')+'" onclick="togglePushNotif()">'+(pn?t('enabledLabel'):t('disabledLabel'))+'</button>';
+  html+='</div>';
   html+='<div class="settings-group">';
   html+='<h3>'+t('teacherModeTitle')+'</h3>';
   html+='<p style="color:var(--text-light);font-size:.9em;margin-bottom:8px">'+t('teacherModeDesc')+'</p>';
@@ -3124,20 +3130,48 @@ setInterval(function(){try{var allData={};['eng_progress','eng_activeProfile','e
 
 function goToLevel(lvl){var idx=-1;if(appData&&appData.curricula){for(var i=0;i<appData.curricula.length;i++){var lvls=appData.curricula[i].levels||[];for(var j=0;j<lvls.length;j++){if((lvls[j].cefr_level||lvls[j].level_name||"").indexOf(lvl)!==-1){idx=i;break}}if(idx!==-1)break}}if(idx!==-1){selectCurriculum(idx);switchLevelTab(0);hideAllViews();renderTOC(0)}else toast(lvl)}
 
-// ─── PUSH NOTIFICATION SUBSCRIPTION ───
+// ─── PUSH NOTIFICATION ───
+var _vapidKey=null;
+function fetchVapidKey(){
+fetch('/api/push/publickey').then(function(r){return r.json()}).then(function(d){
+if(d.ok)_vapidKey=d.publicKey;
+}).catch(function(){});
+}
 function subscribePush(){
-var vapidKey=ls('eng_vapid_key')||'';
-if(!vapidKey){toast(t('vapidKeyMissing'));return;}
+if(!_vapidKey){fetchVapidKey();setTimeout(subscribePush,2000);return}
 if(!('serviceWorker'in navigator)||!('PushManager'in window)){toast(t('speechNotSupported'));return}
-var key=urlBase64ToUint8Array(vapidKey);
+var key=urlBase64ToUint8Array(_vapidKey);
 navigator.serviceWorker.ready.then(function(reg){
 reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key}).then(function(sub){
-        lss('eng_push_sub',JSON.stringify(sub));toast(t('pushSubscribed'))
-      }).catch(function(err){toast(t('pushFailed')+' '+err.message)})
+lss('eng_push_sub','true');fetch('/api/push/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subscription:sub})});toast(t('pushSubscribed'))
+}).catch(function(err){toast(t('pushFailed')+' '+err.message)})
 });
 }
 function unsubscribePush(){
-lss('eng_push_sub','');navigator.serviceWorker.ready.then(function(reg){reg.pushManager.getSubscription().then(function(s){if(s)s.unsubscribe()})});toast(t('pushUnsubscribed'));
+lss('eng_push_sub','');navigator.serviceWorker.ready.then(function(reg){reg.pushManager.getSubscription().then(function(s){if(s){s.unsubscribe();fetch('/api/push/unsubscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subscription:s})})}})});toast(t('pushUnsubscribed'));
+}
+function togglePushNotif(){
+var on=ls('eng_push_notif')==='true';
+if(on){
+lss('eng_push_notif','false');unsubscribePush();
+}else{
+lss('eng_push_notif','true');
+if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+subscribePush();
+schedulePushReminder();
+}
+}
+function schedulePushReminder(){
+var s=getReminderSettings();
+if(!s.enabled)return;
+var now=new Date();
+var next=new Date(now.getFullYear(),now.getMonth(),now.getDate(),s.hour,s.minute,0);
+if(next<=now)next.setDate(next.getDate()+1);
+var ms=next.getTime()-now.getTime();
+setTimeout(function(){
+fetch('/api/push/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:'📚 '+t('studyPlan'),body:t('reminderDesc')})});
+schedulePushReminder();
+},ms);
 }
 function urlBase64ToUint8Array(base64String){
 var padding='='.repeat((4-base64String.length%4)%4);
