@@ -263,7 +263,7 @@ const LANG = {
     arExplGeneric:'درس "{0}" باللغة الإنجليزية. يغطي المفردات والقواعد والمهارات اللغوية من خلال أمثلة وتطبيقات عملية.',
     pushSubscribed:'✅ تم الاشتراك في الإشعارات',pushFailed:'❌ فشل الإشعارات',pushUnsubscribed:'تم إلغاء الاشتراك',
     themeLabel:'🎨 الثيم',themeClassic:'✨ كلاسيكي',themeRasta:'🌿 راستا',themeFestive:'🎊 فرائحي'
-,themeBlack:'أسود',
+,themeBlack:'أسود',themeSudan:'السودان',
     sudanWelcome:'🇸🇩 مرحباً بك في التطبيق السوداني',
     festiveGreeting:'🎉 كل عام وأنتم بخير!',
     rastaGreeting:'🌿 One Love!',
@@ -565,7 +565,7 @@ const LANG = {
     showEnglish:'⬇️ Show English',
     showArabic:'⬇️ Show Arabic',
     pushSubscribed:'✅ Push subscribed',pushFailed:'❌ Push failed',pushUnsubscribed:'Push unsubscribed',
-    themeLabel:'🎨 Theme',themeClassic:'✨ Classic',themeRasta:'🌿 Rasta',themeFestive:'🎊 Festive',themeBlack:'⬛ Black',
+    themeLabel:'🎨 Theme',themeClassic:'✨ Classic',themeRasta:'🌿 Rasta',themeFestive:'🎊 Festive',themeBlack:'⬛ Black',themeSudan:'🇸🇩 Sudan',
     sudanWelcome:'🇸🇩 Welcome to the Sudanese Theme',
     festiveGreeting:'🎉 Happy Celebrations!',
     rastaGreeting:'🌿 One Love!',
